@@ -167,7 +167,8 @@
             NSLog(@"ESPTouchTask __listenAsyn() start an asyn listen task, current thread is: %@", [NSThread currentThread]);
         }
         NSTimeInterval startTimestamp = [[NSDate date] timeIntervalSince1970];
-        Byte expectOneByte = (Byte) ([self._apSsid length] + [self._apPwd length]);
+        NSString *apSsidAndPwd = [NSString stringWithFormat:@"%@%@",self._apSsid,self._apPwd];
+        Byte expectOneByte = [ESP_ByteUtil getBytesByNSString:apSsidAndPwd].length;
         Byte receiveOneByte = -1;
         NSData *receiveData = nil;
         int correctBroadcastCount = 0;

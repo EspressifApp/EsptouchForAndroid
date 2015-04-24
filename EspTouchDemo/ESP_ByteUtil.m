@@ -134,10 +134,10 @@
 
 + (NSData *) getBytesByNSString: (NSString *)string
 {
-    NSUInteger numberOfBytes = [string length];
+    NSUInteger numberOfBytes = [string lengthOfBytesUsingEncoding:ESPTOUCH_NSStringEncoding];
     Byte bytes[numberOfBytes];
     NSRange range = NSMakeRange(0, numberOfBytes);
-    [string getBytes:bytes maxLength:numberOfBytes usedLength:nil encoding:NSASCIIStringEncoding options:0 range:range remainingRange:NULL];
+    [string getBytes:bytes maxLength:numberOfBytes usedLength:nil encoding:ESPTOUCH_NSStringEncoding options:0 range:range remainingRange:NULL];
     NSData *data = [[NSData alloc]initWithBytes:bytes length:numberOfBytes];
     return data;
 }

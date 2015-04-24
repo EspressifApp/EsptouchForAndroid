@@ -21,10 +21,12 @@
     self = [super init];
     if (self)
     {
+        NSData* apSsidBytes = [ESP_ByteUtil getBytesByNSString:apSsid];
+        NSData* apPwdBytes = [ESP_ByteUtil getBytesByNSString:apPwd];
         // the u8 total len of apSsid and apPassword
-        UInt8 totalLen = [apSsid length] + [apPwd length];
+        UInt8 totalLen = [apSsidBytes length] + [apPwdBytes length];
         // the u8 len of apPassword
-        UInt8 pwdLen = [apPwd length];
+        UInt8 pwdLen = [apPwdBytes length];
         
         // generate guide code
         ESPGuideCode *gc = [[ESPGuideCode alloc]init];

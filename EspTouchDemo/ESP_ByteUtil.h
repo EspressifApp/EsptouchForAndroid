@@ -10,6 +10,8 @@
 
 @interface ESP_ByteUtil : NSObject
 
+#define ESPTOUCH_NSStringEncoding NSUTF8StringEncoding
+
 /**
  * Convert uint8 into char( we treat char as uint8)
  *
@@ -112,7 +114,7 @@
 
 /**
  * @param string the string to be used
- * @return the Byte[] of string according to ASCII
+ * @return the Byte[] of string according to ESPTOUCH_NSStringEncoding
  */
 + (NSData *) getBytesByNSString: (NSString *)string;
 

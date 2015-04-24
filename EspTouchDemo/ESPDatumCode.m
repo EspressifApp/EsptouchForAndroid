@@ -19,12 +19,15 @@
     if (self)
     {
         NSString *info = [[NSString alloc]initWithFormat:@"%@%@", apPwd, apSsid];
-        NSUInteger infoLen = [info length];
+        NSData *infoBytes = [ESP_ByteUtil getBytesByNSString:info];
+        NSUInteger infoLen = [infoBytes length];
+        Byte byte;
         _dataCodes = [[NSMutableArray alloc]initWithCapacity:infoLen];
         UInt8 infoU8s[infoLen];
         for (int i = 0; i < infoLen; i++)
         {
-            infoU8s[i] = [info characterAtIndex:i];
+            [infoBytes getBytes:&byte range:NSMakeRange(i, 1)];
+            infoU8s[i] = [ESP_ByteUtil convertByte2Uint8:byte];
         }
         for (int i = 0; i < infoLen; i++)
         {
