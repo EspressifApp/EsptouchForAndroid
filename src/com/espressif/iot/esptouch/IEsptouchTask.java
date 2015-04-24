@@ -1,6 +1,7 @@
 package com.espressif.iot.esptouch;
 
 public interface IEsptouchTask {
+	
 	/**
 	 * Interrupt the Esptouch Task when User tap back or close the Application.
 	 */

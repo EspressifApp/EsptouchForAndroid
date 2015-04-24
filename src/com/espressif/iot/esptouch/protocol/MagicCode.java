@@ -43,7 +43,7 @@ public class MagicCode implements ICodeData{
         mLengthHigh = lengthBytes[0];
         mLengthLow = lengthBytes[1];
         CRC8 crc8 = new CRC8();
-        crc8.update(ssid.getBytes());
+        crc8.update(ByteUtil.getBytesByString(ssid));
         char crcValue = (char) crc8.getValue();
         byte[] crcBytes = ByteUtil.splitUint8To2bytes(crcValue);
         mSsidCrcHigh = crcBytes[0];

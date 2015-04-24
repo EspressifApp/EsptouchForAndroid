@@ -15,11 +15,12 @@ public class DatumCode implements ICodeData {
 	public DatumCode(String apSsid, String apPassword) {
 		// note apPassword must before apSsid
 		String info = apPassword + apSsid;
-		int infoLen = info.length();
+		byte[] infoBytes = ByteUtil.getBytesByString(info);
+		int infoLen = infoBytes.length;
 		mDataCodes = new DataCode[infoLen];
 		char[] infoChars = new char[infoLen];
 		for (int i = 0; i < infoChars.length; i++) {
-			infoChars[i] = info.charAt(i);
+			infoChars[i] = ByteUtil.convertByte2Uint8(infoBytes[i]);
 		}
 		for (int i = 0; i < infoLen; i++) {
 			mDataCodes[i] = new DataCode(infoChars[i], i);

@@ -11,7 +11,7 @@ import com.espressif.iot.esptouch.IEsptouchResult;
  * 
  */
 public interface __IEsptouchTask {
-
+	
 	static final long INTERVAL_GUIDE_CODE_MILLISECOND = 10;
 
 	static final long INTERVAL_MAGIC_CODE_MILLISECOND = 10;

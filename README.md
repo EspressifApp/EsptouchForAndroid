@@ -1,3 +1,19 @@
+==================================v0.2.1==================================
+
+1.  fix the bug when SSID char is more than one byte value(0xff), the apk will crash
+
+    thx for the engineer in NATop YoungYang's discovery
+
+2.  the encoding charset could be set, the default one is "UTF-8":
+
+    change the constant ESPTOUCH_ENCODING_CHARSET in ByteUtil.java
+
+    (It will lead to ESPTOUCH fail for wrong CHARSET is set.
+
+     Whether the CHARSET is correct is depend on the phone or pad.
+
+     More info and discussion please refer to http://bbs.espressif.com/viewtopic.php?f=8&t=397)
+
 ==================================v0.2.0==================================
 
 1.  add check valid mechanism to forbid such situation:

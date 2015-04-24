@@ -65,8 +65,9 @@ public class __EsptouchTask implements __IEsptouchTask {
 					Log.d(TAG, "__listenAsyn() start");
 				}
 				long startTimestamp = System.currentTimeMillis();
-				byte expectOneByte = (byte) (mApSsid.length() + mApPassword
-						.length());
+				byte[] apSsidAndPassword = ByteUtil.getBytesByString(mApSsid
+						+ mApPassword);
+				byte expectOneByte = (byte) apSsidAndPassword.length;
 				byte receiveOneByte = -1;
 				byte[] receiveBytes = null;
 				int correctBroadcastCount = 0;

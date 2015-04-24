@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.espressif.iot_esptouch_demo"
     android:versionCode="7"
-    android:versionName="v0.2.0" >
+    android:versionName="v0.2.1" >
 
     <uses-sdk
         android:minSdkVersion="14"

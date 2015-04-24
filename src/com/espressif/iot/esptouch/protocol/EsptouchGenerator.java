@@ -20,10 +20,13 @@ public class EsptouchGenerator implements IEsptouchGenerator {
 	 */
 	public EsptouchGenerator(String apSsid, String apPassword) {
 
+		byte[] apSsidBytes = ByteUtil.getBytesByString(apSsid);
+		byte[] apPasswordBytes = ByteUtil.getBytesByString(apPassword);
+		
 		// the u8 total len of apSsid and apPassword
-		char totalLen = (char) (apSsid.length() + apPassword.length());
+		char totalLen = (char) (apSsidBytes.length + apPasswordBytes.length);
 		// the u8 len of apPassword
-		char pwdLen = (char) apPassword.length();
+		char pwdLen = (char) apPasswordBytes.length;
 
 		// generate guide code
 		GuideCode gc = new GuideCode();

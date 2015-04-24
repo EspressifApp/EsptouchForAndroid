@@ -1,5 +1,6 @@
 package com.espressif.iot.esptouch.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
 /**
@@ -11,6 +12,9 @@ import java.util.Random;
  *
  */
 public class ByteUtil {
+	
+	public static final String ESPTOUCH_ENCODING_CHARSET = "UTF-8";
+	
 	/**
 	 * Put String to byte[]
 	 * 
@@ -263,6 +267,18 @@ public class ByteUtil {
         }
         return sb.toString();
     }
+    
+    /**
+     * @param string the string to be used
+     * @return the byte[] of String according to {@link #ESPTOUCH_ENCODING_CHARSET}
+     */
+	public static byte[] getBytesByString(String string) {
+		try {
+			return string.getBytes(ESPTOUCH_ENCODING_CHARSET);
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalArgumentException("the charset is invalid");
+		}
+	}
 
 	private static void test_splitUint8To2bytes() {
 		// 20 = 0x14
