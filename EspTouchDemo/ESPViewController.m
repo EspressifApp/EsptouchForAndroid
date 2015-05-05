@@ -7,16 +7,6 @@
 //
 
 #import "ESPViewController.h"
-#import "ESP_ByteUtil.h"
-#import "ESP_CRC8.h"
-#import "ESPDataCode.h"
-#import "ESPMagicCode.h"
-#import "ESPPrefixCode.h"
-#import "ESPDataCode.h"
-#import "ESPDatumCode.h"
-#import "ESPTouchGenerator.h"
-#import "ESPUDPSocketClient.h"
-#import "ESPUDPSocketServer.h"
 #import "ESPTouchTask.h"
 #import "ESPTouchResult.h"
 
