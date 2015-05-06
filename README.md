@@ -21,6 +21,12 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 该软件按本来的样子提供，没有任何明确或暗含的担保，包括但不仅限于关于试销性、适合某一特定用途和非侵权的保证。作者和版权持有人在任何情况下均不就由软件或软件使用引起的以合同形式、民事侵权或其它方式提出的任何索赔、损害或其它责任负责。
 
+==================================v0.2.2==================================
+
+1.  add isCancelled API in ESPTouchTask and ESPTouchResult to check whether the task
+
+    is cancelled by user directly.
+
 ==================================v0.2.1==================================
 
 1.  fix the bug when SSID char is more than one byte value(0xff), esptouch will fail forever

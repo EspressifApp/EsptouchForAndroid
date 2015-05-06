@@ -29,9 +29,6 @@
 // the state of the confirm/cancel button
 @property (nonatomic, assign) BOOL _isConfirmState;
 
-// whether the task is canceled by user
-@property (atomic, assign) BOOL _isCanceled;
-
 @end
 
 @implementation ESPViewController
@@ -47,8 +44,6 @@
         dispatch_queue_t  queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         dispatch_async(queue, ^{
             NSLog(@"do the execute work...");
-            // clear _isCanceled
-            self._isCanceled = NO;
             // execute the task
             ESPTouchResult *esptouchResult = [self executeForResult];
             // show the result to the user in UI Main Thread
@@ -56,7 +51,7 @@
                 [self._spinner stopAnimating];
                 [self enableConfirmBtn];
                 // when canceled by user, don't show the alert view again
-                if (!self._isCanceled)
+                if (!esptouchResult.isCancelled)
                 {
                     [[[UIAlertView alloc] initWithTitle:@"Execute Result" message:[esptouchResult description] delegate:nil cancelButtonTitle:@"I know" otherButtonTitles: nil] show];
                 }
@@ -66,8 +61,6 @@
     // do cancel
     else
     {
-        // set _isCanceled
-        self._isCanceled = YES;
         [self._spinner stopAnimating];
         [self enableConfirmBtn];
         NSLog(@"do cancel action...");

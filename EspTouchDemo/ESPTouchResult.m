@@ -17,6 +17,7 @@
     {
         self.isSuc = isSuc;
         self.bssid = bssid;
+        self.isCancelled = NO;
     }
     return self;
 }

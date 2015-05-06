@@ -267,9 +267,16 @@
 
 - (void) interrupt
 {
-    if (DEBUG_ON) {
+    if (DEBUG_ON)
+    {
         NSLog(@"ESPTouchTask interrupt()");
     }
+    self.isCancelled = YES;
+    [self __interrupt];
+}
+
+- (void) __interrupt
+{
     self._isInterrupt = YES;
     [self._client interrupt];
     [self._server interrupt];
@@ -341,7 +348,7 @@
             break;
         }
     }
-    if (DEBUG_ON)
+    if (!self._isInterrupt && DEBUG_ON)
     {
         NSLog(@"ESPTouchTask __execute() finished, the result is %@", self._isSuc ? @"YES":@"NO");
     }
@@ -383,7 +390,7 @@
     }
     
     [self __sleep: WAIT_UDP_RESPONSE_MILLISECOND];
-    [self interrupt];
+    [self __interrupt];
     return isSuc;
 }
 
@@ -404,12 +411,14 @@
         isSuc = [self __execute:generator];
         if (isSuc)
         {
+            self._esptouchResult.isCancelled = self.isCancelled;
             return self._esptouchResult;
         }
     }
     
     [self __sleep: WAIT_UDP_RESPONSE_MILLISECOND];
-    [self interrupt];
+    [self __interrupt];
+    esptouchResult.isCancelled = self.isCancelled;
     return esptouchResult;
 }
 

@@ -13,6 +13,8 @@
 
 @interface ESPTouchTask : NSObject
 
+@property (atomic,assign) BOOL isCancelled;
+
 - (id) initWithApSsid: (NSString *) apSsid andApPwd: (NSString *) apPwd;
 
 /**

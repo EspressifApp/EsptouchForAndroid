@@ -14,6 +14,8 @@
 
 @property (nonatomic,strong) NSString * bssid;
 
+@property (atomic,assign) BOOL isCancelled;
+
 - (id) initWithIsSuc: (BOOL) isSuc andBssid: (NSString *) bssid;
 
 @end
