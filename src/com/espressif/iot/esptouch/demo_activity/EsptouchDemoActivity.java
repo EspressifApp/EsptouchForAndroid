@@ -125,10 +125,13 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 					.setEnabled(true);
 			mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(
 					"Confirm");
-			if (result) {
-				mProgressDialog.setMessage("Esptouch success");
-			} else {
-				mProgressDialog.setMessage("Esptouch fail");
+			// it is unnecessary at the moment, add here just to show how to use isCancelled()
+			if (!mEsptouchTask.isCancelled()) {
+				if (result) {
+					mProgressDialog.setMessage("Esptouch success");
+				} else {
+					mProgressDialog.setMessage("Esptouch fail");
+				}
 			}
 		}
 	}
@@ -183,10 +186,14 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 					.setEnabled(true);
 			mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(
 					"Confirm");
-			if (result.isSuc()) {
-				mProgressDialog.setMessage("Esptouch success, bssid = " + result.getBssid());
-			} else {
-				mProgressDialog.setMessage("Esptouch fail");
+			// it is unnecessary at the moment, add here just to show how to use isCancelled()
+			if (!result.isCancelled()) {
+				if (result.isSuc()) {
+					mProgressDialog.setMessage("Esptouch success, bssid = "
+							+ result.getBssid());
+				} else {
+					mProgressDialog.setMessage("Esptouch fail");
+				}
 			}
 		}
 	}

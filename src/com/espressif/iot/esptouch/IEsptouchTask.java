@@ -26,4 +26,5 @@ public interface IEsptouchTask {
 	 */
 	IEsptouchResult executeForResult() throws RuntimeException;
 	
+	boolean isCancelled();
 }

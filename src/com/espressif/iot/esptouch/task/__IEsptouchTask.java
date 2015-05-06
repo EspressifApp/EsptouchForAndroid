@@ -125,4 +125,5 @@ public interface __IEsptouchTask {
 	 */
 	static final boolean DEBUG = false;
 
+	boolean isCancelled();
 }

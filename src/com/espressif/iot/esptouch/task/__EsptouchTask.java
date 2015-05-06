@@ -1,5 +1,7 @@
 package com.espressif.iot.esptouch.task;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.espressif.iot.esptouch.EsptouchResult;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.protocol.EsptouchGenerator;
@@ -16,7 +18,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 
 	private static final String TAG = "EsptouchTask";
 
-	private volatile IEsptouchResult mEsptouchResult;
+	private volatile EsptouchResult mEsptouchResult;
 	private volatile boolean mIsSuc = false;
 	private volatile boolean mIsInterrupt = false;
 	private volatile boolean mIsExecuted = false;
@@ -24,6 +26,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 	private final UDPSocketServer mSocketServer;
 	private final String mApSsid;
 	private final String mApPassword;
+	private AtomicBoolean mIsCancelled;
 
 	public __EsptouchTask(String apSsid, String apPassword, Context context) {
 		if (TextUtils.isEmpty(apSsid)) {
@@ -35,6 +38,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		}
 		mApSsid = apSsid;
 		mApPassword = apPassword;
+		mIsCancelled = new AtomicBoolean(false);
 		mSocketClient = new UDPSocketClient();
 		mSocketServer = new UDPSocketServer(PORT_LISTENING,
 				WAIT_TIMEOUT_MILLISECOND, context);
@@ -55,6 +59,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		if (__IEsptouchTask.DEBUG) {
 			Log.d(TAG, "interrupt()");
 		}
+		mIsCancelled.set(true);
 		__interrupt();
 	}
 
@@ -148,6 +153,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		}.start();
 	}
 
+	@SuppressWarnings("unused")
 	private boolean __execute(IEsptouchGenerator generator) {
 		
 		long startTime = System.currentTimeMillis();
@@ -203,7 +209,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 				break;
 			}
 		}
-		if (__IEsptouchTask.DEBUG) {
+		if (__IEsptouchTask.DEBUG && !mIsCancelled.get()) {
 			Log.i(TAG, "__execute() finished, the result is " + mIsSuc);
 		}
 		return mIsSuc;
@@ -280,11 +286,12 @@ public class __EsptouchTask implements __IEsptouchTask {
 				mApPassword);
 		// listen the esptouch result asyn
 		__listenAsyn(ESP_TOUCH_RESULT_LEN);
-		IEsptouchResult esptouchResultFail = new EsptouchResult(false, null);
+		EsptouchResult esptouchResultFail = new EsptouchResult(false, null);
 		boolean isSuc = false;
 		for (int i = 0; i < TOTAL_REPEAT_TIME; i++) {
 			isSuc = __execute(generator);
 			if (isSuc) {
+				mEsptouchResult.setIsCancelled(mIsCancelled.get());
 				return mEsptouchResult;
 			}
 		}
@@ -300,11 +307,18 @@ public class __EsptouchTask implements __IEsptouchTask {
 			else
 			{
 				this.__interrupt();
+				esptouchResultFail.setIsCancelled(mIsCancelled.get());
 				return esptouchResultFail;
 			}
 		}
 		this.__interrupt();
+		esptouchResultFail.setIsCancelled(mIsCancelled.get());
 		return esptouchResultFail;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return this.mIsCancelled.get();
 	}
 
 }

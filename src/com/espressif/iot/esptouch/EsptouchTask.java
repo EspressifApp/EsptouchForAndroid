@@ -38,4 +38,9 @@ public class EsptouchTask implements IEsptouchTask {
 		return _mEsptouchTask.executeForResult();
 	}
 
+	@Override
+	public boolean isCancelled() {
+		return _mEsptouchTask.isCancelled();
+	}
+
 }
