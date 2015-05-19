@@ -29,11 +29,6 @@ public class EsptouchTask implements IEsptouchTask {
 	}
 
 	@Override
-	public boolean execute() throws RuntimeException {
-		return _mEsptouchTask.execute();
-	}
-
-	@Override
 	public IEsptouchResult executeForResult() throws RuntimeException {
 		return _mEsptouchTask.executeForResult();
 	}

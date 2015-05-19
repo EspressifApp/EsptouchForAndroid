@@ -74,13 +74,35 @@ public class UDPSocketClient {
 	 */
 	public void sendData(byte[][] data, String targetHostName, int targetPort,
 			long interval) {
+		sendData(data, 0, data.length, targetHostName, targetPort, interval);
+	}
+	
+	
+	/**
+	 * send the data by UDP
+	 * 
+	 * @param data
+	 *            the data to be sent
+	 * @param offset
+	 * 			  the offset which data to be sent
+	 * @param count
+	 * 			  the count of the data
+	 * @param targetHost
+	 *            the host name of target, e.g. 192.168.1.101
+	 * @param targetPort
+	 *            the port of target
+	 * @param interval
+	 *            the milliseconds to between each UDP sent
+	 */
+	public void sendData(byte[][] data, int offset, int count,
+			String targetHostName, int targetPort, long interval) {
 		if ((data == null) || (data.length <= 0)) {
 			if (__IEsptouchTask.DEBUG) {
 				Log.e(TAG, "sendData(): data == null or length <= 0");
 			}
 			return;
 		}
-		for (int i = 0; !mIsStop && i < data.length; i++) {
+		for (int i = offset; !mIsStop && i < offset + count; i++) {
 			if (data[i].length == 0) {
 				continue;
 			}

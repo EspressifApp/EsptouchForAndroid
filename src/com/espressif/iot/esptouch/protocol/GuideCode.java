@@ -9,20 +9,15 @@ public class GuideCode implements ICodeData {
 
 	@Override
 	public byte[] getBytes() {
-		byte[] guideBytes = new byte[GUIDE_CODE_LEN];
-		guideBytes[0] = 0x01;
-		guideBytes[1] = 0x02;
-		guideBytes[2] = 0x03;
-		guideBytes[3] = 0x04;
-		return guideBytes;
+		throw new RuntimeException("DataCode don't support getBytes()");
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		byte[] dataBytes = getBytes();
+		char[] dataU8s = getU8s();
 		for (int i = 0; i < GUIDE_CODE_LEN; i++) {
-			String hexString = ByteUtil.convertByte2HexString(dataBytes[i]);
+			String hexString = ByteUtil.convertU8ToHexString(dataU8s[i]);
 			sb.append("0x");
 			if (hexString.length() == 1) {
 				sb.append("0");
@@ -34,6 +29,11 @@ public class GuideCode implements ICodeData {
 
 	@Override
 	public char[] getU8s() {
-		throw new RuntimeException("DataCode don't support getU8s()");
+		char[] guidesU8s = new char[GUIDE_CODE_LEN];
+		guidesU8s[0] = 756;
+		guidesU8s[1] = 755;
+		guidesU8s[2] = 754;
+		guidesU8s[3] = 753;
+		return guidesU8s;
 	}
 }

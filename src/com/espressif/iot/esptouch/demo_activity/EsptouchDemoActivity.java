@@ -74,68 +74,6 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	
-	private class EsptouchAsyncTask extends AsyncTask<String, Void, Boolean> {
-
-		private ProgressDialog mProgressDialog;
-
-		private IEsptouchTask mEsptouchTask;
-
-		@Override
-		protected void onPreExecute() {
-			mProgressDialog = new ProgressDialog(EsptouchDemoActivity.this);
-			mProgressDialog
-					.setMessage("Esptouch is configuring, please wait for a moment...");
-			mProgressDialog.setCanceledOnTouchOutside(false);
-			mProgressDialog.setOnCancelListener(new OnCancelListener() {
-				@Override
-				public void onCancel(DialogInterface dialog) {
-					if (__IEsptouchTask.DEBUG) {
-						Log.i(TAG, "progress dialog is canceled");
-					}
-					if (mEsptouchTask != null) {
-						mEsptouchTask.interrupt();
-					}
-				}
-			});
-			mProgressDialog.setButton(DialogInterface.BUTTON_POSITIVE,
-					"Waiting...", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-						}
-					});
-			mProgressDialog.show();
-			mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-					.setEnabled(false);
-		}
-
-		@Override
-		protected Boolean doInBackground(String... params) {
-			String apSsid = params[0];
-			String apPassword = params[1];
-			mEsptouchTask = new EsptouchTask(apSsid, apPassword,
-					EsptouchDemoActivity.this);
-			boolean result = mEsptouchTask.execute();
-			return result;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-					.setEnabled(true);
-			mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(
-					"Confirm");
-			// it is unnecessary at the moment, add here just to show how to use isCancelled()
-			if (!mEsptouchTask.isCancelled()) {
-				if (result) {
-					mProgressDialog.setMessage("Esptouch success");
-				} else {
-					mProgressDialog.setMessage("Esptouch fail");
-				}
-			}
-		}
-	}
-	
 	private class EsptouchAsyncTask2 extends AsyncTask<String, Void, IEsptouchResult> {
 
 		private ProgressDialog mProgressDialog;
@@ -190,7 +128,8 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 			if (!result.isCancelled()) {
 				if (result.isSuc()) {
 					mProgressDialog.setMessage("Esptouch success, bssid = "
-							+ result.getBssid());
+							+ result.getBssid() + ",InetAddress = "
+							+ result.getInetAddress().getHostAddress());
 				} else {
 					mProgressDialog.setMessage("Esptouch fail");
 				}

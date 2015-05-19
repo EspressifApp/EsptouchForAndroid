@@ -12,12 +12,7 @@ import com.espressif.iot.esptouch.util.CRC8;
  * 2nd 9bits:       0x1                sequence header
  * 3rd 9bits:       0x0             crc(low)       data(low)
  * 
- * sequence header data
- * 
- * 8 7 6 5-0
- * 1 0 x index
- * if data(low) == 0, x = 1
- * else x = 0
+ * sequence header: 0,1,2,...
  * 
  * @author afunx
  * 
@@ -26,8 +21,8 @@ public class DataCode implements ICodeData{
 	
 	public static final int DATA_CODE_LEN = 6;
 	
-	private static final int INDEX_MAX = 63;
-
+	private static final int INDEX_MAX = 127;
+	
 	private final byte mSeqHeader;
     private final byte mDataHigh;
     private final byte mDataLow;
@@ -54,11 +49,7 @@ public class DataCode implements ICodeData{
 		byte[] crcBytes = ByteUtil.splitUint8To2bytes((char) crc8.getValue());
 		mCrcHigh = crcBytes[0];
 		mCrcLow = crcBytes[1];
-		if (mDataLow == 0 && mCrcLow == 0) {
-			mSeqHeader = (byte) (index | 101 << 6);
-		} else {
-			mSeqHeader = (byte) (index | 100 << 6);
-		}
+		mSeqHeader = (byte) index;
 	}
 	
 	@Override
