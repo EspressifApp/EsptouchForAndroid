@@ -10,6 +10,6 @@
 
 @interface ESPGuideCode : NSObject
 
-- (NSData *) getBytes;
+- (NSData *) getU16s;
 
 @end

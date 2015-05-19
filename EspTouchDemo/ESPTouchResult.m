@@ -7,10 +7,11 @@
 //
 
 #import "ESPTouchResult.h"
+#import "ESP_NetUtil.h"
 
 @implementation ESPTouchResult
 
-- (id) initWithIsSuc: (BOOL) isSuc andBssid: (NSString *) bssid
+- (id) initWithIsSuc: (BOOL) isSuc andBssid: (NSString *) bssid andInetAddrData: (NSData *) ipAddrData
 {
     self = [super init];
     if (self)
@@ -18,13 +19,18 @@
         self.isSuc = isSuc;
         self.bssid = bssid;
         self.isCancelled = NO;
+        self.ipAddrData = ipAddrData;
     }
     return self;
 }
 
 - (NSString *)description
 {
-    return [[NSString alloc]initWithFormat:@"[isSuc: %@,bssid: %@]",self.isSuc? @"YES":@"NO",self.bssid];
+    NSString *ipAddrDataStr = [ESP_NetUtil descriptionInetAddrByData:self.ipAddrData];
+    return [[NSString alloc]initWithFormat:@"[isSuc: %@,isCancelled: %@,bssid: %@,inetAddress: %@]",self.isSuc? @"YES":@"NO",
+            self.isCancelled? @"YES":@"NO"
+            ,self.bssid
+            ,ipAddrDataStr];
 }
 
 @end

@@ -10,7 +10,7 @@
 #import "ESP_ByteUtil.h"
 #import "ESP_CRC8.h"
 
-#define INDEX_MAX   63
+#define INDEX_MAX   127
 
 @implementation ESPDataCode
 
@@ -32,13 +32,7 @@
         NSData* crcData = [ESP_ByteUtil splitUint8To2Bytes:[crc getValue]];
         [crcData getBytes:&_crcHigh range:NSMakeRange(0, 1)];
         [crcData getBytes:&_crcLow range:NSMakeRange(1, 1)];
-        if (_dataLow == 0 && _crcLow == 0)
-        {
-            _seqHeader = index | 101 << 6;
-        }
-        else{
-            _seqHeader = index | 100 << 6;
-        }
+        _seqHeader = index;
     }
     return self;
 }

@@ -9,29 +9,58 @@
 #import "ESPDatumCode.h"
 #import "ESPDataCode.h"
 #import "ESP_ByteUtil.h"
+#import "ESP_CRC8.h"
 
+// define by the Esptouch protocol, all of the datum code should add EXTRA_LEN to prevent 0
+#define EXTRA_LEN   200
 
 @implementation ESPDatumCode
 
-- (id) initWithSsid:(NSString *)apSsid andApPwd:(NSString *)apPwd
+- (id) initWithSsid: (NSString *) apSsid andApPwd: (NSString*) apPwd andInetAddrData: (NSData *) ipAddrData
 {
     self = [super init];
     if (self)
     {
-        NSString *info = [[NSString alloc]initWithFormat:@"%@%@", apPwd, apSsid];
-        NSData *infoBytes = [ESP_ByteUtil getBytesByNSString:info];
-        NSUInteger infoLen = [infoBytes length];
-        Byte byte;
-        _dataCodes = [[NSMutableArray alloc]initWithCapacity:infoLen];
-        UInt8 infoU8s[infoLen];
-        for (int i = 0; i < infoLen; i++)
-        {
-            [infoBytes getBytes:&byte range:NSMakeRange(i, 1)];
-            infoU8s[i] = [ESP_ByteUtil convertByte2Uint8:byte];
+        // Data = total len(1 byte) + apPwd len(1 byte) + SSID CRC(1 byte) + ipAddress(4 byte) + apPwd + apSsid
+		// apPwdLen <= 104 at the moment
+        NSData *apPwdBytesData = [ESP_ByteUtil getBytesByNSString:apPwd];
+        NSData *apSsidBytesData = [ESP_ByteUtil getBytesByNSString:apSsid];
+        Byte apPwdBytes[[apPwdBytesData length]];
+        Byte apSsidBytes[[apSsidBytesData length]];
+        [apPwdBytesData getBytes:apPwdBytes];
+        [apSsidBytesData getBytes:apSsidBytes];
+        Byte apPwdLen = [apPwdBytesData length];
+        ESP_CRC8 *crc = [[ESP_CRC8 alloc]init];
+        [crc updateWithBuf:apSsidBytes Nbytes:(int)sizeof(apSsidBytes)];
+        Byte apSsidCrc = [crc getValue];
+        
+        UInt8 apSsidLen = sizeof(apSsidBytes);
+        
+        // only support ipv4 at the moment
+        UInt8 ipLen = [ipAddrData length];
+        Byte ipAddrUint8s[ipLen];
+        [ipAddrData getBytes:ipAddrUint8s];
+        
+        UInt8 totalLen = 3 + ipLen + apPwdLen + apSsidLen;
+        
+        // build data codes
+        _dataCodes = [[NSMutableArray alloc]initWithCapacity:totalLen];
+        ESPDataCode *dataCode = [[ESPDataCode alloc]initWithU8:totalLen andIndex:0];
+        [_dataCodes addObject:dataCode];
+        dataCode = [[ESPDataCode alloc]initWithU8:apPwdLen andIndex:1];
+        [_dataCodes addObject:dataCode];
+        dataCode = [[ESPDataCode alloc]initWithU8:apSsidCrc andIndex:2];
+        [_dataCodes addObject:dataCode];
+        for (int i = 0; i < ipLen; i++) {
+            dataCode = [[ESPDataCode alloc]initWithU8:ipAddrUint8s[i] andIndex:i + 3];
+            [_dataCodes addObject:dataCode];
         }
-        for (int i = 0; i < infoLen; i++)
-        {
-            ESPDataCode *dataCode = [[ESPDataCode alloc]initWithU8:infoU8s[i] andIndex:i];
+        for (int i = 0; i < apPwdLen; i++) {
+            dataCode = [[ESPDataCode alloc]initWithU8:apPwdBytes[i] andIndex:i + 3 + ipLen];
+            [_dataCodes addObject:dataCode];
+        }
+        for (int i = 0; i < apSsidLen; i++) {
+            dataCode = [[ESPDataCode alloc]initWithU8:apSsidBytes[i] andIndex:i + 3 + ipLen + apPwdLen];
             [_dataCodes addObject:dataCode];
         }
     }
@@ -57,17 +86,17 @@
 - (NSData *) getU16s
 {
     NSData *dataBytes = [self getBytes];
-    int totalLen = [dataBytes length];
+    NSInteger totalLen = [dataBytes length];
     Byte bytes[totalLen];
     [dataBytes getBytes:bytes length:totalLen];
-    int len = totalLen / 2;
+    NSInteger len = totalLen / 2;
     UInt16 dataU16s[len];
     Byte high, low;
     for (int i = 0; i < len; i++)
     {
         high = bytes[i * 2];
         low = bytes[i * 2 + 1];
-        dataU16s[i] = [ESP_ByteUtil combine2bytesToU16WithHigh:high andLow:low];
+        dataU16s[i] = [ESP_ByteUtil combine2bytesToU16WithHigh:high andLow:low] + EXTRA_LEN;
     }
     return [[NSData alloc]initWithBytes:dataU16s length:totalLen];
 }

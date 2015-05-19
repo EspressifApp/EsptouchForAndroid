@@ -93,7 +93,13 @@
 }
 
 - (void) sendDataWithBytesArray2: (NSArray *) bytesArray2 ToTargetHostName: (NSString *)targetHostName WithPort: (int) port
-                    andInterval: (long) interval
+                     andInterval: (long) interval
+{
+    return [self sendDataWithBytesArray2:bytesArray2 Offset:0 Count:[bytesArray2 count] ToTargetHostName:targetHostName WithPort:port andInterval:interval];
+}
+
+- (void) sendDataWithBytesArray2: (NSArray *) bytesArray2 Offset: (NSUInteger) offset Count: (NSUInteger) count ToTargetHostName: (NSString *)targetHostName WithPort: (int) port
+                     andInterval: (long) interval
 {
     // check data is valid
     if (nil == bytesArray2 || 0 == [bytesArray2 count])
@@ -128,7 +134,7 @@
         }
     }
     // send data gotten from the array
-    for (int i = 0; !self._isStop && i < [bytesArray2 count]; i++) {
+    for (NSUInteger i = offset; !self._isStop && i < offset + count; i++) {
         // get data
         NSData* data = [bytesArray2 objectAtIndex:i];
         NSUInteger dataLen = [data length];

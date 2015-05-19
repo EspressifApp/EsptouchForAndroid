@@ -13,10 +13,6 @@
 @private
     NSMutableArray *_gcBytes2;
 @private
-    NSMutableArray *_mcBytes2;
-@private
-    NSMutableArray *_pcBytes2;
-@private
     NSMutableArray *_dcBytes2;
 }
 /**
@@ -26,26 +22,16 @@
  *            the Ap's ssid
  * @param apPwd
  *            the Ap's password
+ * @param ipAddrData
+ *            the ip address of the phone or pad
  */
-- (id) initWithSsid: (NSString *) apSsid andApPassword: (NSString *) apPwd;
+- (id) initWithSsid: (NSString *) apSsid andApPassword: (NSString *) apPwd andInetAddrData: (NSData *) ipAddrData;
 
 /**
  * Get guide code by the format of byte[][]
  * @return guide code by the format of byte[][]
  */
 - (NSArray *) getGCBytes2;
-
-/**
- * Get magic code by the format of byte[][]
- * @return magic code by the format of byte[][]
- */
-- (NSArray *) getMCBytes2;
-
-/**
- * Get prefix code by the format of byte[][]
- * @return prefix code by the format of byte[][]
- */
-- (NSArray *) getPCBytes2;
 
 /**
  * Get data code by the format of byte[][]

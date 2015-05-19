@@ -11,8 +11,8 @@
 		0703C6F51AD653E9009A3841 /* ESPDatumCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0703C6F41AD653E9009A3841 /* ESPDatumCode.m */; };
 		0703C6F81AD65404009A3841 /* ESPTouchGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 0703C6F71AD65404009A3841 /* ESPTouchGenerator.m */; };
 		0703C6FB1AD65413009A3841 /* ESPGuideCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0703C6FA1AD65413009A3841 /* ESPGuideCode.m */; };
-		0703C6FE1AD65421009A3841 /* ESPMagicCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0703C6FD1AD65421009A3841 /* ESPMagicCode.m */; };
-		0703C7011AD6544D009A3841 /* ESPPrefixCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0703C7001AD6544D009A3841 /* ESPPrefixCode.m */; };
+		071F6A111B05F7A70015B482 /* IPAddress.c in Sources */ = {isa = PBXBuildFile; fileRef = 071F6A0F1B05F7A70015B482 /* IPAddress.c */; };
+		071F6A141B05F8790015B482 /* ESP_NetUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 071F6A131B05F8790015B482 /* ESP_NetUtil.m */; };
 		073FD2131ADBB6350080A2CF /* ESPUDPSocketClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 073FD2121ADBB6350080A2CF /* ESPUDPSocketClient.m */; };
 		073FD2161ADBB6440080A2CF /* ESPUDPSocketServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 073FD2151ADBB6440080A2CF /* ESPUDPSocketServer.m */; };
 		075A05C21AD3ABC100ECB5D6 /* ESP_ByteUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 075A05C11AD3ABC100ECB5D6 /* ESP_ByteUtil.m */; };
@@ -54,10 +54,10 @@
 		0703C6F71AD65404009A3841 /* ESPTouchGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESPTouchGenerator.m; sourceTree = "<group>"; };
 		0703C6F91AD65413009A3841 /* ESPGuideCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESPGuideCode.h; sourceTree = "<group>"; };
 		0703C6FA1AD65413009A3841 /* ESPGuideCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESPGuideCode.m; sourceTree = "<group>"; };
-		0703C6FC1AD65421009A3841 /* ESPMagicCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESPMagicCode.h; sourceTree = "<group>"; };
-		0703C6FD1AD65421009A3841 /* ESPMagicCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESPMagicCode.m; sourceTree = "<group>"; };
-		0703C6FF1AD6544D009A3841 /* ESPPrefixCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESPPrefixCode.h; sourceTree = "<group>"; };
-		0703C7001AD6544D009A3841 /* ESPPrefixCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESPPrefixCode.m; sourceTree = "<group>"; };
+		071F6A0F1B05F7A70015B482 /* IPAddress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IPAddress.c; sourceTree = "<group>"; };
+		071F6A101B05F7A70015B482 /* IPAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPAddress.h; sourceTree = "<group>"; };
+		071F6A121B05F8790015B482 /* ESP_NetUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESP_NetUtil.h; sourceTree = "<group>"; };
+		071F6A131B05F8790015B482 /* ESP_NetUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESP_NetUtil.m; sourceTree = "<group>"; };
 		073FD2111ADBB6350080A2CF /* ESPUDPSocketClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESPUDPSocketClient.h; sourceTree = "<group>"; };
 		073FD2121ADBB6350080A2CF /* ESPUDPSocketClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESPUDPSocketClient.m; sourceTree = "<group>"; };
 		073FD2141ADBB6440080A2CF /* ESPUDPSocketServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESPUDPSocketServer.h; sourceTree = "<group>"; };
@@ -126,10 +126,6 @@
 				0703C6F71AD65404009A3841 /* ESPTouchGenerator.m */,
 				0703C6F91AD65413009A3841 /* ESPGuideCode.h */,
 				0703C6FA1AD65413009A3841 /* ESPGuideCode.m */,
-				0703C6FC1AD65421009A3841 /* ESPMagicCode.h */,
-				0703C6FD1AD65421009A3841 /* ESPMagicCode.m */,
-				0703C6FF1AD6544D009A3841 /* ESPPrefixCode.h */,
-				0703C7001AD6544D009A3841 /* ESPPrefixCode.m */,
 			);
 			name = protocol;
 			sourceTree = "<group>";
@@ -235,10 +231,14 @@
 		077B60431AC038A1000AC046 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				071F6A0F1B05F7A70015B482 /* IPAddress.c */,
+				071F6A101B05F7A70015B482 /* IPAddress.h */,
 				077B60441AC0395A000AC046 /* ESP_CRC8.h */,
 				077B60451AC0395A000AC046 /* ESP_CRC8.m */,
 				075A05C01AD3ABC100ECB5D6 /* ESP_ByteUtil.h */,
 				075A05C11AD3ABC100ECB5D6 /* ESP_ByteUtil.m */,
+				071F6A121B05F8790015B482 /* ESP_NetUtil.h */,
+				071F6A131B05F8790015B482 /* ESP_NetUtil.m */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -351,16 +351,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				0703C6F81AD65404009A3841 /* ESPTouchGenerator.m in Sources */,
-				0703C7011AD6544D009A3841 /* ESPPrefixCode.m in Sources */,
-				0703C6FE1AD65421009A3841 /* ESPMagicCode.m in Sources */,
 				073FD2161ADBB6440080A2CF /* ESPUDPSocketServer.m in Sources */,
 				077B60461AC0395A000AC046 /* ESP_CRC8.m in Sources */,
 				0703C6F21AD653D9009A3841 /* ESPDataCode.m in Sources */,
 				0703C6F51AD653E9009A3841 /* ESPDatumCode.m in Sources */,
 				07A433731ADCF33A001F99B0 /* ESPTouchTask.m in Sources */,
+				071F6A141B05F8790015B482 /* ESP_NetUtil.m in Sources */,
 				075A05C21AD3ABC100ECB5D6 /* ESP_ByteUtil.m in Sources */,
 				0703C6FB1AD65413009A3841 /* ESPGuideCode.m in Sources */,
 				073FD2131ADBB6350080A2CF /* ESPUDPSocketClient.m in Sources */,
+				071F6A111B05F7A70015B482 /* IPAddress.c in Sources */,
 				077B60181AC036C3000AC046 /* main.m in Sources */,
 				077B601C1AC036C3000AC046 /* ESPAppDelegate.m in Sources */,
 				077B60221AC036C3000AC046 /* ESPViewController.m in Sources */,
@@ -446,7 +446,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -478,7 +478,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};

@@ -16,6 +16,8 @@
 
 @property (atomic,assign) BOOL isCancelled;
 
-- (id) initWithIsSuc: (BOOL) isSuc andBssid: (NSString *) bssid;
+@property (atomic,assign) NSData * ipAddrData;
+
+- (id) initWithIsSuc: (BOOL) isSuc andBssid: (NSString *) bssid andInetAddrData: (NSData *) ipAddrData;
 
 @end

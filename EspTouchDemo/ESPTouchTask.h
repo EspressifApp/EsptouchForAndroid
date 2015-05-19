@@ -25,14 +25,6 @@
 /**
  * Note: !!!Don't call the task at UI Main Thread
  *
- * @return whether the Esptouch Task is executed suc
- */
-- (BOOL) execute;
-
-
-/**
- * Note: !!!Don't call the task at UI Main Thread
- *
  * Smart Config v1.1 support the API
  *
  * @return the ESPTouchResult

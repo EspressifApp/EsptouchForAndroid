@@ -9,6 +9,7 @@
 #import "ESPViewController.h"
 #import "ESPTouchTask.h"
 #import "ESPTouchResult.h"
+#import "ESP_NetUtil.h"
 
 #import <SystemConfiguration/CaptiveNetwork.h>
 
@@ -78,18 +79,6 @@
     }
 }
 
-#pragma mark - the example of how to use execute
-
-- (BOOL) execute
-{
-    NSString *apSsid = self.ssidLabel.text;
-    NSString *apPwd = self._pwdTextView.text;
-    self._esptouchTask = [[ESPTouchTask alloc]initWithApSsid:apSsid andApPwd:apPwd];
-    BOOL result = [self._esptouchTask execute];
-    NSLog(@"execute() result is: %@",result?@"YES":@"NO");
-    return result;
-}
-
 #pragma mark - the example of how to use executeForResult
 
 - (ESPTouchResult *) executeForResult
@@ -125,6 +114,7 @@
     self._pwdTextView.delegate = self;
     self._pwdTextView.keyboardType = UIKeyboardTypeASCIICapable;
     [self enableConfirmBtn];
+    [ESP_NetUtil getLocalInetAddress];
 }
 
 #pragma mark - the follow codes are just to make soft-keyboard disappear at necessary time

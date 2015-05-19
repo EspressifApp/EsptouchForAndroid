@@ -20,8 +20,10 @@
  *            the  and Ap's ssid
  * @param apPwd
  *            the Ap's password ssid
+ * @param ipAddrData
+ *            the ip address of the phone or pad
  */
-- (id) initWithSsid: (NSString *) apSsid andApPwd: (NSString*) apPwd;
+- (id) initWithSsid: (NSString *) apSsid andApPwd: (NSString*) apPwd andInetAddrData: (NSData *) ipAddrData;
 
 - (NSData *) getBytes;
 

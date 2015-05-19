@@ -17,13 +17,8 @@
  * 1st 9bits:       0x0             crc(high)      data(high)
  * 2nd 9bits:       0x1                sequence header
  * 3rd 9bits:       0x0             crc(low)       data(low)
- *
- * sequence header data
- *
- * 8 7 6 5-0
- * 1 0 x index
- * if data(low) == 0, x = 1
- * else x = 0
+ * 
+ * sequence header: 0,1,2,...
  *
  * @author afunx
  *
