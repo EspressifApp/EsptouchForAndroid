@@ -30,8 +30,9 @@ public class __EsptouchTask implements __IEsptouchTask {
 	private final String mApPassword;
 	private final Context mContext;
 	private AtomicBoolean mIsCancelled;
+	private IEsptouchTaskParameter mParameter;
 
-	public __EsptouchTask(String apSsid, String apPassword, Context context) {
+	public __EsptouchTask(String apSsid, String apPassword, Context context, IEsptouchTaskParameter parameter) {
 		if (TextUtils.isEmpty(apSsid)) {
 			throw new IllegalArgumentException(
 					"the apSsid should be null or empty");
@@ -44,8 +45,9 @@ public class __EsptouchTask implements __IEsptouchTask {
 		mApPassword = apPassword;
 		mIsCancelled = new AtomicBoolean(false);
 		mSocketClient = new UDPSocketClient();
-		mSocketServer = new UDPSocketServer(PORT_LISTENING,
-				WAIT_TIMEOUT_MILLISECOND + WAIT_UDP_RESPONSE_MILLISECOND,
+		mParameter = parameter;
+		mSocketServer = new UDPSocketServer(mParameter.getPortListening(),
+				mParameter.getWaitUdpTotalMillisecond(),
 				context);
 	}
 
@@ -84,7 +86,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 				byte receiveOneByte = -1;
 				byte[] receiveBytes = null;
 				int correctBroadcastCount = 0;
-				while (correctBroadcastCount < THRESHOLD_ESPTOUCH_SUC_BROADCAST_COUNT) {
+				while (correctBroadcastCount < mParameter.getThresholdSucBroadcastCount()) {
 					receiveBytes = mSocketServer
 							.receiveSpecLenBytes(expectDataLen);
 					if (receiveBytes != null) {
@@ -99,7 +101,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 						// change the socket's timeout
 						long consume = System.currentTimeMillis()
 								- startTimestamp;
-						int timeout = (int) (WAIT_TIMEOUT_MILLISECOND - consume);
+						int timeout = (int) (mParameter.getWaitUdpTotalMillisecond() - consume);
 						if (timeout < 0) {
 							if (__IEsptouchTask.DEBUG) {
 								Log.i(TAG, "esptouch timeout");
@@ -111,7 +113,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 										+ timeout + " milliseconds");
 							}
 							mSocketServer.setSoTimeout(timeout);
-							if (correctBroadcastCount == THRESHOLD_ESPTOUCH_SUC_BROADCAST_COUNT) {
+							if (correctBroadcastCount == mParameter.getThresholdSucBroadcastCount()) {
 								if (__IEsptouchTask.DEBUG) {
 									Log.i(TAG,
 											"receive enough correct broadcast");
@@ -119,14 +121,14 @@ public class __EsptouchTask implements __IEsptouchTask {
 								if (receiveBytes != null) {
 									String mBssid = ByteUtil.parseBssid(
 											receiveBytes,
-											ESP_TOUCH_RESULT_ONE_LEN,
-											ESP_TOUCH_RESULT_MAC_LEN);
+											mParameter.getEsptouchResultOneLen(),
+											mParameter.getEsptouchResultMacLen());
 									InetAddress inetAddress = EspNetUtil
 											.parseInetAddr(
 													receiveBytes,
-													ESP_TOUCH_RESULT_ONE_LEN
-															+ ESP_TOUCH_RESULT_MAC_LEN,
-													ESP_TOUCH_RESULT_IP_LEN);
+													mParameter.getEsptouchResultOneLen()
+													+ mParameter.getEsptouchResultMacLen(),
+													mParameter.getEsptouchResultIpLen());
 									mEsptouchResult = new EsptouchResult(true,
 											mBssid, inetAddress);
 								}
@@ -135,7 +137,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 							}
 						}
 					}
-					else if (expectDataLen == ESP_TOUCH_RESULT_TOTAL_LEN
+					else if (expectDataLen == mParameter.getEsptouchResultTotalLen()
 							&& receiveBytes == null) {
 						if (__IEsptouchTask.DEBUG) {
 							Log.i(TAG, "esptouch timeout 3");
@@ -163,7 +165,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 
 		long startTime = System.currentTimeMillis();
 		long currentTime = startTime;
-		long lastTime = currentTime - TIMEOUT_MILLISECOND_TOTAL_CODE;
+		long lastTime = currentTime - mParameter.getTimeoutTotalCodeMillisecond();
 
 		byte[][] gcBytes2 = generator.getGCBytes2();
 		byte[][] dcBytes2 = generator.getDCBytes2();
@@ -178,29 +180,33 @@ public class __EsptouchTask implements __IEsptouchTask {
 		int index = 0;
 		final int one_data_len = 3;
 		while (!mIsInterrupt) {
-			if (currentTime - lastTime >= TIMEOUT_MILLISECOND_TOTAL_CODE) {
+			if (currentTime - lastTime >= mParameter.getTimeoutTotalCodeMillisecond()) {
 				if (__IEsptouchTask.DEBUG) {
 					Log.d(TAG, "send gc code ");
 				}
 				// send guide code
 				while (!mIsInterrupt
-						&& System.currentTimeMillis() - currentTime < TIMEOUT_MILLISECOND_GUIDE_CODE) {
-					mSocketClient.sendData(gcBytes2, TARGET_HOSTNAME,
-							TARGET_PORT, INTERVAL_GUIDE_CODE_MILLISECOND);
+						&& System.currentTimeMillis() - currentTime < mParameter
+								.getTimeoutGuideCodeMillisecond()) {
+					mSocketClient.sendData(gcBytes2,
+							mParameter.getTargetHostname(),
+							mParameter.getTargetPort(),
+							mParameter.getIntervalGuideCodeMillisecond());
 					// check whether the udp is send enough time
-					if (System.currentTimeMillis() - startTime > WAIT_TIMEOUT_MILLISECOND) {
+					if (System.currentTimeMillis() - startTime > mParameter.getWaitUdpSendingMillisecond()) {
 						break;
 					}
 				}
 				lastTime = currentTime;
 			} else {
 				mSocketClient.sendData(dcBytes2, index, one_data_len,
-						TARGET_HOSTNAME, TARGET_PORT,
-						INTERVAL_DATA_CODE_MILLISECOND);
+						mParameter.getTargetHostname(),
+						mParameter.getTargetPort(),
+						mParameter.getIntervalDataCodeMillisecond());
 			}
 			currentTime = System.currentTimeMillis();
 			// check whether the udp is send enough time
-			if (currentTime - startTime > WAIT_TIMEOUT_MILLISECOND) {
+			if (currentTime - startTime > mParameter.getWaitUdpSendingMillisecond()) {
 				break;
 			}
 			index = (index + one_data_len) % dcBytes2.length;
@@ -239,11 +245,11 @@ public class __EsptouchTask implements __IEsptouchTask {
 		IEsptouchGenerator generator = new EsptouchGenerator(mApSsid,
 				mApPassword, localInetAddress);
 		// listen the esptouch result asyn
-		__listenAsyn(ESP_TOUCH_RESULT_TOTAL_LEN);
+		__listenAsyn(mParameter.getEsptouchResultTotalLen());
 		EsptouchResult esptouchResultFail = new EsptouchResult(false, null,
 				null);
 		boolean isSuc = false;
-		for (int i = 0; i < TOTAL_REPEAT_TIME; i++) {
+		for (int i = 0; i < mParameter.getTotalRepeatTime(); i++) {
 			isSuc = __execute(generator);
 			if (isSuc) {
 				mEsptouchResult.setIsCancelled(mIsCancelled.get());
@@ -253,7 +259,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		
 		// wait the udp response without sending udp broadcast
 		try {
-			Thread.sleep(WAIT_UDP_RESPONSE_MILLISECOND);
+			Thread.sleep(mParameter.getWaitUdpReceivingMillisecond());
 		} catch (InterruptedException e) {
 			// receive the udp broadcast or the user interrupt the task
 			if (this.mIsSuc)
