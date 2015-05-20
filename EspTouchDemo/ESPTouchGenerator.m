@@ -14,7 +14,7 @@
 
 @implementation ESPTouchGenerator
 
-- (id) initWithSsid: (NSString *) apSsid andApPassword: (NSString *) apPwd andInetAddrData: (NSData *) ipAddrData
+- (id) initWithSsid: (NSString *) apSsid andApBssid: (NSString *) apBssid andApPassword: (NSString *) apPwd andInetAddrData: (NSData *) ipAddrData andIsSsidHidden: (BOOL) isSsidHidden
 {
     self = [super init];
     if (self)
@@ -33,7 +33,7 @@
         }
         
         // generate data code
-        ESPDatumCode *dc = [[ESPDatumCode alloc]initWithSsid:apSsid andApPwd:apPwd andInetAddrData:ipAddrData];
+        ESPDatumCode *dc = [[ESPDatumCode alloc]initWithSsid:apSsid andApBssid:apBssid andApPwd:apPwd andInetAddrData:ipAddrData andIsSsidHidden:isSsidHidden];
         NSData *dcData1 = [dc getU16s];
         NSUInteger dcDataLen = [dcData1 length];
         UInt16 dcU16_1[dcDataLen/2];

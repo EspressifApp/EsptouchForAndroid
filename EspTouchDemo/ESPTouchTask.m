@@ -20,6 +20,8 @@
 
 @property (nonatomic,strong) NSString *_apSsid;
 
+@property (nonatomic,strong) NSString *_apBssid;
+
 @property (nonatomic,strong) NSString *_apPwd;
 
 @property (atomic,assign) BOOL _isSuc;
@@ -38,13 +40,15 @@
 
 @property (nonatomic,assign) volatile BOOL _isExecutedAlready;
 
+@property (nonatomic,assign) BOOL _isSsidHidden;
+
 @property (nonatomic,strong) ESPTaskParameter *_parameter;
 
 @end
 
 @implementation ESPTouchTask
 
-- (id) initWithApSsid: (NSString *) apSsid andApPwd: (NSString *) apPwd
+- (id) initWithApSsid: (NSString *)apSsid andApBssid: (NSString *) apBssid andApPwd: (NSString *)apPwd andIsSsidHiden: (BOOL) isSsidHidden
 {
     if (apSsid==nil||[apSsid isEqualToString:@""]) {
         perror("ESPTouchTask initWithApSsid() apSsid shouldn't be null or empty");
@@ -65,6 +69,7 @@
         }
         self._apSsid = apSsid;
         self._apPwd = apPwd;
+        self._apBssid = apBssid;
         self._parameter = [[ESPTaskParameter alloc]init];
         self._client = [[ESPUDPSocketClient alloc]init];
         self._server = [[ESPUDPSocketServer alloc]initWithPort: [self._parameter getPortListening]
@@ -74,6 +79,7 @@
         self._isWakeUp = NO;
         self._isExecutedAlready = NO;
         self._condition = [[NSCondition alloc]init];
+        self._isSsidHidden = isSsidHidden;
     }
     return self;
 }
@@ -88,7 +94,7 @@
         }
         NSTimeInterval startTimestamp = [[NSDate date] timeIntervalSince1970];
         NSString *apSsidAndPwd = [NSString stringWithFormat:@"%@%@",self._apSsid,self._apPwd];
-        Byte expectOneByte = [ESP_ByteUtil getBytesByNSString:apSsidAndPwd].length + 7;
+        Byte expectOneByte = [ESP_ByteUtil getBytesByNSString:apSsidAndPwd].length + 8;
         if (DEBUG_ON) {
             NSLog(@"ESPTouchTask __listenAsyn() expectOneByte: %d",expectOneByte);
         }
@@ -275,7 +281,7 @@
     }
     // generator the esptouch byte[][] to be transformed, which will cost
     // some time(maybe a bit much)
-    ESPTouchGenerator *generator = [[ESPTouchGenerator alloc]initWithSsid:self._apSsid andApPassword:self._apPwd andInetAddrData:localInetAddrData];
+    ESPTouchGenerator *generator = [[ESPTouchGenerator alloc]initWithSsid:self._apSsid andApBssid:self._apBssid andApPassword:self._apPwd andInetAddrData:localInetAddrData andIsSsidHidden:self._isSsidHidden];
     // listen the esptouch result asyn
     [self __listenAsyn:[self._parameter getEsptouchResultTotalLen]];
     ESPTouchResult *esptouchResult = [[ESPTouchResult alloc]initWithIsSuc:NO andBssid:nil andInetAddrData:nil];

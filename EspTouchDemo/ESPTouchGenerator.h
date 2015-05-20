@@ -20,12 +20,16 @@
  *
  * @param apSsid
  *            the Ap's ssid
+ * @param apBssid
+ *            the Ap's bssid
  * @param apPwd
  *            the Ap's password
  * @param ipAddrData
  *            the ip address of the phone or pad
+ * @param isSsidHidden
+ *            whether the Ap's ssid is hidden
  */
-- (id) initWithSsid: (NSString *) apSsid andApPassword: (NSString *) apPwd andInetAddrData: (NSData *) ipAddrData;
+- (id) initWithSsid: (NSString *) apSsid andApBssid: (NSString *) apBssid andApPassword: (NSString *) apPwd andInetAddrData: (NSData *) ipAddrData andIsSsidHidden: (BOOL) isSsidHidden;
 
 /**
  * Get guide code by the format of byte[][]

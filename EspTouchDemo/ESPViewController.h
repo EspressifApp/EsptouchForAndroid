@@ -10,4 +10,5 @@
 
 @interface ESPViewController : UIViewController<UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *ssidLabel;
+@property (strong, nonatomic) NSString *bssid;
 @end

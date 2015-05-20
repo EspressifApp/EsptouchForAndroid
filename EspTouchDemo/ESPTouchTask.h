@@ -15,7 +15,7 @@
 
 @property (atomic,assign) BOOL isCancelled;
 
-- (id) initWithApSsid: (NSString *) apSsid andApPwd: (NSString *) apPwd;
+- (id) initWithApSsid: (NSString *)apSsid andApBssid: (NSString *) apBssid andApPwd: (NSString *)apPwd andIsSsidHiden: (BOOL) isSsidHidden;
 
 /**
  * Interrupt the Esptouch Task when User tap back or close the Application.

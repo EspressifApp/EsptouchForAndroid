@@ -23,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *_spinner;
 @property (weak, nonatomic) IBOutlet UITextField *_pwdTextView;
 @property (weak, nonatomic) IBOutlet UIButton *_confirmCancelBtn;
+@property (weak, nonatomic) IBOutlet UISwitch *_isSsidHiddenSwitch;
 
 // to cancel ESPTouchTask when
 @property (atomic, strong) ESPTouchTask *_esptouchTask;
@@ -85,7 +86,9 @@
 {
     NSString *apSsid = self.ssidLabel.text;
     NSString *apPwd = self._pwdTextView.text;
-    self._esptouchTask = [[ESPTouchTask alloc]initWithApSsid:apSsid andApPwd:apPwd];
+    NSString *apBssid = self.bssid;
+    BOOL isSsidHidden = [self._isSsidHiddenSwitch isOn];
+    self._esptouchTask = [[ESPTouchTask alloc]initWithApSsid:apSsid andApBssid:apBssid andApPwd:apPwd andIsSsidHiden:isSsidHidden];
     ESPTouchResult * esptouchResult = [self._esptouchTask executeForResult];
     NSLog(@"executeForResult() result is: %@",esptouchResult);
     return esptouchResult;

@@ -76,4 +76,16 @@
     return [NSString stringWithFormat:@"%d.%d.%d.%d",inetAddrBytes[0],inetAddrBytes[1],inetAddrBytes[2],inetAddrBytes[3]];
 }
 
++ (NSData *) parseBssid2bytes: (NSString *) bssid
+{
+    NSArray *bssidArray = [bssid componentsSeparatedByString:@":"];
+    NSInteger size = [bssidArray count];
+    Byte bssidBytes[size];
+    for (NSInteger i = 0; i < size; i++) {
+        NSString *bssidStr = [bssidArray objectAtIndex:i];
+        bssidBytes[i] = strtoul([bssidStr UTF8String], 0, 16);
+    }
+    return [[NSData alloc]initWithBytes:bssidBytes length:size];
+}
+
 @end

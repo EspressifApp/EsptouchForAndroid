@@ -26,4 +26,12 @@
  */
 + (NSString *) descriptionInetAddrByData: (NSData *) inetAddrData;
 
+/**
+ * parse bssid
+ *
+ * @param bssid the bssid
+ * @return byte converted from bssid
+ */
++ (NSData *) parseBssid2bytes: (NSString *) bssid;
+
 @end

@@ -8,6 +8,7 @@
 
 #import "ESPAppDelegate.h"
 #import "ESPViewController.h"
+#import "ESP_NetUtil.h"
 
 #import <SystemConfiguration/CaptiveNetwork.h>
 
@@ -41,7 +42,9 @@
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     ESPViewController *vc = (ESPViewController *)self.window.rootViewController;
-    vc.ssidLabel.text = [self fetchSsid];
+    NSDictionary *netInfo = [self fetchNetInfo];
+    vc.ssidLabel.text = [netInfo objectForKey:@"SSID"];
+    vc.bssid = [netInfo objectForKey:@"BSSID"];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -51,12 +54,25 @@
 
 - (NSString *)fetchSsid
 {
-    NSDictionary *ssidInfo = [self fetchSSIDInfo];
+    NSDictionary *ssidInfo = [self fetchNetInfo];
+    
+    // test
+    NSString *bssid = [self fetchBssid];
+    NSData *data = [ESP_NetUtil parseBssid2bytes:bssid];
+    NSLog(@"data:%@",data);
+    
     return [ssidInfo objectForKey:@"SSID"];
 }
 
+- (NSString *)fetchBssid
+{
+    NSDictionary *bssidInfo = [self fetchNetInfo];
+    
+    return [bssidInfo objectForKey:@"BSSID"];
+}
+
 // refer to http://stackoverflow.com/questions/5198716/iphone-get-ssid-without-private-library
-- (NSDictionary *)fetchSSIDInfo
+- (NSDictionary *)fetchNetInfo
 {
     NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
     NSLog(@"%s: Supported interfaces: %@", __func__, interfaceNames);
