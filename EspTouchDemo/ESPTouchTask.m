@@ -14,71 +14,7 @@
 #import "ESPUDPSocketClient.h"
 #import "ESPUDPSocketServer.h"
 #import "ESP_NetUtil.h"
-
-
-#define INTERVAL_GUIDE_CODE_MILLISECOND     8
-
-#define INTERVAL_DATA_CODE_MILLISECOND      8
-
-#define TIMEOUT_MILLISECOND_GUIDE_CODE      2000
-
-#define TIMEOUT_MILLISECOND_DATA_CODE       4000
-
-#define TIMEOUT_MILLISECOND_TOTAL_CODE (TIMEOUT_MILLISECOND_GUIDE_CODE + TIMEOUT_MILLISECOND_DATA_CODE)
-
-/*
- * TOTAL_REPEAT_TIME means execute how many circle times
- */
-#define TOTAL_REPEAT_TIME                   1
-
-/*
- * WAIT_UDP_RESPONSE_MILLISECOND means just wait the device send udp broadcast response,
- * but don't send udp broadcast at the sametime
- */
-#define WAIT_UDP_RESPONSE_MILLISECOND       10000
-
-/**
- * the len of the Esptouch result 1st byte is the total length of ssid and
- * password, the other 6 bytes are the device's bssid
- */
-#define ESP_TOUCH_RESULT_ONE_LEN            1
-
-#define ESP_TOUCH_RESULT_MAC_LEN            6
-
-#define ESP_TOUCH_RESULT_IP_LEN             4
-
-#define ESP_TOUCH_RESULT_TOTAL_LEN  (ESP_TOUCH_RESULT_ONE_LEN + ESP_TOUCH_RESULT_MAC_LEN + ESP_TOUCH_RESULT_IP_LEN)
-
-/**
- * The port which device will send broadcast when it configured suc
- */
-#define PORT_LISTENING                      18266
-
-/**
- * Time between the device receive the Ap's ssid,password and the device send broadcast
- */
-#define TIME_MILLISECOND_DEVICE_SEND_BROADCAST  4000
-
-/**
- * The timeout for Esptouch wait the device sending broadcast
- */
-#define WAIT_TIMEOUT_MILLISECOND            48000
-
-/**
- * The threshold number how many UDP broadcast received when we think the
- * device is configured suc
- */
-#define THRESHOLD_ESPTOUCH_SUC_BROADCAST_COUNT  1
-
-/**
- * The broadcast host name
- */
-#define TARGET_HOSTNAME  @"255.255.255.255"
-
-/**
- * The target port
- */
-#define TARGET_PORT  7001
+#import "ESPTouchTaskParameter.h"
 
 @interface ESPTouchTask ()
 
@@ -101,6 +37,8 @@
 @property (nonatomic,assign) __block BOOL _isWakeUp;
 
 @property (nonatomic,assign) volatile BOOL _isExecutedAlready;
+
+@property (nonatomic,strong) ESPTaskParameter *_parameter;
 
 @end
 
@@ -127,9 +65,10 @@
         }
         self._apSsid = apSsid;
         self._apPwd = apPwd;
+        self._parameter = [[ESPTaskParameter alloc]init];
         self._client = [[ESPUDPSocketClient alloc]init];
-        self._server = [[ESPUDPSocketServer alloc]initWithPort:PORT_LISTENING AndSocketTimeout:WAIT_TIMEOUT_MILLISECOND
-                        + WAIT_UDP_RESPONSE_MILLISECOND];
+        self._server = [[ESPUDPSocketServer alloc]initWithPort: [self._parameter getPortListening]
+                                              AndSocketTimeout: [self._parameter getWaitUdpTotalMillisecond]];
         self._isSuc = NO;
         self._isInterrupt = NO;
         self._isWakeUp = NO;
@@ -156,7 +95,7 @@
         Byte receiveOneByte = -1;
         NSData *receiveData = nil;
         int correctBroadcastCount = 0;
-        while (correctBroadcastCount < THRESHOLD_ESPTOUCH_SUC_BROADCAST_COUNT)
+        while (correctBroadcastCount < [self._parameter getThresholdSucBroadcastCount])
         {
             receiveData = [self._server receiveSpecLenBytes:expectDataLen];
             if (receiveData != nil)
@@ -172,7 +111,7 @@
                 }
                 // change the socket's timeout
                 NSTimeInterval consume = [[NSDate date] timeIntervalSince1970] - startTimestamp;
-                int timeout = (int)(WAIT_TIMEOUT_MILLISECOND - consume*1000);
+                int timeout = (int)([self._parameter getWaitUdpTotalMillisecond] - consume*1000);
                 if (timeout < 0)
                 {
                     if (DEBUG_ON)
@@ -188,7 +127,7 @@
                         NSLog(@"ESPTouchTask __listenAsyn() socketServer's new timeout is %d milliseconds",timeout);
                     }
                     [self._server setSocketTimeout:timeout];
-                    if (correctBroadcastCount == THRESHOLD_ESPTOUCH_SUC_BROADCAST_COUNT)
+                    if (correctBroadcastCount == [self._parameter getThresholdSucBroadcastCount])
                     {
                         if (DEBUG_ON)
                         {
@@ -197,9 +136,13 @@
                         if (receiveData != nil)
                         {
                             NSString *bssid =
-                            [ESP_ByteUtil parseBssid:(Byte *)[receiveData bytes] Offset:ESP_TOUCH_RESULT_ONE_LEN Count:ESP_TOUCH_RESULT_MAC_LEN];
-                            NSData *inetAddrData = [ESP_NetUtil parseInetAddrByData:receiveData andOffset:ESP_TOUCH_RESULT_ONE_LEN
-                                                    + ESP_TOUCH_RESULT_MAC_LEN andCount:ESP_TOUCH_RESULT_IP_LEN];
+                            [ESP_ByteUtil parseBssid:(Byte *)[receiveData bytes]
+                                              Offset:[self._parameter getEsptouchResultOneLen]
+                                               Count:[self._parameter getEsptouchResultMacLen]];
+                            NSData *inetAddrData =
+                            [ESP_NetUtil parseInetAddrByData:receiveData
+                                                   andOffset:[self._parameter getEsptouchResultOneLen] + [self._parameter getEsptouchResultMacLen]
+                                                    andCount:[self._parameter getEsptouchResultIpLen]];
                             self._esptouchResult = [[ESPTouchResult alloc]initWithIsSuc:YES andBssid:bssid andInetAddrData:inetAddrData];
                         }
                         self._isSuc = YES;
@@ -207,8 +150,7 @@
                     }
                 }
             }
-            else if (expectDataLen == ESP_TOUCH_RESULT_TOTAL_LEN
-                     && receiveData == nil)
+            else if (expectDataLen == [self._parameter getEsptouchResultTotalLen] && receiveData == nil)
             {
                 if (DEBUG_ON)
                 {
@@ -259,7 +201,7 @@
 {
     NSTimeInterval startTime = [[NSDate date] timeIntervalSince1970];
     NSTimeInterval currentTime = startTime;
-    NSTimeInterval lastTime = currentTime - TIMEOUT_MILLISECOND_TOTAL_CODE;
+    NSTimeInterval lastTime = currentTime - [self._parameter getTimeoutTotalCodeMillisecond];
     
     NSArray *gcBytes2 = [generator getGCBytes2];
     NSArray *dcBytes2 = [generator getDCBytes2];
@@ -269,18 +211,21 @@
     
     while (!self._isInterrupt)
     {
-        if (currentTime - lastTime >= TIMEOUT_MILLISECOND_TOTAL_CODE/1000.0)
+        if (currentTime - lastTime >= [self._parameter getTimeoutTotalCodeMillisecond]/1000.0)
         {
             if (DEBUG_ON)
             {
                 NSLog(@"ESPTouchTask __execute() send gc code ");
             }
             // send guide code
-            while (!self._isInterrupt && [[NSDate date] timeIntervalSince1970] - currentTime < TIMEOUT_MILLISECOND_GUIDE_CODE/1000.0)
+            while (!self._isInterrupt && [[NSDate date] timeIntervalSince1970] - currentTime < [self._parameter getTimeoutGuideCodeMillisecond]/1000.0)
             {
-                [self._client sendDataWithBytesArray2:gcBytes2 ToTargetHostName:TARGET_HOSTNAME WithPort:TARGET_PORT andInterval:INTERVAL_GUIDE_CODE_MILLISECOND];
+                [self._client sendDataWithBytesArray2:gcBytes2
+                                     ToTargetHostName:[self._parameter getTargetHostname]
+                                             WithPort:[self._parameter getTargetPort]
+                                          andInterval:[self._parameter getIntervalGuideCodeMillisecond]];
                 // check whether the udp is send enough time
-                if ([[NSDate date] timeIntervalSince1970] - startTime > WAIT_TIMEOUT_MILLISECOND/1000.0)
+                if ([[NSDate date] timeIntervalSince1970] - startTime > [self._parameter getWaitUdpSendingMillisecond]/1000.0)
                 {
                     break;
                 }
@@ -289,11 +234,16 @@
         }
         else
         {
-            [self._client sendDataWithBytesArray2:dcBytes2 Offset:index Count:one_data_len ToTargetHostName:TARGET_HOSTNAME WithPort:TARGET_PORT andInterval:INTERVAL_DATA_CODE_MILLISECOND];
+            [self._client sendDataWithBytesArray2:dcBytes2
+                                           Offset:index
+                                            Count:one_data_len
+                                 ToTargetHostName:[self._parameter getTargetHostname]
+                                         WithPort:[self._parameter getTargetPort]
+                                      andInterval:[self._parameter getIntervalDataCodeMillisecond]];
         }
         currentTime = [[NSDate date] timeIntervalSince1970];
         // check whether the udp is send enough time
-        if ([[NSDate date] timeIntervalSince1970] - startTime > WAIT_TIMEOUT_MILLISECOND/1000.0)
+        if ([[NSDate date] timeIntervalSince1970] - startTime > [self._parameter getWaitUdpSendingMillisecond]/1000.0)
         {
             break;
         }
@@ -327,10 +277,10 @@
     // some time(maybe a bit much)
     ESPTouchGenerator *generator = [[ESPTouchGenerator alloc]initWithSsid:self._apSsid andApPassword:self._apPwd andInetAddrData:localInetAddrData];
     // listen the esptouch result asyn
-    [self __listenAsyn:ESP_TOUCH_RESULT_TOTAL_LEN];
+    [self __listenAsyn:[self._parameter getEsptouchResultTotalLen]];
     ESPTouchResult *esptouchResult = [[ESPTouchResult alloc]initWithIsSuc:NO andBssid:nil andInetAddrData:nil];
     BOOL isSuc = NO;
-    for (int i = 0; i < TOTAL_REPEAT_TIME; i++)
+    for (int i = 0; i < [self._parameter getTotalRepeatTime]; i++)
     {
         isSuc = [self __execute:generator];
         if (isSuc)
@@ -340,7 +290,7 @@
         }
     }
     
-    [self __sleep: WAIT_UDP_RESPONSE_MILLISECOND];
+    [self __sleep: [self._parameter getWaitUdpReceivingMillisecond]];
     [self __interrupt];
     esptouchResult.isCancelled = self.isCancelled;
     return esptouchResult;
@@ -353,7 +303,7 @@
     {
         NSLog(@"ESPTouchTask __sleep() start");
     }
-    NSDate *date = [NSDate dateWithTimeIntervalSinceNow: WAIT_UDP_RESPONSE_MILLISECOND/1000.0];
+    NSDate *date = [NSDate dateWithTimeIntervalSinceNow: milliseconds/1000.0];
     [self._condition lock];
     BOOL signaled = NO;
     while (!self._isWakeUp && (signaled = [self._condition waitUntilDate:date]))
