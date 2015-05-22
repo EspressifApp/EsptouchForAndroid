@@ -5,27 +5,36 @@ import java.net.InetAddress;
 import com.espressif.iot.esptouch.task.ICodeData;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.CRC8;
+import com.espressif.iot.esptouch.util.EspNetUtil;
 
 public class DatumCode implements ICodeData {
 	
 	// define by the Esptouch protocol, all of the datum code should add 1 at last to prevent 0
-	private static final int EXTRA_LEN = 200;
+	private static final int EXTRA_LEN = 40;
 	
 	private final DataCode[] mDataCodes;
 	
 	/**
 	 * Constructor of DatumCode
 	 * @param apSsid the Ap's ssid
+	 * @param apBssid the Ap's bssid
 	 * @param apPassword the Ap's password
 	 * @param ipAddress the ip address of the phone or pad
+	 * @param isSsidHidden whether the Ap's ssid is hidden
 	 */
-	public DatumCode(String apSsid, String apPassword, InetAddress ipAddress) {
-		// Data = total len(1 byte) + apPwd len(1 byte) + SSID CRC(1 byte) + ipAddress(4 byte) + apPwd + apSsid
-		// apPwdLen <= 104 at the moment
+	public DatumCode(String apSsid, String apBssid, String apPassword,
+			InetAddress ipAddress, boolean isSsidHiden) {
+		// Data = total len(1 byte) + apPwd len(1 byte) + SSID CRC(1 byte) +
+		// BSSID CRC(1 byte) + ipAddress(4 byte) + apPwd + apSsid apPwdLen <=
+		// 104 at the moment
 		char apPwdLen = (char) ByteUtil.getBytesByString(apPassword).length;
 		CRC8 crc = new CRC8();
 		crc.update(ByteUtil.getBytesByString(apSsid));
 		char apSsidCrc = (char) crc.getValue();
+		
+		crc.reset();
+		crc.update(EspNetUtil.parseBssid2bytes(apBssid));
+		char apBssidCrc = (char) crc.getValue();
 		
 		char apSsidLen = (char) ByteUtil.getBytesByString(apSsid).length;
 		// hostname parse
@@ -38,24 +47,40 @@ public class DatumCode implements ICodeData {
 			ipAddrChars[i] = (char) Integer.parseInt(ipAddrStrs[i]);
 		}
 		
-		char totalLen = (char) (3 + ipLen + apPwdLen + apSsidLen);
+		
+		char _totalLen = (char) (4 + ipLen + apPwdLen + apSsidLen);
+		char totalLen = isSsidHiden ? (char) (4 + ipLen + apPwdLen + apSsidLen)
+				: (char) (4 + ipLen + apPwdLen);
 		
 		// build data codes
 		mDataCodes = new DataCode[totalLen];
-		mDataCodes[0] = new DataCode(totalLen, 0);
+		mDataCodes[0] = new DataCode(_totalLen, 0);
 		mDataCodes[1] = new DataCode(apPwdLen, 1);
 		mDataCodes[2] = new DataCode(apSsidCrc, 2);
+		mDataCodes[3] = new DataCode(apBssidCrc, 3);
 		for (int i = 0; i < ipLen; ++i) {
-			mDataCodes[i + 3] = new DataCode(ipAddrChars[i], i + 3);
+			mDataCodes[i + 4] = new DataCode(ipAddrChars[i], i + 4);
 		}
-		byte[] apSsidPwdBytes = ByteUtil.getBytesByString(apPassword + apSsid);
-		char[] apSsidPwdChars = new char[apSsidPwdBytes.length];
-		for (int i = 0;i < apSsidPwdBytes.length; i++) {
-			apSsidPwdChars[i] = ByteUtil.convertByte2Uint8(apSsidPwdBytes[i]);
+		
+		byte[] apPwdBytes = ByteUtil.getBytesByString(apPassword);
+		char[] apPwdChars = new char[apPwdBytes.length];
+		for (int i = 0;i < apPwdBytes.length; i++) {
+			apPwdChars[i] = ByteUtil.convertByte2Uint8(apPwdBytes[i]);
 		}
-		for (int i = 0; i < apSsidPwdChars.length; i++) {
-			mDataCodes[i + 3 + ipLen] = new DataCode(apSsidPwdChars[i], i + 3
-					+ ipLen);
+		for (int i = 0;i < apPwdChars.length; i++) {
+			mDataCodes[i + 4 + ipLen] = new DataCode(apPwdChars[i], i + 4 + ipLen);
+		}
+		
+		if (isSsidHiden) {
+			byte[] apSsidBytes = ByteUtil.getBytesByString(apSsid);
+			char[] apSsidChars = new char[apSsidBytes.length];
+			for (int i = 0; i < apSsidBytes.length; i++) {
+				apSsidChars[i] = ByteUtil.convertByte2Uint8(apSsidBytes[i]);
+			}
+			for (int i = 0; i < apSsidChars.length; i++) {
+				mDataCodes[i + 4 + ipLen + apPwdLen] = new DataCode(
+						apSsidChars[i], i + 4 + ipLen + apPwdLen);
+			}
 		}
 	}
 	
@@ -93,7 +118,7 @@ public class DatumCode implements ICodeData {
 		for (int i = 0; i < len; i++) {
 			high = dataBytes[i * 2];
 			low = dataBytes[i * 2 + 1];
-			dataU8s[i] = (char) (ByteUtil.combine2bytesToU8(high, low) + EXTRA_LEN);
+			dataU8s[i] = (char) (ByteUtil.combine2bytesToU16(high, low) + EXTRA_LEN);
 		}
 		return dataU8s;
 	}

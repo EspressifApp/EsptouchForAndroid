@@ -16,13 +16,17 @@ public class EsptouchGenerator implements IEsptouchGenerator {
 	 * 
 	 * @param apSsid
 	 *            the Ap's ssid
+	 * @param apBssid
+	 *            the Ap's bssid
 	 * @param apPassword
 	 *            the Ap's password
 	 * @param inetAddress
 	 *            the phone's or pad's local ip address allocated by Ap
+	 * @param isSsidHidden
+	 *            whether the Ap's ssid is hidden
 	 */
-	public EsptouchGenerator(String apSsid, String apPassword,
-			InetAddress inetAddress) {
+	public EsptouchGenerator(String apSsid, String apBssid, String apPassword,
+			InetAddress inetAddress, boolean isSsidHiden) {
 		// generate guide code
 		GuideCode gc = new GuideCode();
 		char[] gcU81 = gc.getU8s();
@@ -33,7 +37,8 @@ public class EsptouchGenerator implements IEsptouchGenerator {
 		}
 
 		// generate data code
-		DatumCode dc = new DatumCode(apSsid, apPassword, inetAddress);
+		DatumCode dc = new DatumCode(apSsid, apBssid, apPassword, inetAddress,
+				isSsidHiden);
 		char[] dcU81 = dc.getU8s();
 		mDcBytes2 = new byte[dcU81.length][];
 

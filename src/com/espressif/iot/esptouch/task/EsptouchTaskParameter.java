@@ -2,106 +2,110 @@ package com.espressif.iot.esptouch.task;
 
 public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 
-	private long mIntervalGuideCodeMillisecond = 8;
+	private long mIntervalGuideCodeMillisecond;
+	private long mIntervalDataCodeMillisecond;
+	private long mTimeoutGuideCodeMillisecond;
+	private long mTimeoutDataCodeMillisecond;
+	private int mTotalRepeatTime;
+	private int mEsptouchResultOneLen;
+	private int mEsptouchResultMacLen;
+	private int mEsptouchResultIpLen;
+	private int mEsptouchResultTotalLen;
+	private int mPortListening;
+	private String mTargetHostname;
+	private int mTargetPort;
+	private int mWaitUdpReceivingMilliseond;
+	private int mWaitUdpSendingMillisecond;
+	private int mThresholdSucBroadcastCount;
+
+	public EsptouchTaskParameter() {
+		mIntervalGuideCodeMillisecond = 10;
+		mIntervalDataCodeMillisecond = 10;
+		mTimeoutGuideCodeMillisecond = 2000;
+		mTimeoutDataCodeMillisecond = 4000;
+		mTotalRepeatTime = 1;
+		mEsptouchResultOneLen = 1;
+		mEsptouchResultMacLen = 6;
+		mEsptouchResultIpLen = 4;
+		mEsptouchResultTotalLen = 1 + 6 + 4;
+		mPortListening = 18266;
+		mTargetHostname = "255.255.255.255";
+		mTargetPort = 7001;
+		mWaitUdpReceivingMilliseond = 10000;
+		mWaitUdpSendingMillisecond = 48000;
+		mThresholdSucBroadcastCount = 1;
+	}
 
 	@Override
 	public long getIntervalGuideCodeMillisecond() {
 		return mIntervalGuideCodeMillisecond;
 	}
 
-	private long mIntervalDataCodeMillisecond = 8;
-
 	@Override
 	public long getIntervalDataCodeMillisecond() {
 		return mIntervalDataCodeMillisecond;
 	}
-
-	private long mTimeoutGuideCodeMillisecond = 2000;
 
 	@Override
 	public long getTimeoutGuideCodeMillisecond() {
 		return mTimeoutGuideCodeMillisecond;
 	}
 
-	private long mTimeoutDataCodeMillisecond = 4000;
-
 	@Override
 	public long getTimeoutDataCodeMillisecond() {
 		return mTimeoutDataCodeMillisecond;
 	}
 
-	private long mTimeoutTotalCodeMillisecond = 2000 + 4000;
-
 	@Override
 	public long getTimeoutTotalCodeMillisecond() {
-		return mTimeoutTotalCodeMillisecond;
+		return mTimeoutGuideCodeMillisecond + mTimeoutDataCodeMillisecond;
 	}
 
-	private int mTotalRepeatTime = 1;
-	
 	@Override
 	public int getTotalRepeatTime() {
 		return mTotalRepeatTime;
 	}
 
-	private int mEsptouchResultOneLen = 1;
-	
 	@Override
 	public int getEsptouchResultOneLen() {
 		return mEsptouchResultOneLen;
 	}
 
-	private int mEsptouchResultMacLen = 6;
-	
 	@Override
 	public int getEsptouchResultMacLen() {
 		return mEsptouchResultMacLen;
 	}
 
-	private int mEsptouchResultIpLen = 4;
-	
 	@Override
 	public int getEsptouchResultIpLen() {
 		return mEsptouchResultIpLen;
 	}
 
-	private int mEsptouchResultTotalLen = 1 + 6 + 4;
-	
 	@Override
 	public int getEsptouchResultTotalLen() {
 		return mEsptouchResultTotalLen;
 	}
 
-	private int mPortListening = 18266;
-	
 	@Override
 	public int getPortListening() {
 		return mPortListening;
 	}
 
-	private String mTargetHostname = "255.255.255.255";
-	
 	@Override
 	public String getTargetHostname() {
 		return mTargetHostname;
 	}
 
-	private int mTargetPort = 7001;
-	
 	@Override
 	public int getTargetPort() {
 		return mTargetPort;
 	}
 
-	private int mWaitUdpReceivingMilliseond = 10000;
-	
 	@Override
 	public int getWaitUdpReceivingMillisecond() {
 		return mWaitUdpReceivingMilliseond;
 	}
 
-	private int mWaitUdpSendingMillisecond = 48000;
-	
 	@Override
 	public int getWaitUdpSendingMillisecond() {
 		return mWaitUdpSendingMillisecond;
@@ -112,8 +116,6 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 		return mWaitUdpReceivingMilliseond + mWaitUdpSendingMillisecond;
 	}
 
-	private int mThresholdSucBroadcastCount = 1;
-	
 	@Override
 	public int getThresholdSucBroadcastCount() {
 		return mThresholdSucBroadcastCount;
@@ -121,6 +123,14 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 
 	@Override
 	public void setWaitUdpTotalMillisecond(int waitUdpTotalMillisecond) {
+		if (waitUdpTotalMillisecond < mWaitUdpReceivingMilliseond
+				+ getTimeoutTotalCodeMillisecond()) {
+			// if it happen, even one turn about sending udp broadcast can't be
+			// completed
+			throw new IllegalArgumentException(
+					"waitUdpTotalMillisecod is invalid, "
+							+ "it is less than mWaitUdpReceivingMilliseond + getTimeoutTotalCodeMillisecond()");
+		}
 		mWaitUdpSendingMillisecond = waitUdpTotalMillisecond
 				- mWaitUdpReceivingMilliseond;
 	}

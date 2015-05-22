@@ -75,4 +75,19 @@ public class EspNetUtil {
 		}
 		return inetAddress;
 	}
+	
+	/**
+	 * parse bssid
+	 * 
+	 * @param bssid the bssid
+	 * @return byte converted from bssid
+	 */
+	public static byte[] parseBssid2bytes(String bssid) {
+		String bssidSplits[] = bssid.split(":");
+		byte[] result = new byte[bssidSplits.length];
+		for(int i = 0;i < bssidSplits.length; i++) {
+			result[i] = (byte) Integer.parseInt(bssidSplits[i], 16);
+		}
+		return result;
+	}
 }

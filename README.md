@@ -21,6 +21,65 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 该软件按本来的样子提供，没有任何明确或暗含的担保，包括但不仅限于关于试销性、适合某一特定用途和非侵权的保证。作者和版权持有人在任何情况下均不就由软件或软件使用引起的以合同形式、民事侵权或其它方式提出的任何索赔、损害或其它责任负责。
 
+
+==================================v0.3.0==================================
+
+1.  Espressif's Smart Config is updated to v2.1, and the protocol is changed.
+
+    <b>Esptouch v0.3.0 only support Espressif's Smart Config v2.1</b>
+
+2.  Usage:
+
+    // build esptouch task
+
+    String apSsid = "wifi-1;
+
+    String apBssid = "12:34:56:78:9a:bc";
+
+    String apPwd = "1234567890";
+
+    boolean isSsidHidden = false;// whether the Ap's ssid is hidden, it is false usually
+
+    IEspTouchTask task = new EspTouchTask(apSsid, apBssid, apPassword,
+            isSsidHidden, XXXActivity.this);
+
+    // if you'd like to determine the timeout by yourself, use the follow:
+
+    int timeoutMillisecond = 58000;// it should >= 18000, 58000 is default
+
+    IEspTouchTask task = new EspTouchTask(apSsid, apBssid, apPassword,
+            isSsidHidden, timeoutMillisecond, XXXActivity.this);
+
+    // execute for result
+
+    IESPTouchResult esptouchReult = task.executeForResult();
+
+    // <b>note: one task can't executed more than once:</b>
+
+    IESPTouchTask esptouchTask = new EsptouchTask(...)
+
+    // wrong usage, which shouldn't happen
+
+    {
+
+        esptouchTask.executeForResult();
+
+        esptouchTask.executeForResult();
+
+    }
+
+    // correct usage
+
+    {
+
+        esptouchTask.executeForResult();
+
+        IEsptouchTask esptouchTask = new EsptouchTask(...);
+
+        esptouchTask.executeForResult();
+
+    }
+
 ==================================v0.2.2==================================
 
 1.  add isCancelled API in ESPTouchTask and ESPTouchResult to check whether the task

@@ -11,7 +11,7 @@ import com.espressif.iot.esptouch.IEsptouchResult;
  * 
  */
 public interface __IEsptouchTask {
-
+	
 	/**
 	 * Interrupt the Esptouch Task when User tap back or close the Application.
 	 */

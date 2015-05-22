@@ -18,6 +18,11 @@ import android.util.Log;
 
 public class __EsptouchTask implements __IEsptouchTask {
 
+	/**
+	 * one indivisible data contain 3 9bits info
+	 */
+	private static final int ONE_DATA_LEN = 3;
+	
 	private static final String TAG = "EsptouchTask";
 
 	private volatile EsptouchResult mEsptouchResult;
@@ -27,12 +32,15 @@ public class __EsptouchTask implements __IEsptouchTask {
 	private final UDPSocketClient mSocketClient;
 	private final UDPSocketServer mSocketServer;
 	private final String mApSsid;
+	private final String mApBssid;
+	private final boolean mIsSsidHidden;
 	private final String mApPassword;
 	private final Context mContext;
 	private AtomicBoolean mIsCancelled;
 	private IEsptouchTaskParameter mParameter;
 
-	public __EsptouchTask(String apSsid, String apPassword, Context context, IEsptouchTaskParameter parameter) {
+	public __EsptouchTask(String apSsid, String apBssid, String apPassword, Context context, IEsptouchTaskParameter parameter
+			,boolean isSsidHidden) {
 		if (TextUtils.isEmpty(apSsid)) {
 			throw new IllegalArgumentException(
 					"the apSsid should be null or empty");
@@ -42,6 +50,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		}
 		mContext = context;
 		mApSsid = apSsid;
+		mApBssid = apBssid;
 		mApPassword = apPassword;
 		mIsCancelled = new AtomicBoolean(false);
 		mSocketClient = new UDPSocketClient();
@@ -49,6 +58,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		mSocketServer = new UDPSocketServer(mParameter.getPortListening(),
 				mParameter.getWaitUdpTotalMillisecond(),
 				context);
+		mIsSsidHidden = isSsidHidden;
 	}
 
 	private synchronized void __interrupt() {
@@ -79,7 +89,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 				long startTimestamp = System.currentTimeMillis();
 				byte[] apSsidAndPassword = ByteUtil.getBytesByString(mApSsid
 						+ mApPassword);
-				byte expectOneByte = (byte) (apSsidAndPassword.length + 7);
+				byte expectOneByte = (byte) (apSsidAndPassword.length + 8);
 				if (__IEsptouchTask.DEBUG) {
 					Log.i(TAG, "expectOneByte: " + (0 + expectOneByte));
 				}
@@ -169,16 +179,8 @@ public class __EsptouchTask implements __IEsptouchTask {
 
 		byte[][] gcBytes2 = generator.getGCBytes2();
 		byte[][] dcBytes2 = generator.getDCBytes2();
-		Log.e(TAG, "gcBytes2 start:");
-		for(int i=0;i<gcBytes2.length;i++)
-		{
-			Log.e(TAG, 0+gcBytes2[i].length + "");
-		}
-		Log.e(TAG, "gcBytes2 end:");
-		Log.e(TAG, "dcBytes2 start:");
-		Log.e(TAG, "dcBytes2 end:");
+		
 		int index = 0;
-		final int one_data_len = 3;
 		while (!mIsInterrupt) {
 			if (currentTime - lastTime >= mParameter.getTimeoutTotalCodeMillisecond()) {
 				if (__IEsptouchTask.DEBUG) {
@@ -199,7 +201,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 				}
 				lastTime = currentTime;
 			} else {
-				mSocketClient.sendData(dcBytes2, index, one_data_len,
+				mSocketClient.sendData(dcBytes2, index, ONE_DATA_LEN,
 						mParameter.getTargetHostname(),
 						mParameter.getTargetPort(),
 						mParameter.getIntervalDataCodeMillisecond());
@@ -209,7 +211,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 			if (currentTime - startTime > mParameter.getWaitUdpSendingMillisecond()) {
 				break;
 			}
-			index = (index + one_data_len) % dcBytes2.length;
+			index = (index + ONE_DATA_LEN) % dcBytes2.length;
 		}
 
 		return mIsSuc;
@@ -242,8 +244,8 @@ public class __EsptouchTask implements __IEsptouchTask {
 		}
 		// generator the esptouch byte[][] to be transformed, which will cost
 		// some time(maybe a bit much)
-		IEsptouchGenerator generator = new EsptouchGenerator(mApSsid,
-				mApPassword, localInetAddress);
+		IEsptouchGenerator generator = new EsptouchGenerator(mApSsid, mApBssid,
+				mApPassword, localInetAddress, mIsSsidHidden);
 		// listen the esptouch result asyn
 		__listenAsyn(mParameter.getEsptouchResultTotalLen());
 		EsptouchResult esptouchResultFail = new EsptouchResult(false, null,

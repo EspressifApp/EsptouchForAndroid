@@ -176,7 +176,7 @@ public class ByteUtil {
 	 *            the low byte
 	 * @return the char(u8)
 	 */
-	public static char combine2bytesToU8(byte high, byte low) {
+	public static char combine2bytesToU16(byte high, byte low) {
 		char highU8 = convertByte2Uint8(high);
 		char lowU8 = convertByte2Uint8(low);
 		return (char) (highU8 << 8 | lowU8);

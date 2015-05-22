@@ -10,6 +10,13 @@ public class EsptouchResult implements IEsptouchResult {
 	private final InetAddress mInetAddress;
 	private AtomicBoolean mIsCancelled;
 
+	/**
+	 * Constructor of EsptouchResult 
+	 * 
+	 * @param isSuc whether the esptouch task is executed suc
+	 * @param bssid the device's bssid
+	 * @param inetAddress the device's ip address
+	 */
 	public EsptouchResult(boolean isSuc, String bssid,InetAddress inetAddress) {
 		this.mIsSuc = isSuc;
 		this.mBssid = bssid;
