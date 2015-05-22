@@ -42,10 +42,10 @@
     {
         [self._spinner startAnimating];
         [self enableCancelBtn];
-        NSLog(@"do confirm action...");
+        NSLog(@"ESPViewController do confirm action...");
         dispatch_queue_t  queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         dispatch_async(queue, ^{
-            NSLog(@"do the execute work...");
+            NSLog(@"ESPViewController do the execute work...");
             // execute the task
             ESPTouchResult *esptouchResult = [self executeForResult];
             // show the result to the user in UI Main Thread
@@ -65,7 +65,7 @@
     {
         [self._spinner stopAnimating];
         [self enableConfirmBtn];
-        NSLog(@"do cancel action...");
+        NSLog(@"ESPViewController do cancel action...");
         [self cancel];
     }
 }
@@ -88,9 +88,10 @@
     NSString *apPwd = self._pwdTextView.text;
     NSString *apBssid = self.bssid;
     BOOL isSsidHidden = [self._isSsidHiddenSwitch isOn];
-    self._esptouchTask = [[ESPTouchTask alloc]initWithApSsid:apSsid andApBssid:apBssid andApPwd:apPwd andIsSsidHiden:isSsidHidden];
+    self._esptouchTask =
+    [[ESPTouchTask alloc]initWithApSsid:apSsid andApBssid:apBssid andApPwd:apPwd andIsSsidHiden:isSsidHidden];
     ESPTouchResult * esptouchResult = [self._esptouchTask executeForResult];
-    NSLog(@"executeForResult() result is: %@",esptouchResult);
+    NSLog(@"ESPViewController executeForResult() result is: %@",esptouchResult);
     return esptouchResult;
 }
 
@@ -117,7 +118,6 @@
     self._pwdTextView.delegate = self;
     self._pwdTextView.keyboardType = UIKeyboardTypeASCIICapable;
     [self enableConfirmBtn];
-    [ESP_NetUtil getLocalInetAddress];
 }
 
 #pragma mark - the follow codes are just to make soft-keyboard disappear at necessary time

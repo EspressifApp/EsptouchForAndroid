@@ -33,8 +33,8 @@
 {
     self = [super init];
     if (self) {
-        self.intervalGuideCodeMillisecond = 8;
-        self.intervalDataCodeMillisecond = 8;
+        self.intervalGuideCodeMillisecond = 10;
+        self.intervalDataCodeMillisecond = 10;
         self.timeoutGuideCodeMillisecond = 2000;
         self.timeoutDataCodeMillisecond = 4000;
         self.timeoutTotalCodeMillisecond = 2000 + 4000;
@@ -143,6 +143,12 @@
 
 - (void) setWaitUdpTotalMillisecond: (int) waitUdpTotalMillisecond
 {
+    if (waitUdpTotalMillisecond < self.waitUdpSendingMillisecond + [self getTimeoutTotalCodeMillisecond])
+    {
+        // if it happen, even one turn about sending udp broadcast can't be completed
+        NSLog(@"ESPTouchTaskParameter waitUdpTotalMillisecod is invalid, it is less than mWaitUdpReceivingMilliseond + [self getTimeoutTotalCodeMillisecond]");
+        assert(0);
+    }
     self.waitUdpSendingMillisecond = waitUdpTotalMillisecond - self.waitUdpReceivingMillisecond;
 }
 @end

@@ -13,7 +13,7 @@
 #import "ESP_NetUtil.h"
 
 // define by the Esptouch protocol, all of the datum code should add EXTRA_LEN to prevent 0
-#define EXTRA_LEN   200
+#define EXTRA_LEN   40
 
 @implementation ESPDatumCode
 
@@ -38,7 +38,7 @@
         
         [crc reset];
         NSData *apBssidData = [ESP_NetUtil parseBssid2bytes:apBssid];
-        NSUInteger apBssidDataLen = [apBssidData length];
+        int apBssidDataLen = (int)[apBssidData length];
         Byte apBssidBytes[apBssidDataLen];
         [apBssidData getBytes:apBssidBytes];
         [crc updateWithBuf:apBssidBytes Nbytes:apBssidDataLen];

@@ -16,10 +16,10 @@
 - (NSData *) getU16s
 {
     UInt16 guideU16s[GUIDE_CODE_LEN];
-    guideU16s[0] = 756;
-    guideU16s[1] = 755;
-    guideU16s[2] = 754;
-    guideU16s[3] = 753;
+    guideU16s[0] = 259;
+    guideU16s[1] = 258;
+    guideU16s[2] = 257;
+    guideU16s[3] = 256;
     NSData* data = [[NSData alloc]initWithBytes:guideU16s length:GUIDE_CODE_LEN*2];
     return data;
 }

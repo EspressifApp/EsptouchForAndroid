@@ -16,6 +16,8 @@
 #import "ESP_NetUtil.h"
 #import "ESPTouchTaskParameter.h"
 
+#define ONE_DATA_LEN    3
+
 @interface ESPTouchTask ()
 
 @property (nonatomic,strong) NSString *_apSsid;
@@ -82,6 +84,15 @@
         self._isSsidHidden = isSsidHidden;
     }
     return self;
+}
+
+- (id) initWithApSsid: (NSString *)apSsid andApBssid: (NSString *) apBssid andApPwd: (NSString *)apPwd andIsSsidHiden: (BOOL) isSsidHidden andTimeoutMillisecond: (int) timeoutMillisecond
+{
+    ESPTouchTask *_self = [self initWithApSsid:apSsid andApBssid:apBssid andApPwd:apPwd andIsSsidHiden:isSsidHidden];
+    if (_self) {
+        [_self._parameter setWaitUdpTotalMillisecond:timeoutMillisecond];
+    }
+    return _self;
 }
 
 - (void) __listenAsyn: (const int) expectDataLen
@@ -213,7 +224,6 @@
     NSArray *dcBytes2 = [generator getDCBytes2];
     
     int index = 0;
-    const int one_data_len = 3;
     
     while (!self._isInterrupt)
     {
@@ -242,7 +252,7 @@
         {
             [self._client sendDataWithBytesArray2:dcBytes2
                                            Offset:index
-                                            Count:one_data_len
+                                            Count:ONE_DATA_LEN
                                  ToTargetHostName:[self._parameter getTargetHostname]
                                          WithPort:[self._parameter getTargetPort]
                                       andInterval:[self._parameter getIntervalDataCodeMillisecond]];
@@ -253,7 +263,7 @@
         {
             break;
         }
-        index = (index + one_data_len) % [dcBytes2 count];
+        index = (index + ONE_DATA_LEN) % [dcBytes2 count];
     }
     
     return self._isSuc;

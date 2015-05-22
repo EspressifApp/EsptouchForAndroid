@@ -31,16 +31,16 @@
         
         if (theAddr == 0) continue;
         if (theAddr == localHost) continue;
-        NSLog(@"theAddr=%lu",theAddr);
+//        NSLog(@"theAddr=%lu",theAddr);
         
         // hard coding
         localIpBytes[0] = (theAddr & 0xff)          >> 0;
         localIpBytes[1] = (theAddr & 0xff00)        >> 8;
         localIpBytes[2] = (theAddr & 0xff0000)      >> 16;
         localIpBytes[3] = (theAddr & 0xff000000)    >> 24;
-        NSLog(@"%d.%d.%d.%d",localIpBytes[0],localIpBytes[1],localIpBytes[2],localIpBytes[3]);
+//        NSLog(@"ESP_NetUtil:: %d.%d.%d.%d",localIpBytes[0],localIpBytes[1],localIpBytes[2],localIpBytes[3]);
         
-        NSLog(@"ESP_NetUtil:: Name: %s MAC: %s IP: %s\n", if_names[i], hw_addrs[i], ip_names[i]);
+//        NSLog(@"ESP_NetUtil:: Name: %s MAC: %s IP: %s\n", if_names[i], hw_addrs[i], ip_names[i]);
     }
     FreeAddresses();
     
