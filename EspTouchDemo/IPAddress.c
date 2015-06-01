@@ -53,6 +53,7 @@ void FreeAddresses()
         if (ip_names[i] != 0) free(ip_names[i]);
         if (hw_addrs[i] != 0) free(hw_addrs[i]);
         ip_addrs[i] = 0;
+        nextAddr = 0;
     }
     InitAddresses();
 }

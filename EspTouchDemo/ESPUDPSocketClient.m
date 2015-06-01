@@ -127,10 +127,10 @@
         {
             if (DEBUG_ON)
             {
-                perror("client: setsockopt SO_BROADCAST fail\n");
+                perror("client: setsockopt SO_BROADCAST fail, but just ignore it\n");
             }
-            [self close];
-            return;
+            // for the Ap will make some troubles when the phone send too many UDP packets,
+            // but we don't expect the UDP packet received by others, so just ignore it
         }
     }
     // send data gotten from the array
@@ -149,10 +149,10 @@
         {
             if (DEBUG_ON)
             {
-                perror("client: sendto fail\n");
+                perror("client: sendto fail, but just ignore it\n");
             }
-            [self close];
-            return;
+            // for the Ap will make some troubles when the phone send too many UDP packets,
+            // but we don't expect the UDP packet received by others, so just ignore it
         }
         // sleep interval
         usleep((useconds_t)(interval*1000));
