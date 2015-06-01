@@ -21,11 +21,13 @@ public class UDPSocketServer {
 	private volatile boolean mIsClosed;
 
 	private synchronized void acquireLock() {
-		mLock.acquire();
+		if (mLock != null && !mLock.isHeld()) {
+			mLock.acquire();
+		}
 	}
 
 	private synchronized void releaseLock() {
-		if (mLock != null) {
+		if (mLock != null && mLock.isHeld()) {
 			try {
 				mLock.release();
 			} catch (Throwable th) {

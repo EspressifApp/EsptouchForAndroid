@@ -121,11 +121,10 @@ public class UDPSocketClient {
 				break;
 			} catch (IOException e) {
 				if (__IEsptouchTask.DEBUG) {
-					Log.e(TAG, "sendData(): IOException");
+					Log.e(TAG, "sendData(): IOException, but just ignore it");
 				}
-				e.printStackTrace();
-				mIsStop = true;
-				break;
+				// for the Ap will make some troubles when the phone send too many UDP packets,
+	            // but we don't expect the UDP packet received by others, so just ignore it
 			}
 			try {
 				Thread.sleep(interval);
