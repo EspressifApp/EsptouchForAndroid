@@ -20,7 +20,7 @@
 @property (atomic,assign) BOOL isCancelled;
 
 // it is used to store the device's ip address
-@property (atomic,assign) NSData * ipAddrData;
+@property (atomic) NSData * ipAddrData;
 
 /**
  * Constructor of EsptouchResult
