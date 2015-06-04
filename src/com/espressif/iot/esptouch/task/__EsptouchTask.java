@@ -205,13 +205,14 @@ public class __EsptouchTask implements __IEsptouchTask {
 						mParameter.getTargetHostname(),
 						mParameter.getTargetPort(),
 						mParameter.getIntervalDataCodeMillisecond());
+				index = (index + ONE_DATA_LEN) % dcBytes2.length;
 			}
 			currentTime = System.currentTimeMillis();
 			// check whether the udp is send enough time
 			if (currentTime - startTime > mParameter.getWaitUdpSendingMillisecond()) {
 				break;
 			}
-			index = (index + ONE_DATA_LEN) % dcBytes2.length;
+//			index = (index + ONE_DATA_LEN) % dcBytes2.length;
 		}
 
 		return mIsSuc;

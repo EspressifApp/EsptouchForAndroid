@@ -30,10 +30,10 @@ public class GuideCode implements ICodeData {
 	@Override
 	public char[] getU8s() {
 		char[] guidesU8s = new char[GUIDE_CODE_LEN];
-		guidesU8s[0] = 259;
-		guidesU8s[1] = 258;
-		guidesU8s[2] = 257;
-		guidesU8s[3] = 256;
+		guidesU8s[0] = 515;
+		guidesU8s[1] = 514;
+		guidesU8s[2] = 513;
+		guidesU8s[3] = 512;
 		return guidesU8s;
 	}
 }
