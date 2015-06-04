@@ -256,6 +256,7 @@
                                  ToTargetHostName:[self._parameter getTargetHostname]
                                          WithPort:[self._parameter getTargetPort]
                                       andInterval:[self._parameter getIntervalDataCodeMillisecond]];
+            index = (index + ONE_DATA_LEN) % [dcBytes2 count];
         }
         currentTime = [[NSDate date] timeIntervalSince1970];
         // check whether the udp is send enough time
@@ -263,7 +264,7 @@
         {
             break;
         }
-        index = (index + ONE_DATA_LEN) % [dcBytes2 count];
+//        index = (index + ONE_DATA_LEN) % [dcBytes2 count];
     }
     
     return self._isSuc;
