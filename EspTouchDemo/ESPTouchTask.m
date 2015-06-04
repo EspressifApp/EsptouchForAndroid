@@ -105,7 +105,7 @@
         }
         NSTimeInterval startTimestamp = [[NSDate date] timeIntervalSince1970];
         NSString *apSsidAndPwd = [NSString stringWithFormat:@"%@%@",self._apSsid,self._apPwd];
-        Byte expectOneByte = [ESP_ByteUtil getBytesByNSString:apSsidAndPwd].length + 8;
+        Byte expectOneByte = [ESP_ByteUtil getBytesByNSString:apSsidAndPwd].length + 9;
         if (DEBUG_ON) {
             NSLog(@"ESPTouchTask __listenAsyn() expectOneByte: %d",expectOneByte);
         }

@@ -14,6 +14,7 @@
 
 // define by the Esptouch protocol, all of the datum code should add EXTRA_LEN to prevent 0
 #define EXTRA_LEN   40
+#define EXTRA_HEAD_LEN  5
 
 @implementation ESPDatumCode
 
@@ -23,8 +24,12 @@
     if (self)
     {
         // Data = total len(1 byte) + apPwd len(1 byte) + SSID CRC(1 byte) +
-		// BSSID CRC(1 byte) + ipAddress(4 byte) + apPwd + apSsid apPwdLen <=
-		// 104 at the moment
+		// BSSID CRC(1 byte) + TOTAL XOR(1 byte) + ipAddress(4 byte) + apPwd + apSsid apPwdLen <=
+		// 105 at the moment
+        
+        // total xor
+        UInt8 totalXor = 0;
+        
         NSData *apPwdBytesData = [ESP_ByteUtil getBytesByNSString:apPwd];
         NSData *apSsidBytesData = [ESP_ByteUtil getBytesByNSString:apSsid];
         Byte apPwdBytes[[apPwdBytesData length]];
@@ -51,38 +56,56 @@
         Byte ipAddrUint8s[ipLen];
         [ipAddrData getBytes:ipAddrUint8s];
         
-        UInt8 _totalLen = 4 + ipLen + apPwdLen + apSsidLen;
-        UInt8 totalLen = isSsidHidden ? (4 + ipLen + apPwdLen + apSsidLen):(4 + ipLen + apPwdLen);
+        UInt8 _totalLen = EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen;
+        UInt8 totalLen = isSsidHidden ? (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen):(EXTRA_HEAD_LEN + ipLen + apPwdLen);
 
         
         // build data codes
         _dataCodes = [[NSMutableArray alloc]initWithCapacity:totalLen];
         ESPDataCode *dataCode = [[ESPDataCode alloc]initWithU8:_totalLen andIndex:0];
         [_dataCodes addObject:dataCode];
+        totalXor ^= _totalLen;
         dataCode = [[ESPDataCode alloc]initWithU8:apPwdLen andIndex:1];
         [_dataCodes addObject:dataCode];
+        totalXor ^= apPwdLen;
         dataCode = [[ESPDataCode alloc]initWithU8:apSsidCrc andIndex:2];
         [_dataCodes addObject:dataCode];
+        totalXor ^= apSsidCrc;
         dataCode = [[ESPDataCode alloc]initWithU8:apBssidCrc andIndex:3];
         [_dataCodes addObject:dataCode];
+        totalXor ^= apBssidCrc;
+        // ESPDataCode 4 is nil
         for (int i = 0; i < ipLen; i++)
         {
-            dataCode = [[ESPDataCode alloc]initWithU8:ipAddrUint8s[i] andIndex:i + 4];
+            dataCode = [[ESPDataCode alloc]initWithU8:ipAddrUint8s[i] andIndex:i + EXTRA_HEAD_LEN];
             [_dataCodes addObject:dataCode];
+            totalXor ^= ipAddrUint8s[i];
         }
         for (int i = 0; i < apPwdLen; i++)
         {
-            dataCode = [[ESPDataCode alloc]initWithU8:apPwdBytes[i] andIndex:i + 4 + ipLen];
+            dataCode = [[ESPDataCode alloc]initWithU8:apPwdBytes[i] andIndex:i + EXTRA_HEAD_LEN + ipLen];
             [_dataCodes addObject:dataCode];
+            totalXor ^= apPwdBytes[i];
         }
+        
+        // totalXor will xor apSsidChars no matter whether the ssid is hidden
+        for (int i = 0; i < apSsidLen; i++)
+        {
+            totalXor ^= apSsidBytes[i];
+        }
+        
         if (isSsidHidden)
         {
             for (int i = 0; i < apSsidLen; i++)
             {
-                dataCode = [[ESPDataCode alloc]initWithU8:apSsidBytes[i] andIndex:i + 4 + ipLen + apPwdLen];
+                dataCode = [[ESPDataCode alloc]initWithU8:apSsidBytes[i] andIndex:i + EXTRA_HEAD_LEN + ipLen + apPwdLen];
                 [_dataCodes addObject:dataCode];
             }
         }
+        
+        // add total xor last
+        dataCode = [[ESPDataCode alloc]initWithU8:totalXor andIndex:4];
+        [_dataCodes insertObject:dataCode atIndex:4];
     }
     return self;
 }

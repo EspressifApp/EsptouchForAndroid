@@ -29,7 +29,7 @@
         
         theAddr = ip_addrs[i];
         
-//        if (theAddr == 0) break;
+        if (theAddr == 0) break;
         if (theAddr == localHost) continue;
 //        NSLog(@"theAddr=%lu",theAddr);
         
@@ -40,7 +40,7 @@
         localIpBytes[3] = (theAddr & 0xff000000)    >> 24;
 //        NSLog(@"ESP_NetUtil:: %d.%d.%d.%d",localIpBytes[0],localIpBytes[1],localIpBytes[2],localIpBytes[3]);
         
-        if (theAddr != 0) break;
+//        if (theAddr != 0) break;
 //        NSLog(@"ESP_NetUtil:: Name: %s MAC: %s IP: %s\n", if_names[i], hw_addrs[i], ip_names[i]);
     }
         
