@@ -89,7 +89,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 				long startTimestamp = System.currentTimeMillis();
 				byte[] apSsidAndPassword = ByteUtil.getBytesByString(mApSsid
 						+ mApPassword);
-				byte expectOneByte = (byte) (apSsidAndPassword.length + 8);
+				byte expectOneByte = (byte) (apSsidAndPassword.length + 9);
 				if (__IEsptouchTask.DEBUG) {
 					Log.i(TAG, "expectOneByte: " + (0 + expectOneByte));
 				}
