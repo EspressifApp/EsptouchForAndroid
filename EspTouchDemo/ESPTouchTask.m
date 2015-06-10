@@ -366,7 +366,6 @@
     ESPTouchGenerator *generator = [[ESPTouchGenerator alloc]initWithSsid:self._apSsid andApBssid:self._apBssid andApPassword:self._apPwd andInetAddrData:localInetAddrData andIsSsidHidden:self._isSsidHidden];
     // listen the esptouch result asyn
     [self __listenAsyn:[self._parameter getEsptouchResultTotalLen]];
-    ESPTouchResult *esptouchResult = [[ESPTouchResult alloc]initWithIsSuc:NO andBssid:nil andInetAddrData:nil];
     BOOL isSuc = NO;
     for (int i = 0; i < [self._parameter getTotalRepeatTime]; i++)
     {
@@ -379,7 +378,6 @@
     
     [self __sleep: [self._parameter getWaitUdpReceivingMillisecond]];
     [self __interrupt];
-    esptouchResult.isCancelled = self.isCancelled;
     return [self __getEsptouchResultList];
 }
 
