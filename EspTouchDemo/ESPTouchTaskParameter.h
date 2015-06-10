@@ -123,4 +123,17 @@
  */
 - (void) setWaitUdpTotalMillisecond: (int) waitUdpTotalMillisecond;
 
+
+/**
+ * get the count of expect task results
+ * @return the count of expect task results
+ */
+- (int) getExpectTaskResultCount;
+
+/**
+ * set the count of expect task results
+ * @param expectTaskResultCount the count of expect task results
+ */
+- (void) setExpectTaskResultCount: (int) expectTaskResultCount;
+
 @end

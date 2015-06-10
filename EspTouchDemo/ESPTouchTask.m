@@ -34,7 +34,7 @@
 
 @property (nonatomic,strong) ESPUDPSocketServer *_server;
 
-@property (atomic,strong) ESPTouchResult *_esptouchResult;
+@property (atomic,strong) NSMutableArray *_esptouchResultArray;
 
 @property (atomic,strong) NSCondition *_condition;
 
@@ -46,13 +46,17 @@
 
 @property (nonatomic,strong) ESPTaskParameter *_parameter;
 
+@property (atomic,strong) NSMutableDictionary *_bssidTaskSucCountDict;
+
+@property (atomic,strong) NSCondition *_esptouchResultArrayCondition;
 @end
 
 @implementation ESPTouchTask
 
 - (id) initWithApSsid: (NSString *)apSsid andApBssid: (NSString *) apBssid andApPwd: (NSString *)apPwd andIsSsidHiden: (BOOL) isSsidHidden
 {
-    if (apSsid==nil||[apSsid isEqualToString:@""]) {
+    if (apSsid==nil||[apSsid isEqualToString:@""])
+    {
         perror("ESPTouchTask initWithApSsid() apSsid shouldn't be null or empty");
     }
     // the apSsid should be null or empty
@@ -82,6 +86,9 @@
         self._isExecutedAlready = NO;
         self._condition = [[NSCondition alloc]init];
         self._isSsidHidden = isSsidHidden;
+        self._esptouchResultArray = [[NSMutableArray alloc]init];
+        self._bssidTaskSucCountDict = [[NSMutableDictionary alloc]init];
+        self._esptouchResultArrayCondition = [[NSCondition alloc]init];
     }
     return self;
 }
@@ -89,10 +96,76 @@
 - (id) initWithApSsid: (NSString *)apSsid andApBssid: (NSString *) apBssid andApPwd: (NSString *)apPwd andIsSsidHiden: (BOOL) isSsidHidden andTimeoutMillisecond: (int) timeoutMillisecond
 {
     ESPTouchTask *_self = [self initWithApSsid:apSsid andApBssid:apBssid andApPwd:apPwd andIsSsidHiden:isSsidHidden];
-    if (_self) {
+    if (_self)
+    {
         [_self._parameter setWaitUdpTotalMillisecond:timeoutMillisecond];
     }
     return _self;
+}
+
+- (void) __putEsptouchResultIsSuc: (BOOL) isSuc AndBssid: (NSString *)bssid AndInetAddr:(NSData *)inetAddr
+{
+    [self._esptouchResultArrayCondition lock];
+    // check whether the result receive enough UDP response
+    BOOL isTaskSucCountEnough = NO;
+    NSNumber *countNumber = [self._bssidTaskSucCountDict objectForKey:bssid];
+    int count = 0;
+    if (countNumber != nil)
+    {
+        count = [countNumber intValue];
+    }
+    ++count;
+    if (DEBUG_ON)
+    {
+        NSLog(@"ESPTouchTask __putEsptouchResult(): count = %d",count);
+    }
+    countNumber = [[NSNumber alloc]initWithInt:count];
+    [self._bssidTaskSucCountDict setObject:countNumber forKey:bssid];
+    isTaskSucCountEnough = count >= [self._parameter getThresholdSucBroadcastCount];
+    if (!isTaskSucCountEnough)
+    {
+        if (DEBUG_ON)
+        {
+            NSLog(@"ESPTouchTask __putEsptouchResult(): count = %d, isn't enough", count);
+        }
+        [self._esptouchResultArrayCondition unlock];
+        return;
+    }
+    // check whether the result is in the mEsptouchResultList already
+    BOOL isExist = NO;
+    for (id esptouchResultId in self._esptouchResultArray)
+    {
+        ESPTouchResult *esptouchResultInArray = esptouchResultId;
+        if ([esptouchResultInArray.bssid isEqualToString:bssid])
+        {
+            isExist = YES;
+            break;
+        }
+    }
+    // only add the result who isn't in the mEsptouchResultList
+    if (!isExist)
+    {
+        if (DEBUG_ON)
+        {
+            NSLog(@"ESPTouchTask __putEsptouchResult(): put one more result");
+        }
+        ESPTouchResult *esptouchResult = [[ESPTouchResult alloc]initWithIsSuc:isSuc andBssid:bssid andInetAddrData:inetAddr];
+        [self._esptouchResultArray addObject:esptouchResult];
+    }
+    [self._esptouchResultArrayCondition unlock];
+}
+
+-(NSArray *) __getEsptouchResultList
+{
+    [self._esptouchResultArrayCondition lock];
+    if ([self._esptouchResultArray count] == 0)
+    {
+        ESPTouchResult *esptouchResult = [[ESPTouchResult alloc]initWithIsSuc:NO andBssid:nil andInetAddrData:nil];
+        esptouchResult.isCancelled = self.isCancelled;
+        [self._esptouchResultArray addObject:esptouchResult];
+    }
+    return self._esptouchResultArray;
+    [self._esptouchResultArrayCondition unlock];
 }
 
 - (void) __listenAsyn: (const int) expectDataLen
@@ -106,25 +179,28 @@
         NSTimeInterval startTimestamp = [[NSDate date] timeIntervalSince1970];
         NSString *apSsidAndPwd = [NSString stringWithFormat:@"%@%@",self._apSsid,self._apPwd];
         Byte expectOneByte = [ESP_ByteUtil getBytesByNSString:apSsidAndPwd].length + 9;
-        if (DEBUG_ON) {
+        if (DEBUG_ON)
+        {
             NSLog(@"ESPTouchTask __listenAsyn() expectOneByte: %d",expectOneByte);
         }
         Byte receiveOneByte = -1;
         NSData *receiveData = nil;
-        int correctBroadcastCount = 0;
-        while (correctBroadcastCount < [self._parameter getThresholdSucBroadcastCount])
+        while ([self._esptouchResultArray count] < [self._parameter getExpectTaskResultCount] && !self._isInterrupt)
         {
             receiveData = [self._server receiveSpecLenBytes:expectDataLen];
             if (receiveData != nil)
             {
                 [receiveData getBytes:&receiveOneByte length:1];
             }
+            else
+            {
+                receiveOneByte = -1;
+            }
             if (receiveOneByte == expectOneByte)
             {
-                correctBroadcastCount++;
                 if (DEBUG_ON)
                 {
-                    NSLog(@"ESPTouchTask __listenAsyn() receive %d correct broadcast",correctBroadcastCount);
+                    NSLog(@"ESPTouchTask __listenAsyn() receive correct broadcast");
                 }
                 // change the socket's timeout
                 NSTimeInterval consume = [[NSDate date] timeIntervalSince1970] - startTimestamp;
@@ -144,36 +220,23 @@
                         NSLog(@"ESPTouchTask __listenAsyn() socketServer's new timeout is %d milliseconds",timeout);
                     }
                     [self._server setSocketTimeout:timeout];
-                    if (correctBroadcastCount == [self._parameter getThresholdSucBroadcastCount])
+                    if (DEBUG_ON)
                     {
-                        if (DEBUG_ON)
-                        {
-                            NSLog(@"ESPTouchTask __listenAsyn() receive enough correct broadcast");
-                        }
-                        if (receiveData != nil)
-                        {
-                            NSString *bssid =
-                            [ESP_ByteUtil parseBssid:(Byte *)[receiveData bytes]
-                                              Offset:[self._parameter getEsptouchResultOneLen]
-                                               Count:[self._parameter getEsptouchResultMacLen]];
-                            NSData *inetAddrData =
-                            [ESP_NetUtil parseInetAddrByData:receiveData
-                                                   andOffset:[self._parameter getEsptouchResultOneLen] + [self._parameter getEsptouchResultMacLen]
-                                                    andCount:[self._parameter getEsptouchResultIpLen]];
-                            self._esptouchResult = [[ESPTouchResult alloc]initWithIsSuc:YES andBssid:bssid andInetAddrData:inetAddrData];
-                        }
-                        self._isSuc = YES;
-                        break;
+                        NSLog(@"ESPTouchTask __listenAsyn() receive correct broadcast");
+                    }
+                    if (receiveData != nil)
+                    {
+                        NSString *bssid =
+                        [ESP_ByteUtil parseBssid:(Byte *)[receiveData bytes]
+                                          Offset:[self._parameter getEsptouchResultOneLen]
+                                           Count:[self._parameter getEsptouchResultMacLen]];
+                        NSData *inetAddrData =
+                        [ESP_NetUtil parseInetAddrByData:receiveData
+                                               andOffset:[self._parameter getEsptouchResultOneLen] + [self._parameter getEsptouchResultMacLen]
+                                                andCount:[self._parameter getEsptouchResultIpLen]];
+                        [self __putEsptouchResultIsSuc:YES AndBssid:bssid AndInetAddr:inetAddrData];
                     }
                 }
-            }
-            else if (expectDataLen == [self._parameter getEsptouchResultTotalLen] && receiveData == nil)
-            {
-                if (DEBUG_ON)
-                {
-                    NSLog(@"ESPTouchTask __listenAsyn() esptouch timeout 3");
-                }
-                break;
             }
             else
             {
@@ -183,11 +246,8 @@
                 }
             }
         }
+        self._isSuc = [self._esptouchResultArray count] >= [self._parameter getExpectTaskResultCount];
         [self __interrupt];
-        if (DEBUG_ON)
-        {
-            NSLog(@"ESPTouchTask __listenAsyn() esptouch finished");
-        }
         if (DEBUG_ON)
         {
             NSLog(@"ESPTouchTask __listenAsyn() finish");
@@ -264,7 +324,6 @@
         {
             break;
         }
-//        index = (index + ONE_DATA_LEN) % [dcBytes2 count];
     }
     
     return self._isSuc;
@@ -283,6 +342,18 @@
 
 - (ESPTouchResult *) executeForResult
 {
+    return [[self executeForResults:1] objectAtIndex:0];
+}
+
+- (NSArray*) executeForResults:(int) expectTaskResultCount
+{
+    // set task result count
+    if (expectTaskResultCount <= 0)
+    {
+        expectTaskResultCount = INT32_MAX;
+    }
+    [self._parameter setExpectTaskResultCount:expectTaskResultCount];
+    
     [self __checkTaskValid];
     
     NSData *localInetAddrData = [ESP_NetUtil getLocalInetAddress];
@@ -302,15 +373,14 @@
         isSuc = [self __execute:generator];
         if (isSuc)
         {
-            self._esptouchResult.isCancelled = self.isCancelled;
-            return self._esptouchResult;
+            return [self __getEsptouchResultList];
         }
     }
     
     [self __sleep: [self._parameter getWaitUdpReceivingMillisecond]];
     [self __interrupt];
     esptouchResult.isCancelled = self.isCancelled;
-    return esptouchResult;
+    return [self __getEsptouchResultList];
 }
 
 // sleep some milliseconds

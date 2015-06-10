@@ -31,6 +31,14 @@
 // the state of the confirm/cancel button
 @property (nonatomic, assign) BOOL _isConfirmState;
 
+// without the condition, if the user tap confirm/cancel quickly enough,
+// the bug will arise. the reason is follows:
+// 0. task is starting created, but not finished
+// 1. the task is cancel for the task hasn't been created, it do nothing
+// 2. task is created
+// 3. Oops, the task should be cancelled, but it is running
+@property (nonatomic, strong) NSCondition *_condition;
+
 @end
 
 @implementation ESPViewController
@@ -74,22 +82,26 @@
 
 - (void) cancel
 {
+    [self._condition lock];
     if (self._esptouchTask != nil)
     {
         [self._esptouchTask interrupt];
     }
+    [self._condition unlock];
 }
 
 #pragma mark - the example of how to use executeForResult
 
 - (ESPTouchResult *) executeForResult
 {
+    [self._condition lock];
     NSString *apSsid = self.ssidLabel.text;
     NSString *apPwd = self._pwdTextView.text;
     NSString *apBssid = self.bssid;
     BOOL isSsidHidden = [self._isSsidHiddenSwitch isOn];
     self._esptouchTask =
     [[ESPTouchTask alloc]initWithApSsid:apSsid andApBssid:apBssid andApPwd:apPwd andIsSsidHiden:isSsidHidden];
+    [self._condition unlock];
     ESPTouchResult * esptouchResult = [self._esptouchTask executeForResult];
     NSLog(@"ESPViewController executeForResult() result is: %@",esptouchResult);
     return esptouchResult;
@@ -117,6 +129,7 @@
     self._isConfirmState = NO;
     self._pwdTextView.delegate = self;
     self._pwdTextView.keyboardType = UIKeyboardTypeASCIICapable;
+    self._condition = [[NSCondition alloc]init];
     [self enableConfirmBtn];
 }
 

@@ -25,6 +25,7 @@
 @property (nonatomic,assign) int waitUdpReceivingMillisecond;
 @property (nonatomic,assign) int waitUdpSendingMillisecond;
 @property (nonatomic,assign) int thresholdSucBroadcastCount;
+@property (nonatomic,assign) int expectTaskResultCount;
 @end
 
 @implementation ESPTaskParameter
@@ -49,6 +50,7 @@
         self.waitUdpReceivingMillisecond = 10000;
         self.waitUdpSendingMillisecond = 48000;
         self.thresholdSucBroadcastCount = 1;
+        self.expectTaskResultCount = 1;
     }
     return self;
 }
@@ -150,5 +152,15 @@
         assert(0);
     }
     self.waitUdpSendingMillisecond = waitUdpTotalMillisecond - self.waitUdpReceivingMillisecond;
+}
+
+- (int) getExpectTaskResultCount
+{
+    return self.expectTaskResultCount;
+}
+
+- (void) setExpectTaskResultCount: (int) expectTaskResultCount
+{
+    _expectTaskResultCount = expectTaskResultCount;
 }
 @end

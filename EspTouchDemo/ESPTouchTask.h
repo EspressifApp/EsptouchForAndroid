@@ -55,10 +55,29 @@
 /**
  * Note: !!!Don't call the task at UI Main Thread
  *
- * Smart Config v2.0 support the API
+ * Smart Config v2.2 support the API
  *
  * @return the ESPTouchResult
  */
 - (ESPTouchResult*) executeForResult;
+
+/**
+ * Note: !!!Don't call the task at UI Main Thread
+ *
+ * Smart Config v2.2 support the API
+ *
+ * It will be blocked until the client receive result count >= expectTaskResultCount.
+ * If it fail, it will return one fail result will be returned in the list.
+ * If it is cancelled while executing,
+ *     if it has received some results, all of them will be returned in the list.
+ *     if it hasn't received any results, one cancel result will be returned in the list.
+ *
+ * @param expectTaskResultCount
+ *            the expect result count(if expectTaskResultCount <= 0,
+ *            expectTaskResultCount = INT32_MAX)
+ * @return the NSArray of EsptouchResult
+ * @throws RuntimeException
+ */
+- (NSArray*) executeForResults:(int) expectTaskResultCount;
 
 @end
