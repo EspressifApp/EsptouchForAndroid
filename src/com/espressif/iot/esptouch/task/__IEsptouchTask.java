@@ -1,5 +1,7 @@
 package com.espressif.iot.esptouch.task;
 
+import java.util.List;
+
 import com.espressif.iot.esptouch.IEsptouchResult;
 
 /**
@@ -26,6 +28,18 @@ public interface __IEsptouchTask {
 	 */
 	IEsptouchResult executeForResult() throws RuntimeException;
 
+	/**
+	 * Note: !!!Don't call the task at UI Main Thread or RuntimeException will
+	 * be thrown Execute the Esptouch Task and return the result
+	 * 
+	 * @param expectTaskResultCount
+	 *            the expect result count(if expectTaskResultCount <= 0,
+	 *            expectTaskResultCount = Integer.MAX_VALUE)
+	 * @return the list of IEsptouchResult
+	 * @throws RuntimeException
+	 */
+	List<IEsptouchResult> executeForResults(int expectTaskResultCount) throws RuntimeException;
+	
 	/**
 	 * Turn on or off the log.
 	 */

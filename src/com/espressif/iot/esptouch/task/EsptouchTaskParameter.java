@@ -17,6 +17,7 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 	private int mWaitUdpReceivingMilliseond;
 	private int mWaitUdpSendingMillisecond;
 	private int mThresholdSucBroadcastCount;
+	private int mExpectTaskResultCount;
 
 	public EsptouchTaskParameter() {
 		mIntervalGuideCodeMillisecond = 10;
@@ -34,6 +35,7 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 		mWaitUdpReceivingMilliseond = 10000;
 		mWaitUdpSendingMillisecond = 48000;
 		mThresholdSucBroadcastCount = 1;
+		mExpectTaskResultCount = 1;
 	}
 
 	@Override
@@ -133,6 +135,16 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 		}
 		mWaitUdpSendingMillisecond = waitUdpTotalMillisecond
 				- mWaitUdpReceivingMilliseond;
+	}
+
+	@Override
+	public int getExpectTaskResultCount() {
+		return this.mExpectTaskResultCount;
+	}
+
+	@Override
+	public void setExpectTaskResultCount(int expectTaskResultCount) {
+		this.mExpectTaskResultCount = expectTaskResultCount;
 	}
 
 }

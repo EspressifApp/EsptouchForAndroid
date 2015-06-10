@@ -90,6 +90,13 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 		private ProgressDialog mProgressDialog;
 
 		private IEsptouchTask mEsptouchTask;
+		// without the lock, if the user tap confirm and cancel quickly enough,
+		// the bug will arise. the reason is follows:
+		// 0. task is starting created, but not finished
+		// 1. the task is cancel for the task hasn't been created, it do nothing
+		// 2. task is created
+		// 3. Oops, the task should be cancelled, but it is running
+		private final Object mLock = new Object();
 
 		@Override
 		protected void onPreExecute() {
@@ -100,11 +107,13 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 			mProgressDialog.setOnCancelListener(new OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialog) {
-					if (__IEsptouchTask.DEBUG) {
-						Log.i(TAG, "progress dialog is canceled");
-					}
-					if (mEsptouchTask != null) {
-						mEsptouchTask.interrupt();
+					synchronized (mLock) {
+						if (__IEsptouchTask.DEBUG) {
+							Log.i(TAG, "progress dialog is canceled");
+						}
+						if (mEsptouchTask != null) {
+							mEsptouchTask.interrupt();
+						}
 					}
 				}
 			});
@@ -121,16 +130,18 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 
 		@Override
 		protected IEsptouchResult doInBackground(String... params) {
-			String apSsid = params[0];
-			String apBssid = params[1];
-			String apPassword = params[2];
-			String isSsidHiddenStr = params[3];
-			boolean isSsidHidden = false;
-			if(isSsidHiddenStr.equals("YES"))
-			{
-				isSsidHidden = true;
+			synchronized (mLock) {
+				String apSsid = params[0];
+				String apBssid = params[1];
+				String apPassword = params[2];
+				String isSsidHiddenStr = params[3];
+				boolean isSsidHidden = false;
+				if (isSsidHiddenStr.equals("YES")) {
+					isSsidHidden = true;
+				}
+				mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword,
+						isSsidHidden, EsptouchDemoActivity.this);
 			}
-			mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, isSsidHidden, EsptouchDemoActivity.this);
 			IEsptouchResult result = mEsptouchTask.executeForResult();
 			return result;
 		}

@@ -114,4 +114,16 @@ public interface IEsptouchTaskParameter {
 	 * @param waitUdpTotalMillisecond the millisecond for waiting udp sending and receiving
 	 */
 	void setWaitUdpTotalMillisecond(int waitUdpTotalMillisecond);
+	
+	/**
+	 * get the count of expect task results
+	 * @return the count of expect task results
+	 */
+	int getExpectTaskResultCount();
+	
+	/**
+	 * set the count of expect task results
+	 * @param expectTaskResultCount the count of expect task results
+	 */
+	void setExpectTaskResultCount(int expectTaskResultCount);
 }

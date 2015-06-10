@@ -1,5 +1,7 @@
 package com.espressif.iot.esptouch;
 
+import java.util.List;
+
 import android.content.Context;
 
 import com.espressif.iot.esptouch.task.EsptouchTaskParameter;
@@ -53,6 +55,7 @@ public class EsptouchTask implements IEsptouchTask {
 		_mEsptouchTask = new __EsptouchTask(apSsid, apBssid, apPassword, context, _mParameter, isSsidHidden);
 	}
 
+	
 	@Override
 	public void interrupt() {
 		_mEsptouchTask.interrupt();
@@ -68,4 +71,12 @@ public class EsptouchTask implements IEsptouchTask {
 		return _mEsptouchTask.isCancelled();
 	}
 
+	@Override
+	public List<IEsptouchResult> executeForResults(int expectTaskResultCount)
+			throws RuntimeException {
+		if (expectTaskResultCount <= 0) {
+			expectTaskResultCount = Integer.MAX_VALUE;
+		}
+		return _mEsptouchTask.executeForResults(expectTaskResultCount);
+	}
 }
