@@ -79,12 +79,37 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="50dp" 
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/spinnerTaskResultCountTitle"
+            android:textSize="24sp" />
+        
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        
+        <Spinner
+            android:id="@+id/spinnerTaskResultCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="150dp" />
+            android:layout_height="0dp" 
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btnConfirm"
