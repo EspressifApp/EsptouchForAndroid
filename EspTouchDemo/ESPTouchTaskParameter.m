@@ -20,7 +20,6 @@
 @property (nonatomic,assign) int esptouchResultIpLen;
 @property (nonatomic,assign) int esptouchResultTotalLen;
 @property (nonatomic,assign) int portListening;
-@property (nonatomic,strong) NSString* targetHostname;
 @property (nonatomic,assign) int targetPort;
 @property (nonatomic,assign) int waitUdpReceivingMillisecond;
 @property (nonatomic,assign) int waitUdpSendingMillisecond;
@@ -29,6 +28,8 @@
 @end
 
 @implementation ESPTaskParameter
+
+static int _datagramCount = 0;
 
 - (id) init
 {
@@ -45,14 +46,19 @@
         self.esptouchResultIpLen = 4;
         self.esptouchResultTotalLen = 1 + 6 + 4;
         self.portListening = 18266;
-        self.targetHostname = @"255.255.255.255";
         self.targetPort = 7001;
-        self.waitUdpReceivingMillisecond = 10000;
-        self.waitUdpSendingMillisecond = 48000;
+        self.waitUdpReceivingMillisecond = 15000;
+        self.waitUdpSendingMillisecond = 45000;
         self.thresholdSucBroadcastCount = 1;
         self.expectTaskResultCount = 1;
     }
     return self;
+}
+
+// the range of the result should be 1-100
+- (int) __getNextDatagramCount
+{
+    return 1 + (_datagramCount++) % 100;
 }
 
 - (long) getIntervalGuideCodeMillisecond
@@ -113,9 +119,11 @@
     return self.portListening;
 }
 
+// target hostname is : 234.1.1.1, 234.2.2.2, 234.3.3.3 to 234.100.100.100
 - (NSString *) getTargetHostname
 {
-    return self.targetHostname;
+    int count = [self __getNextDatagramCount];
+    return [NSString stringWithFormat: @"234.%d.%d.%d", count, count, count];
 }
 
 - (int) getTargetPort
