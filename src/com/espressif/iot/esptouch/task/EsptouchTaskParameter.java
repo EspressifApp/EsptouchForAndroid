@@ -12,12 +12,12 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 	private int mEsptouchResultIpLen;
 	private int mEsptouchResultTotalLen;
 	private int mPortListening;
-	private String mTargetHostname;
 	private int mTargetPort;
 	private int mWaitUdpReceivingMilliseond;
 	private int mWaitUdpSendingMillisecond;
 	private int mThresholdSucBroadcastCount;
 	private int mExpectTaskResultCount;
+	private static int _datagramCount = 0;
 
 	public EsptouchTaskParameter() {
 		mIntervalGuideCodeMillisecond = 10;
@@ -30,12 +30,16 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 		mEsptouchResultIpLen = 4;
 		mEsptouchResultTotalLen = 1 + 6 + 4;
 		mPortListening = 18266;
-		mTargetHostname = "255.255.255.255";
 		mTargetPort = 7001;
-		mWaitUdpReceivingMilliseond = 10000;
-		mWaitUdpSendingMillisecond = 48000;
+		mWaitUdpReceivingMilliseond = 15000;
+		mWaitUdpSendingMillisecond = 45000;
 		mThresholdSucBroadcastCount = 1;
 		mExpectTaskResultCount = 1;
+	}
+
+	// the range of the result should be 1-100
+	private static int __getNextDatagramCount() {
+		return 1 + (_datagramCount++) % 100;
 	}
 
 	@Override
@@ -93,9 +97,11 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 		return mPortListening;
 	}
 
+	// target hostname is : 234.1.1.1, 234.2.2.2, 234.3.3.3 to 234.100.100.100
 	@Override
 	public String getTargetHostname() {
-		return mTargetHostname;
+		int count = __getNextDatagramCount();
+		return "234." + count + "." + count + "." + count;
 	}
 
 	@Override
