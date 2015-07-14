@@ -49,6 +49,9 @@
 @property (atomic,strong) NSMutableDictionary *_bssidTaskSucCountDict;
 
 @property (atomic,strong) NSCondition *_esptouchResultArrayCondition;
+
+@property (nonatomic,assign) __block UIBackgroundTaskIdentifier _backgroundTask;
+
 @end
 
 @implementation ESPTouchTask
@@ -168,10 +171,37 @@
     [self._esptouchResultArrayCondition unlock];
 }
 
+
+- (void) beginBackgroundTask
+{
+    if (DEBUG_ON)
+    {
+        NSLog(@"ESPTouchTask beginBackgroundTask() entrance");
+    }
+    self._backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        if (DEBUG_ON)
+        {
+            NSLog(@"ESPTouchTask beginBackgroundTask() endBackgroundTask");
+        }
+        [self endBackgroundTask];
+    }];
+}
+
+- (void) endBackgroundTask
+{
+    if (DEBUG_ON)
+    {
+        NSLog(@"ESPTouchTask endBackgroundTask() entrance");
+    }
+    [[UIApplication sharedApplication] endBackgroundTask: self._backgroundTask];
+    self._backgroundTask = UIBackgroundTaskInvalid;
+}
+
 - (void) __listenAsyn: (const int) expectDataLen
 {
     dispatch_queue_t  queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     dispatch_async(queue, ^{
+        [self beginBackgroundTask];
         if (DEBUG_ON)
         {
             NSLog(@"ESPTouchTask __listenAsyn() start an asyn listen task, current thread is: %@", [NSThread currentThread]);
@@ -252,6 +282,7 @@
         {
             NSLog(@"ESPTouchTask __listenAsyn() finish");
         }
+        [self endBackgroundTask];
     });
 }
 

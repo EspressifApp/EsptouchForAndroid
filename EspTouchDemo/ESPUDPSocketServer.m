@@ -45,7 +45,7 @@
     self = [super init];
     if (self)
     {
-        // create locl
+        // create local
         self._lock = [[NSLock alloc]init];
         // create socket
         self._isClosed = NO;

@@ -21,6 +21,22 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 该软件按本来的样子提供，没有任何明确或暗含的担保，包括但不仅限于关于试销性、适合某一特定用途和非侵权的保证。作者和版权持有人在任何情况下均不就由软件或软件使用引起的以合同形式、民事侵权或其它方式提出的任何索赔、损害或其它责任负责。
 
+==================================v0.3.4.1==================================
+
+1.  fix the bug when iphone or ipad lock screen while doing esptouch, it will
+
+    crash when back from lock screen state.
+
+    thx for the engineer in Lenovo discovery
+
+2.  Espressif's Smart Config is updated to v2.4, and some paremeters are changed.
+
+    <b>Esptouch v0.3.4 only support Espressif's Smart Config v2.4</b>
+
+3.  Usage:
+
+    The same as v0.3.4.
+
 ==================================v0.3.4==================================
 
 1.  Espressif's Smart Config is updated to v2.4, and some paremeters are changed.

@@ -153,7 +153,7 @@ static int _datagramCount = 0;
 
 - (void) setWaitUdpTotalMillisecond: (int) waitUdpTotalMillisecond
 {
-    if (waitUdpTotalMillisecond < self.waitUdpSendingMillisecond + [self getTimeoutTotalCodeMillisecond])
+    if (waitUdpTotalMillisecond < self.waitUdpReceivingMillisecond + [self getTimeoutTotalCodeMillisecond])
     {
         // if it happen, even one turn about sending udp broadcast can't be completed
         NSLog(@"ESPTouchTaskParameter waitUdpTotalMillisecod is invalid, it is less than mWaitUdpReceivingMilliseond + [self getTimeoutTotalCodeMillisecond]");
