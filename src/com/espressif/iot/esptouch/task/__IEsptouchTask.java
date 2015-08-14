@@ -2,6 +2,7 @@ package com.espressif.iot.esptouch.task;
 
 import java.util.List;
 
+import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
 
 /**
@@ -13,6 +14,12 @@ import com.espressif.iot.esptouch.IEsptouchResult;
  * 
  */
 public interface __IEsptouchTask {
+
+	/**
+	 * set the esptouch listener, when one device is connected to the Ap, it will be called back
+	 * @param esptouchListener when one device is connected to the Ap, it will be called back
+	 */
+	void setEsptouchListener(IEsptouchListener esptouchListener);
 	
 	/**
 	 * Interrupt the Esptouch Task when User tap back or close the Application.

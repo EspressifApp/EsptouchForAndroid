@@ -3,6 +3,7 @@ package com.espressif.iot.esptouch.demo_activity;
 import java.util.List;
 
 import com.espressif.iot.esptouch.EsptouchTask;
+import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.task.__IEsptouchTask;
@@ -24,6 +25,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EsptouchDemoActivity extends Activity implements OnClickListener {
 
@@ -190,6 +192,26 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 		}
 	}
 	
+	private void onEsptoucResultAddedPerform(final IEsptouchResult result) {
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				String text = result.getBssid() + " is connected to the wifi";
+				Toast.makeText(EsptouchDemoActivity.this, text,
+						Toast.LENGTH_LONG).show();
+			}
+
+		});
+	}
+
+	private IEsptouchListener myListener = new IEsptouchListener() {
+
+		@Override
+		public void onEsptouchResultAdded(final IEsptouchResult result) {
+			onEsptoucResultAddedPerform(result);
+		}
+	};
 	
 	private class EsptouchAsyncTask3 extends AsyncTask<String, Void, List<IEsptouchResult>> {
 
@@ -250,6 +272,7 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 				taskResultCount = Integer.parseInt(taskResultCountStr);
 				mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword,
 						isSsidHidden, EsptouchDemoActivity.this);
+				mEsptouchTask.setEsptouchListener(myListener);
 			}
 			List<IEsptouchResult> resultList = mEsptouchTask.executeForResults(taskResultCount);
 			return resultList;

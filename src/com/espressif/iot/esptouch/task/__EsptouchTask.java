@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.espressif.iot.esptouch.EsptouchResult;
+import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.protocol.EsptouchGenerator;
 import com.espressif.iot.esptouch.udp.UDPSocketClient;
@@ -26,7 +27,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 	 * one indivisible data contain 3 9bits info
 	 */
 	private static final int ONE_DATA_LEN = 3;
-	
+
 	private static final String TAG = "EsptouchTask";
 
 	private volatile List<IEsptouchResult> mEsptouchResultList;
@@ -43,9 +44,11 @@ public class __EsptouchTask implements __IEsptouchTask {
 	private AtomicBoolean mIsCancelled;
 	private IEsptouchTaskParameter mParameter;
 	private volatile Map<String, Integer> mBssidTaskSucCountMap;
+	private IEsptouchListener mEsptouchListener;
 
-	public __EsptouchTask(String apSsid, String apBssid, String apPassword, Context context, IEsptouchTaskParameter parameter
-			,boolean isSsidHidden) {
+	public __EsptouchTask(String apSsid, String apBssid, String apPassword,
+			Context context, IEsptouchTaskParameter parameter,
+			boolean isSsidHidden) {
 		if (TextUtils.isEmpty(apSsid)) {
 			throw new IllegalArgumentException(
 					"the apSsid should be null or empty");
@@ -61,8 +64,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		mSocketClient = new UDPSocketClient();
 		mParameter = parameter;
 		mSocketServer = new UDPSocketServer(mParameter.getPortListening(),
-				mParameter.getWaitUdpTotalMillisecond(),
-				context);
+				mParameter.getWaitUdpTotalMillisecond(), context);
 		mIsSsidHidden = isSsidHidden;
 		mEsptouchResultList = new ArrayList<IEsptouchResult>();
 		mBssidTaskSucCountMap = new HashMap<String, Integer>();
@@ -104,13 +106,16 @@ public class __EsptouchTask implements __IEsptouchTask {
 				if (__IEsptouchTask.DEBUG) {
 					Log.d(TAG, "__putEsptouchResult(): put one more result");
 				}
-				IEsptouchResult esptouchResult = new EsptouchResult(isSuc,
+				final IEsptouchResult esptouchResult = new EsptouchResult(isSuc,
 						bssid, inetAddress);
 				mEsptouchResultList.add(esptouchResult);
+				if (mEsptouchListener != null) {
+					mEsptouchListener.onEsptouchResultAdded(esptouchResult);
+				}
 			}
 		}
 	}
-	
+
 	private List<IEsptouchResult> __getEsptouchResultList() {
 		synchronized (mEsptouchResultList) {
 			if (mEsptouchResultList.isEmpty()) {
@@ -119,16 +124,17 @@ public class __EsptouchTask implements __IEsptouchTask {
 				esptouchResultFail.setIsCancelled(mIsCancelled.get());
 				mEsptouchResultList.add(esptouchResultFail);
 			}
+			
 			return mEsptouchResultList;
 		}
 	}
-	
+
 	private synchronized void __interrupt() {
 		if (!mIsInterrupt) {
 			mIsInterrupt = true;
 			mSocketClient.interrupt();
 			mSocketServer.interrupt();
-			// interrupt the current Thread which is used to wait for udp response 
+			// interrupt the current Thread which is used to wait for udp response
 			Thread.currentThread().interrupt();
 		}
 	}
@@ -227,7 +233,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 
 		byte[][] gcBytes2 = generator.getGCBytes2();
 		byte[][] dcBytes2 = generator.getDCBytes2();
-		
+
 		int index = 0;
 		while (!mIsInterrupt) {
 			if (currentTime - lastTime >= mParameter.getTimeoutTotalCodeMillisecond()) {
@@ -273,7 +279,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		}
 		this.mIsExecuted = true;
 	}
-	
+
 	@Override
 	public IEsptouchResult executeForResult() throws RuntimeException {
 		return executeForResults(1).get(0);
@@ -288,9 +294,9 @@ public class __EsptouchTask implements __IEsptouchTask {
 	public List<IEsptouchResult> executeForResults(int expectTaskResultCount)
 			throws RuntimeException {
 		__checkTaskValid();
-		
+
 		mParameter.setExpectTaskResultCount(expectTaskResultCount);
-		
+
 		if (__IEsptouchTask.DEBUG) {
 			Log.d(TAG, "execute()");
 		}
@@ -315,24 +321,26 @@ public class __EsptouchTask implements __IEsptouchTask {
 				return __getEsptouchResultList();
 			}
 		}
-		
+
 		// wait the udp response without sending udp broadcast
 		try {
 			Thread.sleep(mParameter.getWaitUdpReceivingMillisecond());
 		} catch (InterruptedException e) {
 			// receive the udp broadcast or the user interrupt the task
-			if (this.mIsSuc)
-			{
+			if (this.mIsSuc) {
 				return __getEsptouchResultList();
-			}
-			else
-			{
+			} else {
 				this.__interrupt();
 				return __getEsptouchResultList();
 			}
 		}
 		this.__interrupt();
 		return __getEsptouchResultList();
+	}
+
+	@Override
+	public void setEsptouchListener(IEsptouchListener esptouchListener) {
+		mEsptouchListener = esptouchListener;
 	}
 
 }

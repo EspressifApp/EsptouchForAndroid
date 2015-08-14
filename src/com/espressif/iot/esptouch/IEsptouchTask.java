@@ -5,6 +5,12 @@ import java.util.List;
 public interface IEsptouchTask {
 
 	/**
+	 * set the esptouch listener, when one device is connected to the Ap, it will be called back
+	 * @param esptouchListener when one device is connected to the Ap, it will be called back
+	 */
+	void setEsptouchListener(IEsptouchListener esptouchListener);
+	
+	/**
 	 * Interrupt the Esptouch Task when User tap back or close the Application.
 	 */
 	void interrupt();
@@ -13,7 +19,7 @@ public interface IEsptouchTask {
 	 * Note: !!!Don't call the task at UI Main Thread or RuntimeException will
 	 * be thrown Execute the Esptouch Task and return the result
 	 * 
-	 * Smart Config v2.2 support the API
+	 * Smart Config v2.4 support the API
 	 * 
 	 * @return the IEsptouchResult
 	 * @throws RuntimeException
@@ -24,7 +30,7 @@ public interface IEsptouchTask {
 	 * Note: !!!Don't call the task at UI Main Thread or RuntimeException will
 	 * be thrown Execute the Esptouch Task and return the result
 	 * 
-	 * Smart Config v2.2 support the API
+	 * Smart Config v2.4 support the API
 	 * 
 	 * It will be blocked until the client receive result count >= expectTaskResultCount.
 	 * If it fail, it will return one fail result will be returned in the list.
