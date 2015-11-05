@@ -20,6 +20,29 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 在软件和软件的所有副本中都必须包含以上的版权声明和授权声明。
 
 该软件按本来的样子提供，没有任何明确或暗含的担保，包括但不仅限于关于试销性、适合某一特定用途和非侵权的保证。作者和版权持有人在任何情况下均不就由软件或软件使用引起的以合同形式、民事侵权或其它方式提出的任何索赔、损害或其它责任负责。
+==================================v0.3.4.3==================================
+
+1.  Espressif's Smart Config is updated to v2.4.
+
+    <b>Esptouch v0.3.4.3 only support Espressif's Smart Config v2.4</b>
+
+2.  Usage:
+
+    The same as v0.3.4.2.(fix some bugs in v0.3.4.2).
+
+==================================v0.3.4.2==================================
+
+1.  Espressif's Smart Config is updated to v2.4, and some paremeters are changed.
+
+    <b>Esptouch v0.3.4.2 only support Espressif's Smart Config v2.4</b>
+
+2.  Usage:
+
+    The usage of v0.3.4 is supported, besides one new API is added:
+
+    void onEsptouchResultAdded(IEsptouchResult result);
+
+    It support asyn callback when one device is connected to AP.
 
 ==================================v0.3.4==================================
 
