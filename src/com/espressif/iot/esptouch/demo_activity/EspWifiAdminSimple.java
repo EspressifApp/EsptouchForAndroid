@@ -1,8 +1,13 @@
 package com.espressif.iot.esptouch.demo_activity;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
@@ -29,6 +34,49 @@ public class EspWifiAdminSimple {
 
 		}
 		return ssid;
+	}
+	
+	public String getWifiConnectedSsidAscii(String ssid) {
+		final long timeout = 100;
+		final long interval = 20;
+		String ssidAscii = ssid;
+
+		WifiManager wifiManager = (WifiManager) mContext
+				.getSystemService(Context.WIFI_SERVICE);
+		wifiManager.startScan();
+
+		boolean isBreak = false;
+		long start = System.currentTimeMillis();
+		do {
+			try {
+				Thread.sleep(interval);
+			} catch (InterruptedException ignore) {
+				isBreak = true;
+				break;
+			}
+			List<ScanResult> scanResults = wifiManager.getScanResults();
+			for (ScanResult scanResult : scanResults) {
+				if (scanResult.SSID != null && scanResult.SSID.equals(ssid)) {
+					isBreak = true;
+					try {
+						Field wifiSsidfield = ScanResult.class
+								.getDeclaredField("wifiSsid");
+						wifiSsidfield.setAccessible(true);
+						Class<?> wifiSsidClass = wifiSsidfield.getType();
+						Object wifiSsid = wifiSsidfield.get(scanResult);
+						Method method = wifiSsidClass
+								.getDeclaredMethod("getOctets");
+						byte[] bytes = (byte[]) method.invoke(wifiSsid);
+						ssidAscii = new String(bytes, "ISO-8859-1");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
+		} while (System.currentTimeMillis() - start < timeout && !isBreak);
+
+		return ssidAscii;
 	}
 	
 	public String getWifiConnectedBssid() {

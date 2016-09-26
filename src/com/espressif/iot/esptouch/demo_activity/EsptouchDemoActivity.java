@@ -260,7 +260,8 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 		protected List<IEsptouchResult> doInBackground(String... params) {
 			int taskResultCount = -1;
 			synchronized (mLock) {
-				String apSsid = params[0];
+				// !!!NOTICE
+				String apSsid = mWifiAdmin.getWifiConnectedSsidAscii(params[0]);
 				String apBssid = params[1];
 				String apPassword = params[2];
 				String isSsidHiddenStr = params[3];

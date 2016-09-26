@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class ByteUtil {
 	
-	public static final String ESPTOUCH_ENCODING_CHARSET = "UTF-8";
+	public static final String ESPTOUCH_ENCODING_CHARSET = "ISO-8859-1";
 	
 	/**
 	 * Put String to byte[]
