@@ -4,7 +4,7 @@
     <string name="app_name">IOT_Espressif_EspTouch</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="app_version">v0.3.4.3</string>
+    <string name="app_version">v0.3.4.5</string>
     <string name="tvApSsidTitle">SSID: </string>
     <string name="tvPasswordTitle">Password: </string>
     <string name="switchIsSsidHiddenTitle">SSID is Hidden</string>

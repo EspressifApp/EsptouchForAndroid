@@ -45,6 +45,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 	private IEsptouchTaskParameter mParameter;
 	private volatile Map<String, Integer> mBssidTaskSucCountMap;
 	private IEsptouchListener mEsptouchListener;
+	private Thread mTask;
 
 	public __EsptouchTask(String apSsid, String apBssid, String apPassword,
 			Context context, IEsptouchTaskParameter parameter,
@@ -135,7 +136,10 @@ public class __EsptouchTask implements __IEsptouchTask {
 			mSocketClient.interrupt();
 			mSocketServer.interrupt();
 			// interrupt the current Thread which is used to wait for udp response
-			Thread.currentThread().interrupt();
+			if (mTask != null) {
+				mTask.interrupt();
+				mTask = null;
+			}
 		}
 	}
 
@@ -149,7 +153,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 	}
 
 	private void __listenAsyn(final int expectDataLen) {
-		new Thread() {
+		mTask = new Thread() {
 			public void run() {
 				if (__IEsptouchTask.DEBUG) {
 					Log.d(TAG, "__listenAsyn() start");
@@ -203,9 +207,12 @@ public class __EsptouchTask implements __IEsptouchTask {
 								InetAddress inetAddress = EspNetUtil
 										.parseInetAddr(
 												receiveBytes,
-												mParameter.getEsptouchResultOneLen()
-												+ mParameter.getEsptouchResultMacLen(),
-												mParameter.getEsptouchResultIpLen());
+												mParameter
+														.getEsptouchResultOneLen()
+														+ mParameter
+																.getEsptouchResultMacLen(),
+												mParameter
+														.getEsptouchResultIpLen());
 								__putEsptouchResult(true, bssid, inetAddress);
 							}
 						}
@@ -222,7 +229,8 @@ public class __EsptouchTask implements __IEsptouchTask {
 					Log.d(TAG, "__listenAsyn() finish");
 				}
 			}
-		}.start();
+		};
+		mTask.start();
 	}
 
 	private boolean __execute(IEsptouchGenerator generator) {
