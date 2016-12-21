@@ -120,8 +120,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 	private List<IEsptouchResult> __getEsptouchResultList() {
 		synchronized (mEsptouchResultList) {
 			if (mEsptouchResultList.isEmpty()) {
-				EsptouchResult esptouchResultFail = new EsptouchResult(false,
-						null, null);
+				EsptouchResult esptouchResultFail = new EsptouchResult(false, null, null);
 				esptouchResultFail.setIsCancelled(mIsCancelled.get());
 				mEsptouchResultList.add(esptouchResultFail);
 			}

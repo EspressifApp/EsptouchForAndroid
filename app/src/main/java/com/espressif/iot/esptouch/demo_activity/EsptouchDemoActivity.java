@@ -79,8 +79,11 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
         String apSsid = mWifiAdmin.getWifiConnectedSsid();
         if (apSsid != null) {
             mTvApSsid.setText(apSsid);
+            if ("gswtek_mi1".equalsIgnoreCase(apSsid)) {
+                mEdtApPassword.setText("mismis66");
+            }
         } else {
-            mTvApSsid.setText("  Pls connect a wi-fi first!");
+            mTvApSsid.setText("  Pls connect a Wi-Fi first!");
             mTvApSsid.setTextColor(Color.RED);
         }
         // check whether the wifi is connected
@@ -286,10 +289,9 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
                 if (firstResult.isSuc()) {
                     StringBuilder sb = new StringBuilder();
                     for (IEsptouchResult resultInList : result) {
-                        sb.append("Esptouch success, bssid = "
-                                + resultInList.getBssid()
-                                + ",InetAddress = "
-                                + resultInList.getInetAddress().getHostAddress() + "\n");
+                        sb.append("Esptouch success: \n" +
+                                "bssid = " + resultInList.getBssid() + ",\n" +
+                                "InetAddress = " + resultInList.getInetAddress().getHostAddress() + "\n");
                         count++;
                         if (count >= maxDisplayCount) {
                             break;
