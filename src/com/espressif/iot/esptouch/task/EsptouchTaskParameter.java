@@ -20,8 +20,8 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 	private static int _datagramCount = 0;
 
 	public EsptouchTaskParameter() {
-		mIntervalGuideCodeMillisecond = 10;
-		mIntervalDataCodeMillisecond = 10;
+		mIntervalGuideCodeMillisecond = 8;
+		mIntervalDataCodeMillisecond = 8;
 		mTimeoutGuideCodeMillisecond = 2000;
 		mTimeoutDataCodeMillisecond = 4000;
 		mTotalRepeatTime = 1;

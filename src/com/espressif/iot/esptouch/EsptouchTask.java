@@ -27,13 +27,20 @@ public class EsptouchTask implements IEsptouchTask {
 	 * @param context
 	 *            the Context of the Application
 	 */
-	public EsptouchTask(String apSsid, String apBssid, String apPassword,
-			boolean isSsidHidden, Context context) {
+	public EsptouchTask(String apSsid, String apBssid, String apPassword, Context context) {
 		_mParameter = new EsptouchTaskParameter();
 		_mEsptouchTask = new __EsptouchTask(apSsid, apBssid, apPassword,
-				context, _mParameter, isSsidHidden);
+				context, _mParameter, true);
 	}
-
+	
+	/**
+	 * @deprecated Use the new {{@link #EsptouchTask(String, String, String, Context)} API
+	 */
+	public EsptouchTask(String apSsid, String apBssid, String apPassword,
+			boolean isSsidHidden, Context context) {
+		this(apSsid, apBssid, apPassword, context);
+	}
+	
 	/**
 	 * Constructor of EsptouchTask
 	 * 
@@ -43,19 +50,24 @@ public class EsptouchTask implements IEsptouchTask {
 	 *            the Ap's bssid
 	 * @param apPassword
 	 *            the Ap's password
-	 * @param isSsidHidden
-	 *            whether the Ap's ssid is hidden
 	 * @param timeoutMillisecond
 	 *            (it should be >= 15000+6000) millisecond of total timeout
 	 * @param context
 	 *            the Context of the Application
 	 */
-	public EsptouchTask(String apSsid, String apBssid, String apPassword,
-			boolean isSsidHidden, int timeoutMillisecond, Context context) {
+	public EsptouchTask(String apSsid, String apBssid, String apPassword, int timeoutMillisecond, Context context) {
 		_mParameter = new EsptouchTaskParameter();
 		_mParameter.setWaitUdpTotalMillisecond(timeoutMillisecond);
 		_mEsptouchTask = new __EsptouchTask(apSsid, apBssid, apPassword,
-				context, _mParameter, isSsidHidden);
+				context, _mParameter, true);
+	}
+
+	/**
+	 * @deprecated Use the new {{@link #EsptouchTask(String, String, String, int, Context)} API
+	 */
+	public EsptouchTask(String apSsid, String apBssid, String apPassword,
+			boolean isSsidHidden, int timeoutMillisecond, Context context) {
+		this(apSsid, apBssid, apPassword, context);
 	}
 
 	@Override

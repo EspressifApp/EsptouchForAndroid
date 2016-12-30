@@ -46,10 +46,12 @@ public class __EsptouchTask implements __IEsptouchTask {
 	private volatile Map<String, Integer> mBssidTaskSucCountMap;
 	private IEsptouchListener mEsptouchListener;
 	private Thread mTask;
+	private static final String ESPTOUCH_VERSION = "v0.3.4.6";
 
 	public __EsptouchTask(String apSsid, String apBssid, String apPassword,
 			Context context, IEsptouchTaskParameter parameter,
 			boolean isSsidHidden) {
+		Log.i(TAG, "Welcome Esptouch " + ESPTOUCH_VERSION);
 		if (TextUtils.isEmpty(apSsid)) {
 			throw new IllegalArgumentException(
 					"the apSsid should be null or empty");

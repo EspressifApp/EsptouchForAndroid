@@ -23,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,8 +36,6 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 
 	private Button mBtnConfirm;
 	
-	private Switch mSwitchIsSsidHidden;
-
 	private EspWifiAdminSimple mWifiAdmin;
 	
 	private Spinner mSpinnerTaskCount;
@@ -52,7 +49,6 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 		mTvApSsid = (TextView) findViewById(R.id.tvApSssidConnected);
 		mEdtApPassword = (EditText) findViewById(R.id.edtApPassword);
 		mBtnConfirm = (Button) findViewById(R.id.btnConfirm);
-		mSwitchIsSsidHidden = (Switch) findViewById(R.id.switchIsSsidHidden);
 		mBtnConfirm.setOnClickListener(this);
 		initSpinner();
 	}
@@ -95,20 +91,13 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 			String apSsid = mTvApSsid.getText().toString();
 			String apPassword = mEdtApPassword.getText().toString();
 			String apBssid = mWifiAdmin.getWifiConnectedBssid();
-			Boolean isSsidHidden = mSwitchIsSsidHidden.isChecked();
-			String isSsidHiddenStr = "NO";
 			String taskResultCountStr = Integer.toString(mSpinnerTaskCount
 					.getSelectedItemPosition());
-			if (isSsidHidden) 
-			{
-				isSsidHiddenStr = "YES";
-			}
 			if (__IEsptouchTask.DEBUG) {
 				Log.d(TAG, "mBtnConfirm is clicked, mEdtApSsid = " + apSsid
 						+ ", " + " mEdtApPassword = " + apPassword);
 			}
-			new EsptouchAsyncTask3().execute(apSsid, apBssid, apPassword,
-					isSsidHiddenStr, taskResultCountStr);
+			new EsptouchAsyncTask3().execute(apSsid, apBssid, apPassword, taskResultCountStr);
 		}
 	}
 	
@@ -161,13 +150,7 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 				String apSsid = params[0];
 				String apBssid = params[1];
 				String apPassword = params[2];
-				String isSsidHiddenStr = params[3];
-				boolean isSsidHidden = false;
-				if (isSsidHiddenStr.equals("YES")) {
-					isSsidHidden = true;
-				}
-				mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword,
-						isSsidHidden, EsptouchDemoActivity.this);
+				mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword,EsptouchDemoActivity.this);
 			}
 			IEsptouchResult result = mEsptouchTask.executeForResult();
 			return result;
@@ -264,15 +247,9 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 				String apSsid = mWifiAdmin.getWifiConnectedSsidAscii(params[0]);
 				String apBssid = params[1];
 				String apPassword = params[2];
-				String isSsidHiddenStr = params[3];
-				String taskResultCountStr = params[4];
-				boolean isSsidHidden = false;
-				if (isSsidHiddenStr.equals("YES")) {
-					isSsidHidden = true;
-				}
+				String taskResultCountStr = params[3];
 				taskResultCount = Integer.parseInt(taskResultCountStr);
-				mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword,
-						isSsidHidden, EsptouchDemoActivity.this);
+				mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, EsptouchDemoActivity.this);
 				mEsptouchTask.setEsptouchListener(myListener);
 			}
 			List<IEsptouchResult> resultList = mEsptouchTask.executeForResults(taskResultCount);
