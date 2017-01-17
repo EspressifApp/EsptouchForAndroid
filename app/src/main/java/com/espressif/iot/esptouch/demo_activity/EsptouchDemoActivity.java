@@ -1,12 +1,14 @@
 package com.espressif.iot.esptouch.demo_activity;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -28,9 +30,15 @@ import com.espressif.iot_esptouch_demo.R;
 
 import java.util.List;
 
-public class EsptouchDemoActivity extends Activity implements OnClickListener {
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
+public class EsptouchDemoActivity extends AppCompatActivity implements OnClickListener, EasyPermissions.PermissionCallbacks {
 
     private static final String TAG = "EsptouchDemoActivity";
+    private static final int RC_ACCESS_COARSE_LOCATION_PERM = 123;
+    private static final int RC_SETTINGS_SCREEN = 125;
 
     private TextView mTvApSsid;
 
@@ -43,6 +51,13 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
     private EspWifiAdminSimple mWifiAdmin;
 
     private Spinner mSpinnerTaskCount;
+    private IEsptouchListener myListener = new IEsptouchListener() {
+
+        @Override
+        public void onEsptouchResultAdded(final IEsptouchResult result) {
+            onEsptoucResultAddedPerform(result);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,13 +93,16 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
         // display the connected ap's ssid
         String apSsid = mWifiAdmin.getWifiConnectedSsid();
         if (apSsid != null) {
+            if (apSsid.length() > 10) {
+                Toast.makeText(this, "We recommend that the length of SSID's name should not longer than 10.", Toast.LENGTH_SHORT).show();
+            }
             mTvApSsid.setText(apSsid);
             if ("gswtek_mi1".equalsIgnoreCase(apSsid)) {
                 mEdtApPassword.setText("mismis66");
+                mEdtApPassword.setSelection(mEdtApPassword.getText().length());
             }
         } else {
-            mTvApSsid.setText("  Pls connect a Wi-Fi first!");
-            mTvApSsid.setTextColor(Color.RED);
+            mTvApSsid.setText("  Pls connect to a Wi-Fi first!");
         }
         // check whether the wifi is connected
         boolean isApSsidEmpty = TextUtils.isEmpty(apSsid);
@@ -93,6 +111,9 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
+        if (!isAccessLocationPropare()) {
+            return;
+        }
 
         if (v == mBtnConfirm) {
             String apSsid = mTvApSsid.getText().toString();
@@ -113,11 +134,106 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
         }
     }
 
+    private void displayFrameworkBugMessageAndExit() {
+        Toast.makeText(this, R.string.permissions_access_location_error, Toast.LENGTH_LONG).show();
+        //finish();
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        Log.d(TAG, "onPermissionsDenied:" + requestCode + ":" + perms.size());
+
+        if (perms != null && perms.size() == 1) {
+            //initCamera();
+        } else {
+            displayFrameworkBugMessageAndExit();
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        Log.d(TAG, "onPermissionsDenied:" + requestCode + ":" + perms.size());
+
+        // (Optional) Check whether the user denied any permissions and checked "NEVER ASK AGAIN."
+        // This will display a dialog directing them to enable the permission in app settings.
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this, getString(R.string.rationale_ask_again))
+                    .setTitle(getString(R.string.title_settings_dialog))
+                    .setPositiveButton(getString(R.string.setting))
+                    .setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            displayFrameworkBugMessageAndExit();
+                        }
+                    })
+                    .setRequestCode(RC_SETTINGS_SCREEN)
+                    .build()
+                    .show();
+        } else {
+            displayFrameworkBugMessageAndExit();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        String[] perms = {
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+        };
+
+        if (requestCode == RC_SETTINGS_SCREEN) {
+            // Do something after user returned from app settings screen, like showing a Toast.
+            if (EasyPermissions.hasPermissions(this, perms)) {
+                //initCamera();
+            } else {
+                displayFrameworkBugMessageAndExit();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // EasyPermissions handles the request result.
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(RC_ACCESS_COARSE_LOCATION_PERM)
+    private boolean isAccessLocationPropare() {
+        String[] perms = {
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+        };
+
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            return true;
+        } else {
+            // Request one permission
+            EasyPermissions.requestPermissions(
+                    this,
+                    getResources().getString(R.string.str_request_location_message),
+                    RC_ACCESS_COARSE_LOCATION_PERM,
+                    perms
+            );
+            return false;
+        }
+    }
+
+    private void onEsptoucResultAddedPerform(final IEsptouchResult result) {
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                String text = result.getBssid() + " is connected to the wifi";
+                Toast.makeText(EsptouchDemoActivity.this, text, Toast.LENGTH_LONG).show();
+            }
+
+        });
+    }
+
     private class EsptouchAsyncTask2 extends AsyncTask<String, Void, IEsptouchResult> {
 
-        private ProgressDialog mProgressDialog;
-
-        private IEsptouchTask mEsptouchTask;
         // without the lock, if the user tap confirm and cancel quickly enough,
         // the bug will arise. the reason is follows:
         // 0. task is starting created, but not finished
@@ -125,6 +241,8 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
         // 2. task is created
         // 3. Oops, the task should be cancelled, but it is running
         private final Object mLock = new Object();
+        private ProgressDialog mProgressDialog;
+        private IEsptouchTask mEsptouchTask;
 
         @Override
         protected void onPreExecute() {
@@ -189,31 +307,8 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
         }
     }
 
-    private void onEsptoucResultAddedPerform(final IEsptouchResult result) {
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                String text = result.getBssid() + " is connected to the wifi";
-                Toast.makeText(EsptouchDemoActivity.this, text, Toast.LENGTH_LONG).show();
-            }
-
-        });
-    }
-
-    private IEsptouchListener myListener = new IEsptouchListener() {
-
-        @Override
-        public void onEsptouchResultAdded(final IEsptouchResult result) {
-            onEsptoucResultAddedPerform(result);
-        }
-    };
-
     private class EsptouchAsyncTask3 extends AsyncTask<String, Void, List<IEsptouchResult>> {
 
-        private ProgressDialog mProgressDialog;
-
-        private IEsptouchTask mEsptouchTask;
         // without the lock, if the user tap confirm and cancel quickly enough,
         // the bug will arise. the reason is follows:
         // 0. task is starting created, but not finished
@@ -221,6 +316,8 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
         // 2. task is created
         // 3. Oops, the task should be cancelled, but it is running
         private final Object mLock = new Object();
+        private ProgressDialog mProgressDialog;
+        private IEsptouchTask mEsptouchTask;
 
         @Override
         protected void onPreExecute() {
