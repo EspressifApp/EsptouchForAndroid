@@ -82,9 +82,9 @@ public class ByteUtil {
 	/**
 	 * Put byte[] into char[]( we treat char[] as uint8[])
 	 * 
-	 * @param dest
+	 * @param destUint8s
 	 *            the char[](uint8[]) array
-	 * @param src
+	 * @param srcBytes
 	 *            the byte[]
 	 * @param destOffset
 	 *            the offset of char[](uint8[])

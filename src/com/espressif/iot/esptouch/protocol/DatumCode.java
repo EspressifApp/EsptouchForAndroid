@@ -24,7 +24,7 @@ public class DatumCode implements ICodeData {
 	 * @param isSsidHidden whether the Ap's ssid is hidden
 	 */
 	public DatumCode(String apSsid, String apBssid, String apPassword,
-			InetAddress ipAddress, boolean isSsidHiden) {
+			InetAddress ipAddress, boolean isSsidHidden) {
 		// Data = total len(1 byte) + apPwd len(1 byte) + SSID CRC(1 byte) +
 		// BSSID CRC(1 byte) + TOTAL XOR(1 byte)+ ipAddress(4 byte) + apPwd + apSsid apPwdLen <=
 		// 105 at the moment
@@ -54,7 +54,7 @@ public class DatumCode implements ICodeData {
 		
 		
 		char _totalLen = (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen);
-		char totalLen = isSsidHiden ? (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen)
+		char totalLen = isSsidHidden ? (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen)
 				: (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen);
 		
 		// build data codes
@@ -93,7 +93,7 @@ public class DatumCode implements ICodeData {
 			totalXor ^= apSsidChars[i];
 		}
 		
-		if (isSsidHiden) {
+		if (isSsidHidden) {
 			for (int i = 0; i < apSsidChars.length; i++) {
 				mDataCodes[i + EXTRA_HEAD_LEN + ipLen + apPwdLen] = new DataCode(
 						apSsidChars[i], i + EXTRA_HEAD_LEN + ipLen + apPwdLen);

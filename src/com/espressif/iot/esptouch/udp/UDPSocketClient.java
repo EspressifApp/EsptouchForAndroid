@@ -65,7 +65,7 @@ public class UDPSocketClient {
 	 * 
 	 * @param data
 	 *            the data to be sent
-	 * @param targetHost
+	 * @param targetHostName
 	 *            the host name of target, e.g. 192.168.1.101
 	 * @param targetPort
 	 *            the port of target
@@ -87,7 +87,7 @@ public class UDPSocketClient {
 	 * 			  the offset which data to be sent
 	 * @param count
 	 * 			  the count of the data
-	 * @param targetHost
+	 * @param targetHostName
 	 *            the host name of target, e.g. 192.168.1.101
 	 * @param targetPort
 	 *            the port of target

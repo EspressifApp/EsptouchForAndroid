@@ -22,8 +22,6 @@ public class EsptouchTask implements IEsptouchTask {
 	 *            the Ap's bssid
 	 * @param apPassword
 	 *            the Ap's password
-	 * @param isSsidHidden
-	 *            whether the Ap's ssid is hidden
 	 * @param context
 	 *            the Context of the Application
 	 */
