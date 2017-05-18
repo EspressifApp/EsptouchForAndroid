@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 版权 © 2015  <乐鑫信息科技（上海）有限公司>
 
-<b>该许可证授权仅限于乐鑫信息科技 ESP8266 产品的应用开发。</b>在此情况下，该许可证免费授权任何获得该软件及其相关文档（统称为“软件”）的人无限制地经营该软件，包括无限制
+<b>该许可证授权仅限于乐鑫信息科技 ESP8266/ESP32 产品的应用开发。</b>在此情况下，该许可证免费授权任何获得该软件及其相关文档（统称为“软件”）的人无限制地经营该软件，包括无限制
 的使用、复制、修改、合并、出版发行、散布、再授权、及贩售软件及软件副本的权利。被授权人在享受这些权利的同时，需服从下面的条件：
 
 在软件和软件的所有副本中都必须包含以上的版权声明和授权声明。
@@ -27,7 +27,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 2.  Espressif's Smart Config is updated to v2.4.
 
-    <b>Esptouch v0.3.4.6 only support Espressif's Smart Config v2.4</b>
+    <b>Esptouch v0.3.4.6 support latest Espressif's Smart Config</b>
 
 3.  Usage:
 
