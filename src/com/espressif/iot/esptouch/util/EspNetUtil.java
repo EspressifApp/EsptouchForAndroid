@@ -32,15 +32,11 @@ public class EspNetUtil {
 	}
 
 	private static String __formatString(int value) {
-		String strValue = "";
-		byte[] ary = __intToByteArray(value);
-		for (int i = ary.length - 1; i >= 0; i--) {
-			strValue += (ary[i] & 0xFF);
-			if (i > 0) {
-				strValue += ".";
-			}
-		}
-		return strValue;
+		String result;
+
+		result = String.format("%d.%d.%d.%d", (value & 0xff), (value >> 8 & 0xff), (value >> 16 & 0xff), (value >> 24 & 0xff));
+
+		return result;
 	}
 
 	private static byte[] __intToByteArray(int value) {
