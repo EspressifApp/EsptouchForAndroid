@@ -35,7 +35,9 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 5.  Usage:
 
     byte[] secretKey = "1234567890123456".getBytes(); // TODO use your own key
+
     EspAES aes = new EspAES(secretKey);
+
     EsptouchTask task = new EsptouchTask(apSsid, apBssid, apPassword, aes, context);
 
 =================================v0.3.4.6==================================
