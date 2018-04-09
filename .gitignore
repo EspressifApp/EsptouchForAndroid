@@ -1,5 +1,13 @@
-bin/
-gen/
-proguard/
+*.iml
+*.ipr
+*.iws
 .DS_Store
-project.properties
+.idea
+.gradle
+gradlew.bat
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+/app/build
+/build
+/captures
