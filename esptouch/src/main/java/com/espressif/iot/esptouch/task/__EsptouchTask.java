@@ -62,12 +62,11 @@ public class __EsptouchTask implements __IEsptouchTask {
         if (espAES == null) {
             mApSsid = ByteUtil.getBytesByString(apSsid);
             mApPassword = ByteUtil.getBytesByString(apPassword);
-            mApBssid = EspNetUtil.parseBssid2bytes(apBssid);
         } else {
             mApSsid = espAES.encrypt(ByteUtil.getBytesByString(apSsid));
             mApPassword = espAES.encrypt(ByteUtil.getBytesByString(apPassword));
-            mApBssid = espAES.encrypt(EspNetUtil.parseBssid2bytes(apBssid));
         }
+        mApBssid = EspNetUtil.parseBssid2bytes(apBssid);
         mIsCancelled = new AtomicBoolean(false);
         mSocketClient = new UDPSocketClient();
         mParameter = parameter;

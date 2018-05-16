@@ -58,7 +58,7 @@ public class DatumCode implements ICodeData {
                 : (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen);
 
         // build data codes
-        mDataCodes = new DataCode[totalLen];
+        mDataCodes = new DataCode[totalLen + apBssid.length];
         mDataCodes[0] = new DataCode(_totalLen, 0);
         totalXor ^= _totalLen;
         mDataCodes[1] = new DataCode(apPwdLen, 1);
@@ -102,6 +102,13 @@ public class DatumCode implements ICodeData {
 
         // set total xor last
         mDataCodes[4] = new DataCode(totalXor, 4);
+
+        // set bssid
+        for (int i = 0; i < apBssid.length; i++) {
+            int index = totalLen + i;
+            char c = ByteUtil.convertByte2Uint8(apBssid[i]);
+            mDataCodes[index] = new DataCode(c, index);
+        }
     }
 
     @Override
