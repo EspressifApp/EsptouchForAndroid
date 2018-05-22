@@ -125,8 +125,8 @@ public class DatumCode implements ICodeData {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         byte[] dataBytes = getBytes();
-        for (int i = 0; i < dataBytes.length; i++) {
-            String hexString = ByteUtil.convertByte2HexString(dataBytes[i]);
+        for (byte dataByte : dataBytes) {
+            String hexString = ByteUtil.convertByte2HexString(dataByte);
             sb.append("0x");
             if (hexString.length() == 1) {
                 sb.append("0");

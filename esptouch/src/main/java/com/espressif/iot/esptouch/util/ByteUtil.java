@@ -217,9 +217,7 @@ public class ByteUtil {
 
     public static String parseBssid(byte[] bssidBytes, int offset, int count) {
         byte[] bytes = new byte[count];
-        for (int i = 0; i < count; i++) {
-            bytes[i] = bssidBytes[i + offset];
-        }
+        System.arraycopy(bssidBytes, offset, bytes, 0, count);
         return parseBssid(bytes);
     }
 
@@ -235,8 +233,8 @@ public class ByteUtil {
         int k;
         String hexK;
         String str;
-        for (int i = 0; i < bssidBytes.length; i++) {
-            k = 0xff & bssidBytes[i];
+        for (byte bssidByte : bssidBytes) {
+            k = 0xff & bssidByte;
             hexK = Integer.toHexString(k);
             str = ((k < 16) ? ("0" + hexK) : (hexK));
             System.out.println(str);

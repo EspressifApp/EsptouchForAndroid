@@ -22,6 +22,10 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 该软件按本来的样子提供，没有任何明确或暗含的担保，包括但不仅限于关于试销性、适合某一特定用途和非侵权的保证。作者和版权持有人在任何情况下均不就由软件或软件使用引起的以合同形式、民事侵权或其它方式提出的任何索赔、损害或其它责任负责。
 
 
+=================================v0.3.6.0==================================
+
+1.  Fix bug that cann't configure Chinese SSID
+
 =================================v0.3.4.7==================================
 
 1.  Change project from Eclipse to Android Studio

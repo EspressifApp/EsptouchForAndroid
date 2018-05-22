@@ -78,7 +78,7 @@ public class EspNetUtil {
     /**
      * parse bssid
      *
-     * @param bssid the bssid
+     * @param bssid the bssid like aa:bb:cc:dd:ee:ff
      * @return byte converted from bssid
      */
     public static byte[] parseBssid2bytes(String bssid) {

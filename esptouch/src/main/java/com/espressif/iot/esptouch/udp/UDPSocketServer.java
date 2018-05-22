@@ -90,7 +90,7 @@ public class UDPSocketServer {
         try {
             acquireLock();
             mServerSocket.receive(mReceivePacket);
-            Log.d(TAG, "receive: " + (0 + mReceivePacket.getData()[0]));
+            Log.d(TAG, "receive: " + (mReceivePacket.getData()[0]));
             return mReceivePacket.getData()[0];
         } catch (IOException e) {
             e.printStackTrace();
