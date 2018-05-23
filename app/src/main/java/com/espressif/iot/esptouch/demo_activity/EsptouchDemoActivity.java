@@ -1,5 +1,6 @@
 package com.espressif.iot.esptouch.demo_activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,8 +8,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -34,6 +33,7 @@ import com.espressif.iot.esptouch.task.__IEsptouchTask;
 import com.espressif.iot.esptouch.util.EspAES;
 import com.espressif.iot_esptouch_demo.R;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class EsptouchDemoActivity extends AppCompatActivity implements OnClickListener {
@@ -90,7 +90,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.esptouch_demo_activity);
 
-        mWifiAdmin = new EspWifiAdminSimple(this);
+        mWifiAdmin = new EspWifiAdminSimple(getApplicationContext());
         mTvApSsid = findViewById(R.id.tvApSssidConnected);
         mEdtApPassword = findViewById(R.id.edtApPassword);
         mBtnConfirm = findViewById(R.id.btnConfirm);
@@ -112,7 +112,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         for (int i = 0; i < length; i++) {
             spinnerItemsInteger[i] = spinnerItemsInt[i];
         }
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this,
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, spinnerItemsInteger);
         mSpinnerTaskCount.setAdapter(adapter);
         mSpinnerTaskCount.setSelection(1);
@@ -155,7 +155,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
             if(mTask != null) {
                 mTask.cancelEsptouch();
             }
-            mTask = new EsptouchAsyncTask3();
+            mTask = new EsptouchAsyncTask3(this);
             mTask.execute(apSsid, apBssid, apPassword, taskResultCountStr);
         }
     }
@@ -173,7 +173,8 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         });
     }
 
-    private class EsptouchAsyncTask3 extends AsyncTask<String, Void, List<IEsptouchResult>> {
+    private static class EsptouchAsyncTask3 extends AsyncTask<String, Void, List<IEsptouchResult>> {
+        private WeakReference<EsptouchDemoActivity> mActivity;
 
         // without the lock, if the user tap confirm and cancel quickly enough,
         // the bug will arise. the reason is follows:
@@ -183,7 +184,12 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         // 3. Oops, the task should be cancelled, but it is running
         private final Object mLock = new Object();
         private ProgressDialog mProgressDialog;
+        private AlertDialog mResultDialog;
         private IEsptouchTask mEsptouchTask;
+
+        EsptouchAsyncTask3(EsptouchDemoActivity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
 
         public void cancelEsptouch() {
             cancel(true);
@@ -197,16 +203,16 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
 
         @Override
         protected void onPreExecute() {
-            mProgressDialog = new ProgressDialog(EsptouchDemoActivity.this);
-            mProgressDialog
-                    .setMessage("Esptouch is configuring, please wait for a moment...");
+            Activity activity = mActivity.get();
+            mProgressDialog = new ProgressDialog(activity);
+            mProgressDialog.setMessage("Esptouch is configuring, please wait for a moment...");
             mProgressDialog.setCanceledOnTouchOutside(false);
             mProgressDialog.setOnCancelListener(new OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
                     synchronized (mLock) {
                         if (__IEsptouchTask.DEBUG) {
-                            Log.i(TAG, "progress dialog is canceled");
+                            Log.i(TAG, "progress dialog back pressed canceled");
                         }
                         if (mEsptouchTask != null) {
                             mEsptouchTask.interrupt();
@@ -214,49 +220,59 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
                     }
                 }
             });
-            mProgressDialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                    "Waiting...", new DialogInterface.OnClickListener() {
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getText(android.R.string.cancel),
+                    new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            synchronized (mLock) {
+                                if (__IEsptouchTask.DEBUG) {
+                                    Log.i(TAG, "progress dialog cancel button canceled");
+                                }
+                                if (mEsptouchTask != null) {
+                                    mEsptouchTask.interrupt();
+                                }
+                            }
                         }
                     });
             mProgressDialog.show();
-            mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                    .setEnabled(false);
         }
 
         @Override
         protected List<IEsptouchResult> doInBackground(String... params) {
+            EsptouchDemoActivity activity = mActivity.get();
             int taskResultCount = -1;
             synchronized (mLock) {
                 // !!!NOTICE
-                String apSsid = mWifiAdmin.getWifiConnectedSsidAscii(params[0]);
+                String apSsid = params[0];
                 String apBssid = params[1];
                 String apPassword = params[2];
                 String taskResultCountStr = params[3];
                 taskResultCount = Integer.parseInt(taskResultCountStr);
                 boolean useAes = false;
+                Context context = activity.getApplicationContext();
                 if (useAes) {
                     byte[] secretKey = "1234567890123456".getBytes(); // TODO modify your own key
                     EspAES aes = new EspAES(secretKey);
-                    mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, aes, EsptouchDemoActivity.this);
+                    mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, aes, context);
                 } else {
-                    mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, null, EsptouchDemoActivity.this);
+                    mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, null, context);
                 }
-                mEsptouchTask.setEsptouchListener(myListener);
+                mEsptouchTask.setEsptouchListener(activity.myListener);
             }
-            List<IEsptouchResult> resultList = mEsptouchTask.executeForResults(taskResultCount);
-            return resultList;
+            return mEsptouchTask.executeForResults(taskResultCount);
         }
 
         @Override
         protected void onPostExecute(List<IEsptouchResult> result) {
-            mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                    .setEnabled(true);
-            mProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(
-                    "OK");
+            Activity activity = mActivity.get();
+            mProgressDialog.dismiss();
+            mResultDialog = new AlertDialog.Builder(activity)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .create();
+            mResultDialog.setCanceledOnTouchOutside(false);
             if (result == null) {
-                mProgressDialog.setMessage("Create Esptouch task failed, the esptouch port could be used by other thread");
+                mResultDialog.setMessage("Create Esptouch task failed, the esptouch port could be used by other thread");
+                mResultDialog.show();
                 return;
             }
 
@@ -272,24 +288,27 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
                 if (firstResult.isSuc()) {
                     StringBuilder sb = new StringBuilder();
                     for (IEsptouchResult resultInList : result) {
-                        sb.append("Esptouch success, bssid = "
-                                + resultInList.getBssid()
-                                + ",InetAddress = "
-                                + resultInList.getInetAddress()
-                                .getHostAddress() + "\n");
+                        sb.append("Esptouch success, bssid = ")
+                                .append(resultInList.getBssid())
+                                .append(", InetAddress = ")
+                                .append(resultInList.getInetAddress().getHostAddress())
+                                .append("\n");
                         count++;
                         if (count >= maxDisplayCount) {
                             break;
                         }
                     }
                     if (count < result.size()) {
-                        sb.append("\nthere's " + (result.size() - count)
-                                + " more result(s) without showing\n");
+                        sb.append("\nthere's ")
+                                .append(result.size() - count)
+                                .append(" more result(s) without showing\n");
                     }
-                    mProgressDialog.setMessage(sb.toString());
+                    mResultDialog.setMessage(sb.toString());
                 } else {
-                    mProgressDialog.setMessage("Esptouch fail");
+                    mResultDialog.setMessage("Esptouch fail");
                 }
+
+                mResultDialog.show();
             }
         }
     }

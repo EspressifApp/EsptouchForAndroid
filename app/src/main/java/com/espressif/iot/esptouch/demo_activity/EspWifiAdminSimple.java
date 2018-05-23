@@ -15,7 +15,6 @@ public class EspWifiAdminSimple {
 
     private final Context mContext;
 
-
     public EspWifiAdminSimple(Context context) {
         mContext = context;
     }
@@ -36,49 +35,6 @@ public class EspWifiAdminSimple {
         return ssid;
     }
 
-    public String getWifiConnectedSsidAscii(String ssid) {
-        final long timeout = 100;
-        final long interval = 20;
-        String ssidAscii = ssid;
-
-        WifiManager wifiManager = (WifiManager) mContext
-                .getSystemService(Context.WIFI_SERVICE);
-        wifiManager.startScan();
-
-        boolean isBreak = false;
-        long start = System.currentTimeMillis();
-        do {
-            try {
-                Thread.sleep(interval);
-            } catch (InterruptedException ignore) {
-                isBreak = true;
-                break;
-            }
-            List<ScanResult> scanResults = wifiManager.getScanResults();
-            for (ScanResult scanResult : scanResults) {
-                if (scanResult.SSID != null && scanResult.SSID.equals(ssid)) {
-                    isBreak = true;
-                    try {
-                        Field wifiSsidfield = ScanResult.class
-                                .getDeclaredField("wifiSsid");
-                        wifiSsidfield.setAccessible(true);
-                        Class<?> wifiSsidClass = wifiSsidfield.getType();
-                        Object wifiSsid = wifiSsidfield.get(scanResult);
-                        Method method = wifiSsidClass
-                                .getDeclaredMethod("getOctets");
-                        byte[] bytes = (byte[]) method.invoke(wifiSsid);
-                        ssidAscii = new String(bytes, "ISO-8859-1");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-            }
-        } while (System.currentTimeMillis() - start < timeout && !isBreak);
-
-        return ssidAscii;
-    }
-
     public String getWifiConnectedBssid() {
         WifiInfo mWifiInfo = getConnectionInfo();
         String bssid = null;
@@ -90,10 +46,8 @@ public class EspWifiAdminSimple {
 
     // get the wifi info which is "connected" in wifi-setting
     private WifiInfo getConnectionInfo() {
-        WifiManager mWifiManager = (WifiManager) mContext
-                .getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-        return wifiInfo;
+        WifiManager wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        return wifiManager.getConnectionInfo();
     }
 
     private boolean isWifiConnected() {
@@ -106,10 +60,8 @@ public class EspWifiAdminSimple {
     }
 
     private NetworkInfo getWifiNetworkInfo() {
-        ConnectivityManager mConnectivityManager = (ConnectivityManager) mContext
+        ConnectivityManager mConnectivityManager = (ConnectivityManager) mContext.getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWiFiNetworkInfo = mConnectivityManager
-                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        return mWiFiNetworkInfo;
+        return mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
     }
 }
