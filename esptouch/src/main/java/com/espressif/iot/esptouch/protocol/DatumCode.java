@@ -5,6 +5,7 @@ import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.CRC8;
 
 import java.net.InetAddress;
+import java.util.LinkedList;
 
 public class DatumCode implements ICodeData {
 
@@ -12,7 +13,7 @@ public class DatumCode implements ICodeData {
     private static final int EXTRA_LEN = 40;
     private static final int EXTRA_HEAD_LEN = 5;
 
-    private final DataCode[] mDataCodes;
+    private final LinkedList<DataCode> mDataCodes;
 
     /**
      * Constructor of DatumCode
@@ -52,24 +53,23 @@ public class DatumCode implements ICodeData {
             ipAddrChars[i] = (char) Integer.parseInt(ipAddrStrs[i]);
         }
 
-
         char _totalLen = (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen);
         char totalLen = isSsidHiden ? (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen)
                 : (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen);
 
         // build data codes
-        mDataCodes = new DataCode[totalLen + apBssid.length];
-        mDataCodes[0] = new DataCode(_totalLen, 0);
+        mDataCodes = new LinkedList<>();
+        mDataCodes.add(new DataCode(_totalLen, 0));
         totalXor ^= _totalLen;
-        mDataCodes[1] = new DataCode(apPwdLen, 1);
+        mDataCodes.add(new DataCode(apPwdLen, 1));
         totalXor ^= apPwdLen;
-        mDataCodes[2] = new DataCode(apSsidCrc, 2);
+        mDataCodes.add(new DataCode(apSsidCrc, 2));
         totalXor ^= apSsidCrc;
-        mDataCodes[3] = new DataCode(apBssidCrc, 3);
+        mDataCodes.add(new DataCode(apBssidCrc, 3));
         totalXor ^= apBssidCrc;
-        mDataCodes[4] = null;
+        // ESPDataCode 4 is null
         for (int i = 0; i < ipLen; ++i) {
-            mDataCodes[i + EXTRA_HEAD_LEN] = new DataCode(ipAddrChars[i], i + EXTRA_HEAD_LEN);
+            mDataCodes.add(new DataCode(ipAddrChars[i], i + EXTRA_HEAD_LEN));
             totalXor ^= ipAddrChars[i];
         }
 
@@ -79,44 +79,49 @@ public class DatumCode implements ICodeData {
             apPwdChars[i] = ByteUtil.convertByte2Uint8(apPwdBytes[i]);
         }
         for (int i = 0; i < apPwdChars.length; i++) {
-            mDataCodes[i + EXTRA_HEAD_LEN + ipLen] = new DataCode(
-                    apPwdChars[i], i + EXTRA_HEAD_LEN + ipLen);
+            mDataCodes.add(new DataCode(apPwdChars[i], i + EXTRA_HEAD_LEN + ipLen));
             totalXor ^= apPwdChars[i];
         }
 
         byte[] apSsidBytes = apSsid;
         char[] apSsidChars = new char[apSsidBytes.length];
-
         // totalXor will xor apSsidChars no matter whether the ssid is hidden
         for (int i = 0; i < apSsidBytes.length; i++) {
             apSsidChars[i] = ByteUtil.convertByte2Uint8(apSsidBytes[i]);
             totalXor ^= apSsidChars[i];
         }
-
         if (isSsidHiden) {
             for (int i = 0; i < apSsidChars.length; i++) {
-                mDataCodes[i + EXTRA_HEAD_LEN + ipLen + apPwdLen] = new DataCode(
-                        apSsidChars[i], i + EXTRA_HEAD_LEN + ipLen + apPwdLen);
+                mDataCodes.add(new DataCode(apSsidChars[i], i + EXTRA_HEAD_LEN + ipLen + apPwdLen));
             }
         }
 
-        // set total xor last
-        mDataCodes[4] = new DataCode(totalXor, 4);
+        // add total xor last
+        mDataCodes.add(4, new DataCode(totalXor, 4));
 
-        // set bssid
+        // add bssid
+        int bssidInsertIndex = EXTRA_HEAD_LEN;
         for (int i = 0; i < apBssid.length; i++) {
             int index = totalLen + i;
             char c = ByteUtil.convertByte2Uint8(apBssid[i]);
-            mDataCodes[index] = new DataCode(c, index);
+            DataCode dc = new DataCode(c, index);
+            if (bssidInsertIndex >= mDataCodes.size()) {
+                mDataCodes.add(dc);
+            } else {
+                mDataCodes.add(bssidInsertIndex, dc);
+            }
+            bssidInsertIndex += 4;
         }
     }
 
     @Override
     public byte[] getBytes() {
-        byte[] datumCode = new byte[mDataCodes.length * DataCode.DATA_CODE_LEN];
-        for (int i = 0; i < mDataCodes.length; i++) {
-            System.arraycopy(mDataCodes[i].getBytes(), 0, datumCode, i
-                    * DataCode.DATA_CODE_LEN, DataCode.DATA_CODE_LEN);
+        byte[] datumCode = new byte[mDataCodes.size() * DataCode.DATA_CODE_LEN];
+        int index = 0;
+        for (DataCode dc : mDataCodes) {
+            for (byte b : dc.getBytes()) {
+                datumCode[index++] = b;
+            }
         }
         return datumCode;
     }
