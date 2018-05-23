@@ -24,6 +24,10 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 =================================v0.3.6.0==================================
 
+1.  Fix bug that cann't configure Chinese SSID sequence
+
+=================================v0.3.6.0==================================
+
 1.  Fix bug that cann't configure Chinese SSID
 
 =================================v0.3.4.7==================================
