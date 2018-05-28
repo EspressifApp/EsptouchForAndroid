@@ -8,20 +8,18 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,25 +28,26 @@ import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.task.__IEsptouchTask;
+import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.EspAES;
+import com.espressif.iot.esptouch.util.EspNetUtil;
 import com.espressif.iot_esptouch_demo.R;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class EsptouchDemoActivity extends AppCompatActivity implements OnClickListener {
-
     private static final String TAG = "EsptouchDemoActivity";
 
-    private TextView mTvApSsid;
+    private static final boolean AES_ENABLE = false;
+    private static final String AES_SECRET_KEY = "1234567890123456"; // TODO modify your own key
 
-    private EditText mEdtApPassword;
+    private TextView mApSsidTV;
+    private TextView mApBssidTV;
+    private EditText mApPasswordET;
+    private EditText mDeviceCountET;
+    private Button mConfirmBtn;
 
-    private Button mBtnConfirm;
-
-    private EspWifiAdminSimple mWifiAdmin;
-
-    private Spinner mSpinnerTaskCount;
     private IEsptouchListener myListener = new IEsptouchListener() {
 
         @Override
@@ -57,7 +56,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         }
     };
 
-    private EsptouchAsyncTask3 mTask;
+    private EsptouchAsyncTask4 mTask;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -69,17 +68,8 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
 
             switch (action) {
                 case WifiManager.NETWORK_STATE_CHANGED_ACTION:
-                    NetworkInfo ni = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-                    if (ni != null && !ni.isConnected()) {
-                        if (mTask != null) {
-                            mTask.cancelEsptouch();
-                            mTask = null;
-                            new AlertDialog.Builder(EsptouchDemoActivity.this)
-                                    .setMessage("Wifi disconnected or changed")
-                                    .setNegativeButton(android.R.string.cancel, null)
-                                    .show();
-                        }
-                    }
+                    WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+                    onWifiChanged(wifiInfo);
                     break;
             }
         }
@@ -90,47 +80,20 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.esptouch_demo_activity);
 
-        mWifiAdmin = new EspWifiAdminSimple(getApplicationContext());
-        mTvApSsid = findViewById(R.id.tvApSssidConnected);
-        mEdtApPassword = findViewById(R.id.edtApPassword);
-        mBtnConfirm = findViewById(R.id.btnConfirm);
-        mBtnConfirm.setOnClickListener(this);
-        initSpinner();
+        mApSsidTV = findViewById(R.id.ap_ssid_text);
+        mApBssidTV = findViewById(R.id.ap_bssid_text);
+        mApPasswordET = findViewById(R.id.ap_password_edit);
+        mDeviceCountET = findViewById(R.id.device_count_edit);
+        mDeviceCountET.setText("1");
+        mConfirmBtn = findViewById(R.id.confirm_btn);
+        mConfirmBtn.setEnabled(false);
+        mConfirmBtn.setOnClickListener(this);
 
         TextView versionTV = findViewById(R.id.version_tv);
         versionTV.setText(IEsptouchTask.ESPTOUCH_VERSION);
 
         IntentFilter filter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(mReceiver, filter);
-    }
-
-    private void initSpinner() {
-        mSpinnerTaskCount = findViewById(R.id.spinnerTaskResultCount);
-        int[] spinnerItemsInt = getResources().getIntArray(R.array.taskResultCount);
-        int length = spinnerItemsInt.length;
-        Integer[] spinnerItemsInteger = new Integer[length];
-        for (int i = 0; i < length; i++) {
-            spinnerItemsInteger[i] = spinnerItemsInt[i];
-        }
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, spinnerItemsInteger);
-        mSpinnerTaskCount.setAdapter(adapter);
-        mSpinnerTaskCount.setSelection(1);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // display the connected ap's ssid
-        String apSsid = mWifiAdmin.getWifiConnectedSsid();
-        if (apSsid != null) {
-            mTvApSsid.setText(apSsid);
-        } else {
-            mTvApSsid.setText("");
-        }
-        // check whether the wifi is connected
-        boolean isApSsidEmpty = TextUtils.isEmpty(apSsid);
-        mBtnConfirm.setEnabled(!isApSsidEmpty);
     }
 
     @Override
@@ -140,23 +103,66 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         unregisterReceiver(mReceiver);
     }
 
+    private void onWifiChanged(WifiInfo info) {
+        if (info == null) {
+            mApSsidTV.setText("");
+            mApSsidTV.setTag(null);
+            mApBssidTV.setTag("");
+            mConfirmBtn.setEnabled(false);
+            mConfirmBtn.setTag(null);
+
+            if (mTask != null) {
+                mTask.cancelEsptouch();
+                mTask = null;
+                new AlertDialog.Builder(EsptouchDemoActivity.this)
+                        .setMessage("Wifi disconnected or changed")
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+            }
+        } else {
+            String ssid = info.getSSID();
+            if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
+                ssid = ssid.substring(1, ssid.length() - 1);
+            }
+            mApSsidTV.setText(ssid);
+            mApSsidTV.setTag(ByteUtil.getBytesByString(ssid));
+            byte[] ssidOriginalData = EspUtils.getOriginalSsidBytes(info);
+            mApSsidTV.setTag(ssidOriginalData);
+
+            String bssid = info.getBSSID();
+            mApBssidTV.setText(bssid);
+
+            mConfirmBtn.setEnabled(true);
+            mConfirmBtn.setTag(Boolean.FALSE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                int frequence = info.getFrequency();
+                if (frequence > 4900 && frequence < 5900) {
+                    // Connected 5G wifi. Device does not support 5G
+                    mConfirmBtn.setTag(Boolean.TRUE);
+                }
+            }
+        }
+    }
+
     @Override
     public void onClick(View v) {
-        if (v == mBtnConfirm) {
-            String apSsid = mTvApSsid.getText().toString();
-            String apPassword = mEdtApPassword.getText().toString();
-            String apBssid = mWifiAdmin.getWifiConnectedBssid();
-            String taskResultCountStr = Integer.toString(mSpinnerTaskCount
-                    .getSelectedItemPosition());
-            if (__IEsptouchTask.DEBUG) {
-                Log.d(TAG, "mBtnConfirm is clicked, mEdtApSsid = " + apSsid
-                        + ", " + " mEdtApPassword = " + apPassword);
+        if (v == mConfirmBtn) {
+            if ((Boolean) mConfirmBtn.getTag()) {
+                Toast.makeText(this, R.string.wifi_5g_message, Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            byte[] ssid = mApSsidTV.getTag() == null ? ByteUtil.getBytesByString(mApSsidTV.getText().toString())
+                    : (byte[]) mApSsidTV.getTag();
+            byte[] password = ByteUtil.getBytesByString(mApPasswordET.getText().toString());
+            byte [] bssid = EspNetUtil.parseBssid2bytes(mApBssidTV.getText().toString());
+            byte[] deviceCount = mDeviceCountET.getText().toString().getBytes();
+
             if(mTask != null) {
                 mTask.cancelEsptouch();
             }
-            mTask = new EsptouchAsyncTask3(this);
-            mTask.execute(apSsid, apBssid, apPassword, taskResultCountStr);
+            mTask = new EsptouchAsyncTask4(this);
+            mTask.execute(ssid, bssid, password, deviceCount);
         }
     }
 
@@ -173,7 +179,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         });
     }
 
-    private static class EsptouchAsyncTask3 extends AsyncTask<String, Void, List<IEsptouchResult>> {
+    private static class EsptouchAsyncTask4 extends AsyncTask<byte[], Void, List<IEsptouchResult>> {
         private WeakReference<EsptouchDemoActivity> mActivity;
 
         // without the lock, if the user tap confirm and cancel quickly enough,
@@ -187,14 +193,17 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         private AlertDialog mResultDialog;
         private IEsptouchTask mEsptouchTask;
 
-        EsptouchAsyncTask3(EsptouchDemoActivity activity) {
+        EsptouchAsyncTask4(EsptouchDemoActivity activity) {
             mActivity = new WeakReference<>(activity);
         }
 
-        public void cancelEsptouch() {
+        void cancelEsptouch() {
             cancel(true);
             if (mProgressDialog != null) {
                 mProgressDialog.dismiss();
+            }
+            if (mResultDialog != null) {
+                mResultDialog.dismiss();
             }
             if (mEsptouchTask != null) {
                 mEsptouchTask.interrupt();
@@ -238,20 +247,20 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         }
 
         @Override
-        protected List<IEsptouchResult> doInBackground(String... params) {
+        protected List<IEsptouchResult> doInBackground(byte[]... params) {
             EsptouchDemoActivity activity = mActivity.get();
-            int taskResultCount = -1;
+            int taskResultCount;
             synchronized (mLock) {
                 // !!!NOTICE
-                String apSsid = params[0];
-                String apBssid = params[1];
-                String apPassword = params[2];
-                String taskResultCountStr = params[3];
-                taskResultCount = Integer.parseInt(taskResultCountStr);
-                boolean useAes = false;
+                byte[] apSsid = params[0]; //new byte[params[0].length - 1];
+                System.arraycopy(params[0], 0, apSsid, 0, params[0].length - 1);
+                byte[] apBssid = params[1];
+                byte[] apPassword = params[2];
+                byte[] deviceCountData = params[3];
+                taskResultCount = deviceCountData.length == 0 ? -1 : Integer.parseInt(new String(deviceCountData));
                 Context context = activity.getApplicationContext();
-                if (useAes) {
-                    byte[] secretKey = "1234567890123456".getBytes(); // TODO modify your own key
+                if (AES_ENABLE) {
+                    byte[] secretKey = AES_SECRET_KEY.getBytes();
                     EspAES aes = new EspAES(secretKey);
                     mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, aes, context);
                 } else {
@@ -264,7 +273,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
 
         @Override
         protected void onPostExecute(List<IEsptouchResult> result) {
-            Activity activity = mActivity.get();
+            EsptouchDemoActivity activity = mActivity.get();
             mProgressDialog.dismiss();
             mResultDialog = new AlertDialog.Builder(activity)
                     .setPositiveButton(android.R.string.ok, null)
@@ -310,6 +319,8 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
 
                 mResultDialog.show();
             }
+
+            activity.mTask = null;
         }
     }
 }

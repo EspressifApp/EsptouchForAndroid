@@ -94,10 +94,9 @@ public class UDPSocketClient {
                 continue;
             }
             try {
-                // Log.i(TAG, "data[" + i + " +].length = " + data[i].length);
+                InetAddress targetInetAddress = InetAddress.getByName(targetHostName);
                 DatagramPacket localDatagramPacket = new DatagramPacket(
-                        data[i], data[i].length,
-                        InetAddress.getByName(targetHostName), targetPort);
+                        data[i], data[i].length, targetInetAddress, targetPort);
                 this.mSocket.send(localDatagramPacket);
             } catch (UnknownHostException e) {
                 if (__IEsptouchTask.DEBUG) {

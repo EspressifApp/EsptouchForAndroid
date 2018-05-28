@@ -2,7 +2,6 @@ package com.espressif.iot.esptouch.task;
 
 import android.content.Context;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.espressif.iot.esptouch.EsptouchResult;
@@ -10,6 +9,7 @@ import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.protocol.EsptouchGenerator;
+import com.espressif.iot.esptouch.protocol.TouchData;
 import com.espressif.iot.esptouch.udp.UDPSocketClient;
 import com.espressif.iot.esptouch.udp.UDPSocketServer;
 import com.espressif.iot.esptouch.util.ByteUtil;
@@ -48,37 +48,29 @@ public class __EsptouchTask implements __IEsptouchTask {
     private IEsptouchListener mEsptouchListener;
     private Thread mTask;
 
-    public __EsptouchTask(String apSsid, String apBssid, String apPassword, EspAES espAES,
-                          Context context, IEsptouchTaskParameter parameter, boolean isSsidHidden) {
+    public __EsptouchTask(Context context, TouchData apSsid, TouchData apBssid, TouchData apPassword, EspAES espAES,
+                          IEsptouchTaskParameter parameter, boolean isSsidHidden) {
         Log.i(TAG, "Welcome Esptouch " + IEsptouchTask.ESPTOUCH_VERSION);
-        if (TextUtils.isEmpty(apSsid)) {
-            throw new IllegalArgumentException(
-                    "the apSsid should be null or empty");
-        }
-        if (apPassword == null) {
-            apPassword = "";
-        }
         mContext = context;
         if (espAES == null) {
-            mApSsid = ByteUtil.getBytesByString(apSsid);
-            mApPassword = ByteUtil.getBytesByString(apPassword);
+            mApSsid = apSsid.getData();
+            mApPassword = apPassword.getData();
         } else {
-            mApSsid = espAES.encrypt(ByteUtil.getBytesByString(apSsid));
-            mApPassword = espAES.encrypt(ByteUtil.getBytesByString(apPassword));
+            mApSsid = espAES.encrypt(apSsid.getData());
+            mApPassword = espAES.encrypt(apPassword.getData());
         }
-        mApBssid = EspNetUtil.parseBssid2bytes(apBssid);
+        mApBssid = apBssid.getData();
         mIsCancelled = new AtomicBoolean(false);
         mSocketClient = new UDPSocketClient();
         mParameter = parameter;
         mSocketServer = new UDPSocketServer(mParameter.getPortListening(),
                 mParameter.getWaitUdpTotalMillisecond(), context);
         mIsSsidHidden = isSsidHidden;
-        mEsptouchResultList = new ArrayList<IEsptouchResult>();
-        mBssidTaskSucCountMap = new HashMap<String, Integer>();
+        mEsptouchResultList = new ArrayList<>();
+        mBssidTaskSucCountMap = new HashMap<>();
     }
 
-    private void __putEsptouchResult(boolean isSuc, String bssid,
-                                     InetAddress inetAddress) {
+    private void __putEsptouchResult(boolean isSuc, String bssid, InetAddress inetAddress) {
         synchronized (mEsptouchResultList) {
             // check whether the result receive enough UDP response
             boolean isTaskSucCountEnough = false;

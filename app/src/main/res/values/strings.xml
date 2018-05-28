@@ -2,11 +2,10 @@
 <resources>
 
     <string name="app_name">EspTouch</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="tvApSsidTitle">SSID: </string>
-    <string name="tvPasswordTitle">Password: </string>
-    <string name="switchIsSsidHiddenTitle">SSID is Hidden</string>
-    <string name="spinnerTaskResultCountTitle">Task result count</string>
-    <string name="btnConfirmTitle">Confirm</string>
+    <string name="ssid_title">SSID: </string>
+    <string name="bssid_title">BSSID: </string>
+    <string name="password_title">Password: </string>
+    <string name="device_count_title">Device count: </string>
+    <string name="confirm">Confirm</string>
+    <string name="wifi_5g_message">Device dose not support 5G Wifi</string>
 </resources>

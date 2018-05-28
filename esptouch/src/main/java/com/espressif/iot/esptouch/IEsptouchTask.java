@@ -3,7 +3,7 @@ package com.espressif.iot.esptouch;
 import java.util.List;
 
 public interface IEsptouchTask {
-    String ESPTOUCH_VERSION = "v0.3.6.1";
+    String ESPTOUCH_VERSION = "v0.3.6.2";
 
     /**
      * set the esptouch listener, when one device is connected to the Ap, it will be called back
