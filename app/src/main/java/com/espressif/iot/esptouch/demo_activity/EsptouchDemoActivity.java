@@ -252,8 +252,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
             int taskResultCount;
             synchronized (mLock) {
                 // !!!NOTICE
-                byte[] apSsid = params[0]; //new byte[params[0].length - 1];
-                System.arraycopy(params[0], 0, apSsid, 0, params[0].length - 1);
+                byte[] apSsid = params[0];
                 byte[] apBssid = params[1];
                 byte[] apPassword = params[2];
                 byte[] deviceCountData = params[3];
