@@ -1,8 +1,6 @@
 package com.espressif.iot.esptouch.demo_activity;
 
-import android.content.Context;
 import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,6 +19,8 @@ public final class EspUtils {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         return null;
