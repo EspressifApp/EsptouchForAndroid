@@ -147,7 +147,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
     @Override
     public void onClick(View v) {
         if (v == mConfirmBtn) {
-            if ((Boolean) mConfirmBtn.getTag()) {
+            if (!(Boolean) mConfirmBtn.getTag()) {
                 Toast.makeText(this, R.string.wifi_5g_message, Toast.LENGTH_SHORT).show();
                 return;
             }
