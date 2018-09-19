@@ -6,6 +6,8 @@
     <string name="bssid_title">BSSID: </string>
     <string name="password_title">Password: </string>
     <string name="device_count_title">Device count: </string>
+    <string name="package_broadcast">Broadcast</string>
+    <string name="package_multicast">Multicast</string>
     <string name="confirm">Confirm</string>
     <string name="wifi_5g_message">Device dose not support 5G Wifi</string>
 </resources>

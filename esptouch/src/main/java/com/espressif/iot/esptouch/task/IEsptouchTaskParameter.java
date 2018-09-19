@@ -146,4 +146,11 @@ public interface IEsptouchTaskParameter {
      * @param expectTaskResultCount the count of expect task results
      */
     void setExpectTaskResultCount(int expectTaskResultCount);
+
+    /**
+     * Set broadcast or multicast
+     *
+     * @param broadcast true is broadcast, false is multicast
+     */
+    void setBroadcast(boolean broadcast);
 }

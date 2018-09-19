@@ -3,7 +3,7 @@ package com.espressif.iot.esptouch;
 import java.util.List;
 
 public interface IEsptouchTask {
-    String ESPTOUCH_VERSION = "v0.3.6.2";
+    String ESPTOUCH_VERSION = "v0.3.7.0";
 
     /**
      * set the esptouch listener, when one device is connected to the Ap, it will be called back
@@ -53,4 +53,11 @@ public interface IEsptouchTask {
      * @return whether the task is cancelled by user
      */
     boolean isCancelled();
+
+    /**
+     * Set broadcast or multicast when post config info
+     *
+     * @param broadcast true is broadcast, false is multicast
+     */
+    void setPackageBroadcast(boolean broadcast);
 }

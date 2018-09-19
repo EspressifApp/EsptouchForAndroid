@@ -1,5 +1,9 @@
 # Update Log
 
+## v0.3.7.0
+- Request location permission if Android SDK greater than 27
+- Add option to select Broadcast or Multicast
+
 ## v0.3.6.2
 - Add new constructor for EsptouchTask
 ```

@@ -8,8 +8,8 @@ android {
         applicationId "com.espressif.iot_esptouch_demo"
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 18
-        versionName "0.3.6.2"
+        versionCode 20
+        versionName "0.3.7.0"
     }
 
     buildTypes {

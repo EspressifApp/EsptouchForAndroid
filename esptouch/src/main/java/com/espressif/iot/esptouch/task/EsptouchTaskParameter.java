@@ -1,5 +1,7 @@
 package com.espressif.iot.esptouch.task;
 
+import com.espressif.iot.esptouch.EsptouchTask;
+
 public class EsptouchTaskParameter implements IEsptouchTaskParameter {
 
     private static int _datagramCount = 0;
@@ -18,6 +20,7 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
     private int mWaitUdpSendingMillisecond;
     private int mThresholdSucBroadcastCount;
     private int mExpectTaskResultCount;
+    private boolean mBroadcast = true;
 
     public EsptouchTaskParameter() {
         mIntervalGuideCodeMillisecond = 8;
@@ -100,8 +103,12 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
     // target hostname is : 234.1.1.1, 234.2.2.2, 234.3.3.3 to 234.100.100.100
     @Override
     public String getTargetHostname() {
-        int count = __getNextDatagramCount();
-        return "234." + count + "." + count + "." + count;
+        if (mBroadcast) {
+            return "255.255.255.255";
+        } else {
+            int count = __getNextDatagramCount();
+            return "234." + count + "." + count + "." + count;
+        }
     }
 
     @Override
@@ -153,4 +160,8 @@ public class EsptouchTaskParameter implements IEsptouchTaskParameter {
         this.mExpectTaskResultCount = expectTaskResultCount;
     }
 
+    @Override
+    public void setBroadcast(boolean broadcast) {
+        mBroadcast = broadcast;
+    }
 }
