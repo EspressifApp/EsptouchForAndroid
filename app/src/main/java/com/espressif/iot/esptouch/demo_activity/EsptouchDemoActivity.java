@@ -10,6 +10,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -73,10 +74,23 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
                 return;
             }
 
+            WifiManager wifiManager = (WifiManager) context.getApplicationContext()
+                    .getSystemService(WIFI_SERVICE);
+            assert wifiManager != null;
+
             switch (action) {
                 case WifiManager.NETWORK_STATE_CHANGED_ACTION:
-                    WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+                    WifiInfo wifiInfo;
+                    if (intent.hasExtra(WifiManager.EXTRA_WIFI_INFO)) {
+                        wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+                    } else {
+                        wifiInfo = wifiManager.getConnectionInfo();
+                    }
                     onWifiChanged(wifiInfo);
+                    break;
+                case LocationManager.PROVIDERS_CHANGED_ACTION:
+                    onWifiChanged(wifiManager.getConnectionInfo());
+                    onLocationChanged();
                     break;
             }
         }
@@ -103,7 +117,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         TextView versionTV = findViewById(R.id.version_tv);
         versionTV.setText(IEsptouchTask.ESPTOUCH_VERSION);
 
-        if (Build.VERSION.SDK_INT >= 28) {
+        if (isSDKAtLeastP()) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
                 String[] permissions = {
@@ -145,8 +159,15 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         }
     }
 
+    private boolean isSDKAtLeastP() {
+        return Build.VERSION.SDK_INT >= 28;
+    }
+
     private void registerBroadcastReceiver() {
         IntentFilter filter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        if (isSDKAtLeastP()) {
+            filter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
+        }
         registerReceiver(mReceiver, filter);
         mReceiverRegistered = true;
     }
@@ -189,6 +210,22 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
                     mMessageTV.setText(R.string.wifi_5g_message);
                 }
             }
+        }
+    }
+
+    private void onLocationChanged() {
+        boolean enable;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager == null) {
+            enable = false;
+        } else {
+            boolean locationGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean locationNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            enable = locationGPS || locationNetwork;
+        }
+
+        if (!enable) {
+            mMessageTV.setText(R.string.location_disable_message);
         }
     }
 
