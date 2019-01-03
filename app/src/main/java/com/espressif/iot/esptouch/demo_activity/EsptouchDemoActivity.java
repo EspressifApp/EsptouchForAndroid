@@ -115,7 +115,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         mConfirmBtn.setOnClickListener(this);
 
         TextView versionTV = findViewById(R.id.version_tv);
-        versionTV.setText(IEsptouchTask.ESPTOUCH_VERSION);
+        versionTV.setText(getString(R.string.version, IEsptouchTask.ESPTOUCH_VERSION));
 
         if (isSDKAtLeastP()) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -173,10 +173,11 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
     }
 
     private void onWifiChanged(WifiInfo info) {
-        if (info == null) {
+        boolean connected = info != null && info.getNetworkId() != -1;
+        if (!connected) {
             mApSsidTV.setText("");
             mApSsidTV.setTag(null);
-            mApBssidTV.setTag("");
+            mApBssidTV.setText("");
             mMessageTV.setText("");
             mConfirmBtn.setEnabled(false);
 

@@ -30,7 +30,7 @@ public class UDPSocketClient {
             this.mIsClosed = false;
         } catch (SocketException e) {
             if (__IEsptouchTask.DEBUG) {
-                Log.e(TAG, "SocketException");
+                Log.w(TAG, "SocketException");
             }
             e.printStackTrace();
         }
@@ -85,7 +85,7 @@ public class UDPSocketClient {
                          String targetHostName, int targetPort, long interval) {
         if ((data == null) || (data.length <= 0)) {
             if (__IEsptouchTask.DEBUG) {
-                Log.e(TAG, "sendData(): data == null or length <= 0");
+                Log.w(TAG, "sendData(): data == null or length <= 0");
             }
             return;
         }
@@ -100,14 +100,14 @@ public class UDPSocketClient {
                 this.mSocket.send(localDatagramPacket);
             } catch (UnknownHostException e) {
                 if (__IEsptouchTask.DEBUG) {
-                    Log.e(TAG, "sendData(): UnknownHostException");
+                    Log.w(TAG, "sendData(): UnknownHostException");
                 }
                 e.printStackTrace();
                 mIsStop = true;
                 break;
             } catch (IOException e) {
                 if (__IEsptouchTask.DEBUG) {
-                    Log.e(TAG, "sendData(): IOException, but just ignore it");
+                    Log.w(TAG, "sendData(): IOException, but just ignore it");
                 }
                 // for the Ap will make some troubles when the phone send too many UDP packets,
                 // but we don't expect the UDP packet received by others, so just ignore it
@@ -117,7 +117,7 @@ public class UDPSocketClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 if (__IEsptouchTask.DEBUG) {
-                    Log.e(TAG, "sendData is Interrupted");
+                    Log.w(TAG, "sendData is Interrupted");
                 }
                 mIsStop = true;
                 break;

@@ -37,7 +37,7 @@ public class UDPSocketServer {
             this.mServerSocket.bind(new InetSocketAddress(port));
             this.mServerSocket.setSoTimeout(socketTimeout);
         } catch (IOException e) {
-            Log.e(TAG, "IOException");
+            Log.w(TAG, "IOException");
             e.printStackTrace();
         }
         this.mIsClosed = false;
@@ -113,9 +113,9 @@ public class UDPSocketServer {
             byte[] recDatas = Arrays.copyOf(mReceivePacket.getData(), mReceivePacket.getLength());
             Log.d(TAG, "received len : " + recDatas.length);
             for (int i = 0; i < recDatas.length; i++) {
-                Log.e(TAG, "recDatas[" + i + "]:" + recDatas[i]);
+                Log.w(TAG, "recDatas[" + i + "]:" + recDatas[i]);
             }
-            Log.e(TAG, "receiveSpecLenBytes: " + new String(recDatas));
+            Log.w(TAG, "receiveSpecLenBytes: " + new String(recDatas));
             if (recDatas.length != len) {
                 Log.w(TAG,
                         "received len is different from specific len, return null");
@@ -135,7 +135,7 @@ public class UDPSocketServer {
 
     public synchronized void close() {
         if (!this.mIsClosed) {
-            Log.e(TAG, "mServerSocket is closed");
+            Log.w(TAG, "mServerSocket is closed");
             mServerSocket.close();
             releaseLock();
             this.mIsClosed = true;
