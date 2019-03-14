@@ -13,8 +13,6 @@ import java.util.Arrays;
 
 public class UDPSocketServer {
     private static final String TAG = "UDPSocketServer";
-    private final byte[] buffer;
-    private DatagramPacket mReceivePacket;
     private DatagramSocket mServerSocket;
     private Context mContext;
     private WifiManager.MulticastLock mLock;
@@ -29,8 +27,6 @@ public class UDPSocketServer {
      */
     public UDPSocketServer(int port, int socketTimeout, Context context) {
         this.mContext = context;
-        this.buffer = new byte[64];
-        this.mReceivePacket = new DatagramPacket(buffer, 64);
         try {
             this.mServerSocket = new DatagramSocket(null);
             this.mServerSocket.setReuseAddress(true);
@@ -89,13 +85,14 @@ public class UDPSocketServer {
         Log.d(TAG, "receiveOneByte() entrance");
         try {
             acquireLock();
-            mServerSocket.receive(mReceivePacket);
-            Log.d(TAG, "receive: " + (mReceivePacket.getData()[0]));
-            return mReceivePacket.getData()[0];
-        } catch (IOException e) {
+            DatagramPacket packet = new DatagramPacket(new byte[1], 1);
+            mServerSocket.receive(packet);
+            Log.d(TAG, "receive: " + (packet.getData()[0]));
+            return packet.getData()[0];
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return Byte.MIN_VALUE;
+        return -1;
     }
 
     /**
@@ -109,8 +106,9 @@ public class UDPSocketServer {
         Log.d(TAG, "receiveSpecLenBytes() entrance: len = " + len);
         try {
             acquireLock();
-            mServerSocket.receive(mReceivePacket);
-            byte[] recDatas = Arrays.copyOf(mReceivePacket.getData(), mReceivePacket.getLength());
+            DatagramPacket packet = new DatagramPacket(new byte[64], 64);
+            mServerSocket.receive(packet);
+            byte[] recDatas = Arrays.copyOf(packet.getData(), packet.getLength());
             Log.d(TAG, "received len : " + recDatas.length);
             for (int i = 0; i < recDatas.length; i++) {
                 Log.w(TAG, "recDatas[" + i + "]:" + recDatas[i]);
@@ -122,7 +120,7 @@ public class UDPSocketServer {
                 return null;
             }
             return recDatas;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

@@ -103,7 +103,8 @@ public class __EsptouchTask implements __IEsptouchTask {
             // only add the result who isn't in the mEsptouchResultList
             if (!isExist) {
                 if (__IEsptouchTask.DEBUG) {
-                    Log.d(TAG, "__putEsptouchResult(): put one more result");
+                    Log.d(TAG, "__putEsptouchResult(): put one more result " +
+                            "bssid = " + bssid + " , address = " + inetAddress);
                 }
                 final IEsptouchResult esptouchResult = new EsptouchResult(isSuc,
                         bssid, inetAddress);
@@ -161,7 +162,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 //                        + mApPassword);
                 byte expectOneByte = (byte) (mApSsid.length + mApPassword.length + 9);
                 if (__IEsptouchTask.DEBUG) {
-                    Log.i(TAG, "expectOneByte: " + (0 + expectOneByte));
+                    Log.i(TAG, "expectOneByte: " + expectOneByte);
                 }
                 byte receiveOneByte = -1;
                 byte[] receiveBytes = null;
