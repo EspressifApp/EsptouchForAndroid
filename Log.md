@@ -1,4 +1,6 @@
 # Update Log
+## v0.3.7.1
+- Check location(GPS) state if no wifi info on Android 9
 
 ## v0.3.7.0
 - Request location permission if Android SDK greater than 27
