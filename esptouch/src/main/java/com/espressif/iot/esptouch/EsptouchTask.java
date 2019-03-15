@@ -27,6 +27,10 @@ public class EsptouchTask implements IEsptouchTask {
         this(apSsid, apBssid, apPassword, null, context);
     }
 
+    public EsptouchTask(byte[] apSsid, byte[] apBssid, byte[] apPassword, Context context) {
+        this(apSsid, apBssid, apPassword, null, context);
+    }
+
     /**
      * Constructor of EsptouchTask
      *
@@ -50,10 +54,6 @@ public class EsptouchTask implements IEsptouchTask {
         TouchData bssid = new TouchData(EspNetUtil.parseBssid2bytes(apBssid));
         TouchData password = new TouchData(apPassword);
         init(context, ssid, bssid, password, espAES);
-    }
-
-    public EsptouchTask(byte[] apSsid, byte[] apBssid, byte[] apPassword, Context context) {
-        this(apSsid, apBssid, apPassword, null, context);
     }
 
     private EsptouchTask(byte[] apSsid, byte[] apBssid, byte[] apPassword, EspAES espAES, Context context) {
