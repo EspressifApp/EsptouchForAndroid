@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">EspTouch</string>
+    <string name="menu_item_about">About App</string>
+    <string name="about_app_version">App Version: %s</string>
+    <string name="about_esptouch_version">EspTouch Version: %s</string>
     <string name="ssid_title">SSID: </string>
     <string name="bssid_title">BSSID: </string>
     <string name="password_title">Password: </string>
@@ -12,5 +14,10 @@
     <string name="wifi_5g_message">Device don\'t support 5G Wifi, please make sure the currently connected Wifi is 2.4G</string>
     <string name="location_disable_message">Location(GPS) is disable</string>
     <string name="no_wifi_connection">No Wifi connection</string>
+    <string name="configuring_message">Esptouch is configuring, please wait for a moment…</string>
     <string name="configure_wifi_change_message">Wifi disconnected or changed</string>
+    <string name="configure_result_failed">EspTouch failed</string>
+    <string name="configure_result_failed_port">Create Esptouch task failed, the EspTouch port could be used by other thread</string>
+    <string name="configure_result_success">EspTouch 完成</string>
+    <string name="configure_result_success_item">BSSID = %1$s, InetAddress = %2$s</string>
 </resources>

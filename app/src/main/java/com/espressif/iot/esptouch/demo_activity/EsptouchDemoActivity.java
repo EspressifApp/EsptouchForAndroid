@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.wifi.WifiInfo;
@@ -20,6 +21,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -38,12 +41,15 @@ import com.espressif.iot.esptouch.util.EspNetUtil;
 import com.espressif.iot_esptouch_demo.R;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EsptouchDemoActivity extends AppCompatActivity implements OnClickListener {
     private static final String TAG = "EsptouchDemoActivity";
 
     private static final int REQUEST_PERMISSION = 0x01;
+
+    private static final int MENU_ITEM_ABOUT = 0;
 
     private TextView mApSsidTV;
     private TextView mApBssidTV;
@@ -111,9 +117,6 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         mConfirmBtn.setEnabled(false);
         mConfirmBtn.setOnClickListener(this);
 
-        TextView versionTV = findViewById(R.id.version_tv);
-        versionTV.setText(IEsptouchTask.ESPTOUCH_VERSION);
-
         if (isSDKAtLeastP()) {
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -154,6 +157,47 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         if (mReceiverRegistered) {
             unregisterReceiver(mReceiver);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.NONE, MENU_ITEM_ABOUT, 0, R.string.menu_item_about)
+                .setIcon(R.drawable.ic_info_outline_white_24dp)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case MENU_ITEM_ABOUT:
+                showAboutDialog();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showAboutDialog() {
+        String esptouchVer = IEsptouchTask.ESPTOUCH_VERSION;
+        String appVer = "";
+        PackageManager packageManager = getPackageManager();
+        try {
+            PackageInfo info = packageManager.getPackageInfo(getPackageName(), 0);
+            appVer = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        CharSequence[] items = new CharSequence[] {
+                getString(R.string.about_app_version, appVer),
+                getString(R.string.about_esptouch_version, esptouchVer),
+        };
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.menu_item_about)
+                .setIcon(R.drawable.ic_info_outline_black_24dp)
+                .setItems(items, null)
+                .show();
     }
 
     private boolean isSDKAtLeastP() {
@@ -300,7 +344,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         protected void onPreExecute() {
             Activity activity = mActivity.get();
             mProgressDialog = new ProgressDialog(activity);
-            mProgressDialog.setMessage("Esptouch is configuring, please wait for a moment...");
+            mProgressDialog.setMessage(activity.getString(R.string.configuring_message));
             mProgressDialog.setCanceledOnTouchOutside(false);
             mProgressDialog.setOnCancelListener(new OnCancelListener() {
                 @Override
@@ -355,49 +399,42 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         protected void onPostExecute(List<IEsptouchResult> result) {
             EsptouchDemoActivity activity = mActivity.get();
             mProgressDialog.dismiss();
-            mResultDialog = new AlertDialog.Builder(activity)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .create();
-            mResultDialog.setCanceledOnTouchOutside(false);
             if (result == null) {
-                mResultDialog.setMessage("Create Esptouch task failed, the esptouch port could be used by other thread");
-                mResultDialog.show();
+                mResultDialog = new AlertDialog.Builder(activity)
+                        .setMessage(R.string.configure_result_failed_port)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+                mResultDialog.setCanceledOnTouchOutside(false);
                 return;
             }
 
             IEsptouchResult firstResult = result.get(0);
             // check whether the task is cancelled and no results received
             if (!firstResult.isCancelled()) {
-                int count = 0;
-                // max results to be displayed, if it is more than maxDisplayCount,
-                // just show the count of redundant ones
-                final int maxDisplayCount = 5;
                 // the task received some results including cancelled while
                 // executing before receiving enough results
                 if (firstResult.isSuc()) {
-                    StringBuilder sb = new StringBuilder();
-                    for (IEsptouchResult resultInList : result) {
-                        sb.append("Esptouch success, bssid = ")
-                                .append(resultInList.getBssid())
-                                .append(", InetAddress = ")
-                                .append(resultInList.getInetAddress().getHostAddress())
-                                .append("\n");
-                        count++;
-                        if (count >= maxDisplayCount) {
-                            break;
-                        }
+                    ArrayList<CharSequence> resultMsgList = new ArrayList<>(result.size());
+                    for (IEsptouchResult touchResult : result) {
+                        String message = activity.getString(R.string.configure_result_success_item,
+                                touchResult.getBssid(), touchResult.getInetAddress().getHostAddress());
+                        resultMsgList.add(message);
                     }
-                    if (count < result.size()) {
-                        sb.append("\nthere's ")
-                                .append(result.size() - count)
-                                .append(" more result(s) without showing\n");
-                    }
-                    mResultDialog.setMessage(sb.toString());
-                } else {
-                    mResultDialog.setMessage("Esptouch fail");
-                }
 
-                mResultDialog.show();
+                    CharSequence[] items = new CharSequence[resultMsgList.size()];
+                    mResultDialog = new AlertDialog.Builder(activity)
+                            .setTitle(R.string.configure_result_success)
+                            .setItems(resultMsgList.toArray(items), null)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                    mResultDialog.setCanceledOnTouchOutside(false);
+                } else {
+                    mResultDialog = new AlertDialog.Builder(activity)
+                            .setMessage(R.string.configure_result_failed)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                    mResultDialog.setCanceledOnTouchOutside(false);
+                }
             }
 
             activity.mTask = null;

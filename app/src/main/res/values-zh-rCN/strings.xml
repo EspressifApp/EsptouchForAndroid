@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EspTouch</string>
+    <string name="menu_item_about">关于App</string>
+    <string name="about_app_version">App版本: %s</string>
+    <string name="about_esptouch_version">EspTouch版本: %s</string>
+    <string name="ssid_title">SSID: </string>
+    <string name="bssid_title">BSSID: </string>
+    <string name="password_title">密码: </string>
+    <string name="device_count_title">设备数量: </string>
+    <string name="package_broadcast">广播</string>
+    <string name="package_multicast">组播</string>
+    <string name="confirm">确认</string>
+    <string name="wifi_5g_message">设备不支持 5G Wifi, 请确认当前连接的 Wifi 为 2.4G</string>
+    <string name="location_disable_message">位置信息(GPS)不可用</string>
+    <string name="no_wifi_connection">没有 Wifi 连接</string>
+    <string name="configure_wifi_change_message">Wifi 已断开或发生了变化</string>
+    <string name="configuring_message">Esptouch 正在执行配网, 请稍等片刻…</string>
+    <string name="configure_result_failed">EspTouch 配网失败</string>
+    <string name="configure_result_failed_port">建立 Esptouch 任务失败, 端口可能被其他程序占用</string>
+    <string name="configure_result_success">EspTouch 完成</string>
+    <string name="configure_result_success_item">BSSID = %1$s, 地址 = %2$s</string>
+</resources>
