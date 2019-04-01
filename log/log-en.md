@@ -1,5 +1,8 @@
 # Update Log
-## v0.3.7.1
+
+## v1.0.0
+EspTouch v0.3.7.1
+- Add Chinese
 - Check location(GPS) state if no wifi info on Android 9
 - Hide EsptouchTask's aes constructor, device doesn't support currently
 

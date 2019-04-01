@@ -5,8 +5,8 @@ This APP is used to configure ESP devices to connect target AP, the devices need
 - See [Licence](ESPRESSIF_MIT_LICENSE_V1.LICENSE)
 
 ## Version Log
-- See [Log](Log.md)
+- See [Log](log)
 
-## Jar Release
-- See [libs](releases/libs)  
-    - If you don't want use [esptouch](esptouch) module, copy the jar to your own project.
+## Releases
+- See [releases](https://github.com/EspressifApp/EspRelease/tree/master/EspTouch), contain APK and Jar
+- For developer, if you don't want use [esptouch](esptouch) module, download the jar into your own project.
