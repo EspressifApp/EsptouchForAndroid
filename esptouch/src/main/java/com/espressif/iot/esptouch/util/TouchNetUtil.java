@@ -4,10 +4,12 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class EspNetUtil {
+public class TouchNetUtil {
 
     /**
      * get the local ip address by Android System
@@ -88,5 +90,34 @@ public class EspNetUtil {
             result[i] = (byte) Integer.parseInt(bssidSplits[i], 16);
         }
         return result;
+    }
+
+    public static byte[] getOriginalSsidBytes(WifiInfo info) {
+        try {
+            Method method = info.getClass().getMethod("getWifiSsid");
+            if (method == null) {
+                return null;
+            }
+            method.setAccessible(true);
+            Object wifiSsid = method.invoke(info);
+            if (wifiSsid == null) {
+                return null;
+            }
+            method = wifiSsid.getClass().getMethod("getOctets");
+            if (method == null) {
+                return null;
+            }
+            method.setAccessible(true);
+            return (byte[]) method.invoke(wifiSsid);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

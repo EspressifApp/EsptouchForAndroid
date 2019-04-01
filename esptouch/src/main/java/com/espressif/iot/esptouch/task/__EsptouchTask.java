@@ -14,7 +14,7 @@ import com.espressif.iot.esptouch.udp.UDPSocketClient;
 import com.espressif.iot.esptouch.udp.UDPSocketServer;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.EspAES;
-import com.espressif.iot.esptouch.util.EspNetUtil;
+import com.espressif.iot.esptouch.util.TouchNetUtil;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -203,7 +203,7 @@ public class __EsptouchTask implements __IEsptouchTask {
                                         receiveBytes,
                                         mParameter.getEsptouchResultOneLen(),
                                         mParameter.getEsptouchResultMacLen());
-                                InetAddress inetAddress = EspNetUtil
+                                InetAddress inetAddress = TouchNetUtil
                                         .parseInetAddr(
                                                 receiveBytes,
                                                 mParameter
@@ -311,7 +311,7 @@ public class __EsptouchTask implements __IEsptouchTask {
             throw new RuntimeException(
                     "Don't call the esptouch Task at Main(UI) thread directly.");
         }
-        InetAddress localInetAddress = EspNetUtil.getLocalInetAddress(mContext);
+        InetAddress localInetAddress = TouchNetUtil.getLocalInetAddress(mContext);
         if (__IEsptouchTask.DEBUG) {
             Log.i(TAG, "localInetAddress: " + localInetAddress);
         }

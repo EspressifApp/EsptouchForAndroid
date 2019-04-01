@@ -7,7 +7,7 @@ import com.espressif.iot.esptouch.protocol.TouchData;
 import com.espressif.iot.esptouch.task.EsptouchTaskParameter;
 import com.espressif.iot.esptouch.task.__EsptouchTask;
 import com.espressif.iot.esptouch.util.EspAES;
-import com.espressif.iot.esptouch.util.EspNetUtil;
+import com.espressif.iot.esptouch.util.TouchNetUtil;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class EsptouchTask implements IEsptouchTask {
             apPassword = "";
         }
         TouchData ssid = new TouchData(apSsid);
-        TouchData bssid = new TouchData(EspNetUtil.parseBssid2bytes(apBssid));
+        TouchData bssid = new TouchData(TouchNetUtil.parseBssid2bytes(apBssid));
         TouchData password = new TouchData(apPassword);
         init(context, ssid, bssid, password, espAES);
     }

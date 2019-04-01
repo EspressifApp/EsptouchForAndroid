@@ -37,7 +37,7 @@ import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.task.__IEsptouchTask;
 import com.espressif.iot.esptouch.util.ByteUtil;
-import com.espressif.iot.esptouch.util.EspNetUtil;
+import com.espressif.iot.esptouch.util.TouchNetUtil;
 import com.espressif.iot_esptouch_demo.R;
 
 import java.lang.ref.WeakReference;
@@ -243,7 +243,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
             }
             mApSsidTV.setText(ssid);
             mApSsidTV.setTag(ByteUtil.getBytesByString(ssid));
-            byte[] ssidOriginalData = EspUtils.getOriginalSsidBytes(info);
+            byte[] ssidOriginalData = TouchNetUtil.getOriginalSsidBytes(info);
             mApSsidTV.setTag(ssidOriginalData);
 
             String bssid = info.getBSSID();
@@ -283,7 +283,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
             byte[] ssid = mApSsidTV.getTag() == null ? ByteUtil.getBytesByString(mApSsidTV.getText().toString())
                     : (byte[]) mApSsidTV.getTag();
             byte[] password = ByteUtil.getBytesByString(mApPasswordET.getText().toString());
-            byte [] bssid = EspNetUtil.parseBssid2bytes(mApBssidTV.getText().toString());
+            byte [] bssid = TouchNetUtil.parseBssid2bytes(mApBssidTV.getText().toString());
             byte[] deviceCount = mDeviceCountET.getText().toString().getBytes();
             byte[] broadcast = {(byte) (mPackageModeGroup.getCheckedRadioButtonId() == R.id.package_broadcast
                     ? 1 : 0)};
