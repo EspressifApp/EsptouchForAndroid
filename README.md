@@ -2,7 +2,7 @@
 This APP is used to configure ESP devices to connect target AP, the devices need run smart config.
 
 ## Licence
-- See [Licence](ESPRESSIF_MIT_LICENSE_V1.LICENSE)
+- See [Licence](ESPRESSIF_MIT_LICENSE)
 
 ## Version Log
 - See [Log](log)
