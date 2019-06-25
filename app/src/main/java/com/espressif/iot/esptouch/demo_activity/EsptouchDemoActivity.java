@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
@@ -17,9 +16,6 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,11 +27,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.location.LocationManagerCompat;
+
 import com.espressif.iot.esptouch.EsptouchTask;
-import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.IEsptouchTask;
-import com.espressif.iot.esptouch.task.__IEsptouchTask;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.TouchNetUtil;
 import com.espressif.iot_esptouch_demo.R;
@@ -45,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EsptouchDemoActivity extends AppCompatActivity implements OnClickListener {
-    private static final String TAG = "EsptouchDemoActivity";
+    private static final String TAG = EsptouchDemoActivity.class.getSimpleName();
 
     private static final int REQUEST_PERMISSION = 0x01;
 
@@ -58,14 +57,6 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
     private RadioGroup mPackageModeGroup;
     private TextView mMessageTV;
     private Button mConfirmBtn;
-
-    private IEsptouchListener myListener = new IEsptouchListener() {
-
-        @Override
-        public void onEsptouchResultAdded(final IEsptouchResult result) {
-            onEsptoucResultAddedPerform(result);
-        }
-    };
 
     private EsptouchAsyncTask4 mTask;
 
@@ -84,14 +75,6 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
 
             switch (action) {
                 case WifiManager.NETWORK_STATE_CHANGED_ACTION:
-                    WifiInfo wifiInfo;
-                    if (intent.hasExtra(WifiManager.EXTRA_WIFI_INFO)) {
-                        wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
-                    } else {
-                        wifiInfo = wifiManager.getConnectionInfo();
-                    }
-                    onWifiChanged(wifiInfo);
-                    break;
                 case LocationManager.PROVIDERS_CHANGED_ACTION:
                     onWifiChanged(wifiManager.getConnectionInfo());
                     break;
@@ -120,10 +103,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         if (isSDKAtLeastP()) {
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
-                String[] permissions = {
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                };
-
+                String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
                 requestPermissions(permissions, REQUEST_PERMISSION);
             } else {
                 registerBroadcastReceiver();
@@ -136,17 +116,16 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case REQUEST_PERMISSION:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (!mDestroyed) {
-                        registerBroadcastReceiver();
-                    }
+        if (requestCode == REQUEST_PERMISSION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (!mDestroyed) {
+                    registerBroadcastReceiver();
                 }
-                break;
+            }
+            return;
         }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -169,10 +148,9 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case MENU_ITEM_ABOUT:
-                showAboutDialog();
-                return true;
+        if (item.getItemId() == MENU_ITEM_ABOUT) {
+            showAboutDialog();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -189,7 +167,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
             e.printStackTrace();
         }
 
-        CharSequence[] items = new CharSequence[] {
+        CharSequence[] items = new CharSequence[]{
                 getString(R.string.about_app_version, appVer),
                 getString(R.string.about_esptouch_version, esptouchVer),
         };
@@ -264,14 +242,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
     private void checkLocation() {
         boolean enable;
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager == null) {
-            enable = false;
-        } else {
-            boolean locationGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            boolean locationNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            enable = locationGPS || locationNetwork;
-        }
-
+        enable = locationManager != null && LocationManagerCompat.isLocationEnabled(locationManager);
         if (!enable) {
             mMessageTV.setText(R.string.location_disable_message);
         }
@@ -283,12 +254,12 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
             byte[] ssid = mApSsidTV.getTag() == null ? ByteUtil.getBytesByString(mApSsidTV.getText().toString())
                     : (byte[]) mApSsidTV.getTag();
             byte[] password = ByteUtil.getBytesByString(mApPasswordET.getText().toString());
-            byte [] bssid = TouchNetUtil.parseBssid2bytes(mApBssidTV.getText().toString());
+            byte[] bssid = TouchNetUtil.parseBssid2bytes(mApBssidTV.getText().toString());
             byte[] deviceCount = mDeviceCountET.getText().toString().getBytes();
             byte[] broadcast = {(byte) (mPackageModeGroup.getCheckedRadioButtonId() == R.id.package_broadcast
                     ? 1 : 0)};
 
-            if(mTask != null) {
+            if (mTask != null) {
                 mTask.cancelEsptouch();
             }
             mTask = new EsptouchAsyncTask4(this);
@@ -296,28 +267,9 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         }
     }
 
-    private void onEsptoucResultAddedPerform(final IEsptouchResult result) {
-        runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                String text = result.getBssid() + " is connected to the wifi";
-                Toast.makeText(EsptouchDemoActivity.this, text,
-                        Toast.LENGTH_SHORT).show();
-            }
-
-        });
-    }
-
-    private static class EsptouchAsyncTask4 extends AsyncTask<byte[], Void, List<IEsptouchResult>> {
+    private static class EsptouchAsyncTask4 extends AsyncTask<byte[], IEsptouchResult, List<IEsptouchResult>> {
         private WeakReference<EsptouchDemoActivity> mActivity;
 
-        // without the lock, if the user tap confirm and cancel quickly enough,
-        // the bug will arise. the reason is follows:
-        // 0. task is starting created, but not finished
-        // 1. the task is cancel for the task hasn't been created, it do nothing
-        // 2. task is created
-        // 3. Oops, the task should be cancelled, but it is running
         private final Object mLock = new Object();
         private ProgressDialog mProgressDialog;
         private AlertDialog mResultDialog;
@@ -346,34 +298,33 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
             mProgressDialog = new ProgressDialog(activity);
             mProgressDialog.setMessage(activity.getString(R.string.configuring_message));
             mProgressDialog.setCanceledOnTouchOutside(false);
-            mProgressDialog.setOnCancelListener(new OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    synchronized (mLock) {
-                        if (__IEsptouchTask.DEBUG) {
-                            Log.i(TAG, "progress dialog back pressed canceled");
-                        }
-                        if (mEsptouchTask != null) {
-                            mEsptouchTask.interrupt();
-                        }
+            mProgressDialog.setOnCancelListener(dialog -> {
+                synchronized (mLock) {
+                    if (mEsptouchTask != null) {
+                        mEsptouchTask.interrupt();
                     }
                 }
             });
             mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getText(android.R.string.cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            synchronized (mLock) {
-                                if (__IEsptouchTask.DEBUG) {
-                                    Log.i(TAG, "progress dialog cancel button canceled");
-                                }
-                                if (mEsptouchTask != null) {
-                                    mEsptouchTask.interrupt();
-                                }
+                    (dialog, which) -> {
+                        synchronized (mLock) {
+                            if (mEsptouchTask != null) {
+                                mEsptouchTask.interrupt();
                             }
                         }
                     });
             mProgressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(IEsptouchResult... values) {
+            Context context = mActivity.get();
+            if (context != null) {
+                IEsptouchResult result = values[0];
+                Log.i(TAG, "EspTouchResult: " + result);
+                String text = result.getBssid() + " is connected to the wifi";
+                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
@@ -390,7 +341,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
                 Context context = activity.getApplicationContext();
                 mEsptouchTask = new EsptouchTask(apSsid, apBssid, apPassword, context);
                 mEsptouchTask.setPackageBroadcast(broadcastData[0] == 1);
-                mEsptouchTask.setEsptouchListener(activity.myListener);
+                mEsptouchTask.setEsptouchListener(this::publishProgress);
             }
             return mEsptouchTask.executeForResults(taskResultCount);
         }
@@ -398,6 +349,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         @Override
         protected void onPostExecute(List<IEsptouchResult> result) {
             EsptouchDemoActivity activity = mActivity.get();
+            activity.mTask = null;
             mProgressDialog.dismiss();
             if (result == null) {
                 mResultDialog = new AlertDialog.Builder(activity)
@@ -408,36 +360,36 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
                 return;
             }
 
-            IEsptouchResult firstResult = result.get(0);
             // check whether the task is cancelled and no results received
-            if (!firstResult.isCancelled()) {
-                // the task received some results including cancelled while
-                // executing before receiving enough results
-                if (firstResult.isSuc()) {
-                    ArrayList<CharSequence> resultMsgList = new ArrayList<>(result.size());
-                    for (IEsptouchResult touchResult : result) {
-                        String message = activity.getString(R.string.configure_result_success_item,
-                                touchResult.getBssid(), touchResult.getInetAddress().getHostAddress());
-                        resultMsgList.add(message);
-                    }
+            IEsptouchResult firstResult = result.get(0);
+            if (firstResult.isCancelled()) {
+                return;
+            }
+            // the task received some results including cancelled while
+            // executing before receiving enough results
 
-                    CharSequence[] items = new CharSequence[resultMsgList.size()];
-                    mResultDialog = new AlertDialog.Builder(activity)
-                            .setTitle(R.string.configure_result_success)
-                            .setItems(resultMsgList.toArray(items), null)
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                    mResultDialog.setCanceledOnTouchOutside(false);
-                } else {
-                    mResultDialog = new AlertDialog.Builder(activity)
-                            .setMessage(R.string.configure_result_failed)
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                    mResultDialog.setCanceledOnTouchOutside(false);
-                }
+            if (!firstResult.isSuc()) {
+                mResultDialog = new AlertDialog.Builder(activity)
+                        .setMessage(R.string.configure_result_failed)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+                mResultDialog.setCanceledOnTouchOutside(false);
+                return;
             }
 
-            activity.mTask = null;
+            ArrayList<CharSequence> resultMsgList = new ArrayList<>(result.size());
+            for (IEsptouchResult touchResult : result) {
+                String message = activity.getString(R.string.configure_result_success_item,
+                        touchResult.getBssid(), touchResult.getInetAddress().getHostAddress());
+                resultMsgList.add(message);
+            }
+            CharSequence[] items = new CharSequence[resultMsgList.size()];
+            mResultDialog = new AlertDialog.Builder(activity)
+                    .setTitle(R.string.configure_result_success)
+                    .setItems(resultMsgList.toArray(items), null)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            mResultDialog.setCanceledOnTouchOutside(false);
         }
     }
 }

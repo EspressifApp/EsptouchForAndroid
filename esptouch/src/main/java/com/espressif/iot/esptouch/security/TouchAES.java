@@ -1,4 +1,4 @@
-package com.espressif.iot.esptouch.util;
+package com.espressif.iot.esptouch.security;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -11,7 +11,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class EspAES {
+public class TouchAES implements ITouchEncryptor {
     private static final String TRANSFORMATION_DEFAULT = "AES/ECB/PKCS5Padding";
 
     private final byte[] mKey;
@@ -20,19 +20,19 @@ public class EspAES {
     private Cipher mEncryptCipher;
     private Cipher mDecryptCipher;
 
-    public EspAES(byte[] key) {
+    public TouchAES(byte[] key) {
         this(key, null, TRANSFORMATION_DEFAULT);
     }
 
-    public EspAES(byte[] key, String transformation) {
+    public TouchAES(byte[] key, String transformation) {
         this(key, null, transformation);
     }
 
-    public EspAES(byte[] key, byte[] iv) {
+    public TouchAES(byte[] key, byte[] iv) {
         this(key, iv, TRANSFORMATION_DEFAULT);
     }
 
-    public EspAES(byte[] key, byte[] iv, String transformation) {
+    public TouchAES(byte[] key, byte[] iv, String transformation) {
         mKey = key;
         mIV = iv;
         mTransformation = transformation;

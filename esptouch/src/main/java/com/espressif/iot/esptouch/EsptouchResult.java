@@ -48,4 +48,9 @@ public class EsptouchResult implements IEsptouchResult {
         return this.mInetAddress;
     }
 
+    @Override
+    public String toString() {
+        return String.format("bssid=%s, address=%s, suc=%b, cancel=%b", mBssid,
+                mInetAddress == null ? null : mInetAddress.getHostAddress(), mIsSuc, mIsCancelled.get());
+    }
 }

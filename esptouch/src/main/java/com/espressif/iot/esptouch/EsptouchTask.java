@@ -4,9 +4,9 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.espressif.iot.esptouch.protocol.TouchData;
+import com.espressif.iot.esptouch.security.ITouchEncryptor;
 import com.espressif.iot.esptouch.task.EsptouchTaskParameter;
 import com.espressif.iot.esptouch.task.__EsptouchTask;
-import com.espressif.iot.esptouch.util.EspAES;
 import com.espressif.iot.esptouch.util.TouchNetUtil;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class EsptouchTask implements IEsptouchTask {
         this(apSsid, apBssid, apPassword, null, context);
     }
 
-    private EsptouchTask(String apSsid, String apBssid, String apPassword, EspAES espAES, Context context) {
+    private EsptouchTask(String apSsid, String apBssid, String apPassword, ITouchEncryptor encryptor, Context context) {
         if (TextUtils.isEmpty(apSsid)) {
             throw new NullPointerException("SSID can't be empty");
         }
@@ -51,16 +51,19 @@ public class EsptouchTask implements IEsptouchTask {
         }
         TouchData ssid = new TouchData(apSsid);
         TouchData bssid = new TouchData(TouchNetUtil.parseBssid2bytes(apBssid));
+        if (bssid.getData().length != 6) {
+            throw new IllegalArgumentException("Bssid format must be aa:bb:cc:dd:ee:ff");
+        }
         TouchData password = new TouchData(apPassword);
-        init(context, ssid, bssid, password, espAES);
+        init(context, ssid, bssid, password, encryptor);
     }
 
-    private EsptouchTask(byte[] apSsid, byte[] apBssid, byte[] apPassword, EspAES espAES, Context context) {
+    private EsptouchTask(byte[] apSsid, byte[] apBssid, byte[] apPassword, ITouchEncryptor encryptor, Context context) {
         if (apSsid == null || apSsid.length == 0) {
             throw new NullPointerException("SSID can't be empty");
         }
-        if (apBssid == null || apBssid.length == 0) {
-            throw new NullPointerException("BSSID can't be empty");
+        if (apBssid == null || apBssid.length != 6) {
+            throw new NullPointerException("BSSID is empty or length is not 6");
         }
         if (apPassword == null) {
             apPassword = new byte[0];
@@ -68,12 +71,12 @@ public class EsptouchTask implements IEsptouchTask {
         TouchData ssid = new TouchData(apSsid);
         TouchData bssid = new TouchData(apBssid);
         TouchData password = new TouchData(apPassword);
-        init(context, ssid, bssid, password, espAES);
+        init(context, ssid, bssid, password, encryptor);
     }
 
-    private void init(Context context, TouchData ssid, TouchData bssid, TouchData password, EspAES aes) {
+    private void init(Context context, TouchData ssid, TouchData bssid, TouchData password, ITouchEncryptor encryptor) {
         _mParameter = new EsptouchTaskParameter();
-        _mEsptouchTask = new __EsptouchTask(context, ssid, bssid, password, aes, _mParameter, true);
+        _mEsptouchTask = new __EsptouchTask(context, ssid, bssid, password, encryptor, _mParameter);
     }
 
     @Override

@@ -1,100 +1,92 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/ap_ssid_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="@string/ssid_title"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ap_ssid_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintStart_toEndOf="@id/ap_ssid_label"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ap_bssid_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:singleLine="true"
+        android:text="@string/bssid_title"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ap_ssid_label" />
+
+    <TextView
+        android:id="@+id/ap_bssid_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintStart_toEndOf="@id/ap_bssid_label"
+        app:layout_constraintTop_toTopOf="@id/ap_bssid_label" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ap_password_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_marginTop="8dp"
+        android:hint="@string/password_title"
+        app:layout_constraintTop_toBottomOf="@id/ap_bssid_label"
+        app:passwordToggleEnabled="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="@string/ssid_title"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/ap_ssid_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="@string/bssid_title"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/ap_bssid_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/password_title"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ap_password_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:inputType="textPassword"
             android:singleLine="true" />
-    </LinearLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/device_count_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_marginTop="8dp"
+        android:hint="@string/device_count_title"
+        app:layout_constraintTop_toBottomOf="@id/ap_password_layout">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/device_count_title"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/device_count_edit"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
             android:inputType="number" />
-    </LinearLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <RadioGroup
         android:id="@+id/package_mode_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/device_count_layout">
 
         <RadioButton
             android:id="@+id/package_broadcast"
@@ -107,7 +99,8 @@
             android:id="@+id/package_multicast"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:text="@string/package_multicast" />
     </RadioGroup>
 
@@ -115,17 +108,15 @@
         android:id="@+id/message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:textColor="@android:color/holo_red_dark" />
+        android:gravity="top"
+        android:textColor="@android:color/holo_red_dark"
+        app:layout_constraintTop_toBottomOf="@id/package_mode_group"
+        app:layout_goneMarginStart="4dp" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/confirm_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/confirm" />
-</LinearLayout>
+        android:text="@string/confirm"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

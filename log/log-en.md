@@ -1,4 +1,12 @@
+[[简体中文]](log-zh-rCN.md)
+
 # Update Log
+
+## v1.1.0
+EspTouch v0.3.7.2
+- Migrate to AndroidX
+- Change App theme
+- Add signature
 
 ## v1.0.0
 EspTouch v0.3.7.1

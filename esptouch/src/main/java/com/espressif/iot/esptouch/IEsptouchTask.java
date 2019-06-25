@@ -3,7 +3,7 @@ package com.espressif.iot.esptouch;
 import java.util.List;
 
 public interface IEsptouchTask {
-    String ESPTOUCH_VERSION = "v0.3.7.1";
+    String ESPTOUCH_VERSION = "v0.3.7.2";
 
     /**
      * set the esptouch listener, when one device is connected to the Ap, it will be called back
@@ -24,7 +24,6 @@ public interface IEsptouchTask {
      * Smart Config v2.4 support the API
      *
      * @return the IEsptouchResult
-     * @throws RuntimeException
      */
     IEsptouchResult executeForResult() throws RuntimeException;
 
@@ -43,7 +42,6 @@ public interface IEsptouchTask {
      * @param expectTaskResultCount the expect result count(if expectTaskResultCount <= 0,
      *                              expectTaskResultCount = Integer.MAX_VALUE)
      * @return the list of IEsptouchResult
-     * @throws RuntimeException
      */
     List<IEsptouchResult> executeForResults(int expectTaskResultCount) throws RuntimeException;
 
@@ -55,7 +53,7 @@ public interface IEsptouchTask {
     boolean isCancelled();
 
     /**
-     * Set broadcast or multicast when post config info
+     * Set broadcast or multicast when post configure info
      *
      * @param broadcast true is broadcast, false is multicast
      */

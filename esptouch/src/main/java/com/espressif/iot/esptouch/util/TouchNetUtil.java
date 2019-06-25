@@ -95,18 +95,12 @@ public class TouchNetUtil {
     public static byte[] getOriginalSsidBytes(WifiInfo info) {
         try {
             Method method = info.getClass().getMethod("getWifiSsid");
-            if (method == null) {
-                return null;
-            }
             method.setAccessible(true);
             Object wifiSsid = method.invoke(info);
             if (wifiSsid == null) {
                 return null;
             }
             method = wifiSsid.getClass().getMethod("getOctets");
-            if (method == null) {
-                return null;
-            }
             method.setAccessible(true);
             return (byte[]) method.invoke(wifiSsid);
         } catch (NoSuchMethodException e) {

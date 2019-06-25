@@ -1,4 +1,12 @@
+[[English]](log-en.md)
+
 # Update Log
+
+## v1.1.0
+EspTouch v0.3.7.2
+- 使用AndroidX库
+- 修改应用主题
+- 增加签名文件
 
 ## v1.0.0
 EspTouch v0.3.7.1

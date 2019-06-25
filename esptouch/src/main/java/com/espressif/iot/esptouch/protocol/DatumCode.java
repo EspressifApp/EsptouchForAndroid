@@ -1,5 +1,6 @@
 package com.espressif.iot.esptouch.protocol;
 
+import com.espressif.iot.esptouch.security.ITouchEncryptor;
 import com.espressif.iot.esptouch.task.ICodeData;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.CRC8;
@@ -22,10 +23,10 @@ public class DatumCode implements ICodeData {
      * @param apBssid     the Ap's bssid
      * @param apPassword  the Ap's password
      * @param ipAddress   the ip address of the phone or pad
-     * @param isSsidHiden whether the Ap's ssid is hidden
+     * @param encryptor null use origin data, not null use encrypted data
      */
     public DatumCode(byte[] apSsid, byte[] apBssid, byte[] apPassword,
-                     InetAddress ipAddress, boolean isSsidHiden) {
+                     InetAddress ipAddress, ITouchEncryptor encryptor) {
         // Data = total len(1 byte) + apPwd len(1 byte) + SSID CRC(1 byte) +
         // BSSID CRC(1 byte) + TOTAL XOR(1 byte)+ ipAddress(4 byte) + apPwd + apSsid apPwdLen <=
         // 105 at the moment
@@ -47,14 +48,12 @@ public class DatumCode implements ICodeData {
         byte[] ipBytes = ipAddress.getAddress();
         int ipLen = ipBytes.length;
 
-        char _totalLen = (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen);
-        char totalLen = isSsidHiden ? (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen)
-                : (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen);
+        char totalLen = (char) (EXTRA_HEAD_LEN + ipLen + apPwdLen + apSsidLen);
 
         // build data codes
         mDataCodes = new LinkedList<>();
-        mDataCodes.add(new DataCode(_totalLen, 0));
-        totalXor ^= _totalLen;
+        mDataCodes.add(new DataCode(totalLen, 0));
+        totalXor ^= totalLen;
         mDataCodes.add(new DataCode(apPwdLen, 1));
         totalXor ^= apPwdLen;
         mDataCodes.add(new DataCode(apSsidCrc, 2));
@@ -78,9 +77,7 @@ public class DatumCode implements ICodeData {
         for (int i = 0; i < apSsid.length; i++) {
             char c = ByteUtil.convertByte2Uint8(apSsid[i]);
             totalXor ^= c;
-            if (isSsidHiden) {
-                mDataCodes.add(new DataCode(c, i + EXTRA_HEAD_LEN + ipLen + apPwdLen));
-            }
+            mDataCodes.add(new DataCode(c, i + EXTRA_HEAD_LEN + ipLen + apPwdLen));
         }
 
         // add total xor last
