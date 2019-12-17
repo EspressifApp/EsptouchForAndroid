@@ -106,20 +106,22 @@ public class UDPSocketServer {
         Log.d(TAG, "receiveSpecLenBytes() entrance: len = " + len);
         try {
             acquireLock();
-            DatagramPacket packet = new DatagramPacket(new byte[64], 64);
-            mServerSocket.receive(packet);
-            byte[] recDatas = Arrays.copyOf(packet.getData(), packet.getLength());
-            Log.d(TAG, "received len : " + recDatas.length);
-            for (int i = 0; i < recDatas.length; i++) {
-                Log.w(TAG, "recDatas[" + i + "]:" + recDatas[i]);
-            }
-            Log.w(TAG, "receiveSpecLenBytes: " + new String(recDatas));
-            if (recDatas.length != len) {
-                Log.w(TAG,
-                        "received len is different from specific len, return null");
-                return null;
-            }
-            return recDatas;
+			while (true) {
+				DatagramPacket packet = new DatagramPacket(new byte[64], 64);
+				mServerSocket.receive(packet);
+				byte[] recDatas = Arrays.copyOf(packet.getData(), packet.getLength());
+				Log.d(TAG, "received len : " + recDatas.length);
+				for (int i = 0; i < recDatas.length; i++) {
+					Log.w(TAG, "recDatas[" + i + "]:" + recDatas[i]);
+				}
+				Log.w(TAG, "receiveSpecLenBytes: " + new String(recDatas));
+				if (recDatas.length != len) {
+					Log.w(TAG,
+							"received len is different from specific len, return null");
+					return null;
+				}
+				return recDatas;
+			}
         } catch (Exception e) {
             e.printStackTrace();
         }
