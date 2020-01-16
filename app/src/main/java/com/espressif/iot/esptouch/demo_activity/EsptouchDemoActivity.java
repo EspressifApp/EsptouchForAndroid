@@ -236,13 +236,12 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
                         .show();
             }
         } else {
+            String ssid = info.getSSID();
             if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
                 ssid = ssid.substring(1, ssid.length() - 1);
             }
             mApSsidTV.setText(ssid);
             mApSsidTV.setTag(ByteUtil.getBytesByString(ssid));
-            byte[] ssidOriginalData = TouchNetUtil.getOriginalSsidBytes(info);
-            mApSsidTV.setTag(ssidOriginalData);
 
             String bssid = info.getBSSID();
             mApBssidTV.setText(bssid);
