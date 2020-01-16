@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -76,7 +77,7 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
             switch (action) {
                 case WifiManager.NETWORK_STATE_CHANGED_ACTION:
                 case LocationManager.PROVIDERS_CHANGED_ACTION:
-                    onWifiChanged(wifiManager.getConnectionInfo());
+                    onWifiChanged(wifiManager);
                     break;
             }
         }
@@ -191,10 +192,30 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
         mReceiverRegistered = true;
     }
 
-    private void onWifiChanged(WifiInfo info) {
+    private String findSSIDForWifiInfo(WifiManager manager, WifiInfo wifiInfo) {
+
+        List<WifiConfiguration> listOfConfigurations = manager.getConfiguredNetworks();
+
+        for (int index = 0; index < listOfConfigurations.size(); index++) {
+            WifiConfiguration configuration = listOfConfigurations.get(index);
+            if (configuration.networkId == wifiInfo.getNetworkId()) {
+                return configuration.SSID;
+            }
+        }
+
+        return null;
+    }
+
+    private void onWifiChanged(WifiManager manager) {
+        WifiInfo info = manager.getConnectionInfo();
+        String ssid = info.getSSID();
+        if ("<unknown ssid>".equals(ssid)) {
+            ssid = findSSIDForWifiInfo(manager, info);
+        }
         boolean disconnected = info == null
                 || info.getNetworkId() == -1
-                || "<unknown ssid>".equals(info.getSSID());
+                || ssid == null;
+
         if (disconnected) {
             mApSsidTV.setText("");
             mApSsidTV.setTag(null);
@@ -215,7 +236,6 @@ public class EsptouchDemoActivity extends AppCompatActivity implements OnClickLi
                         .show();
             }
         } else {
-            String ssid = info.getSSID();
             if (ssid.startsWith("\"") && ssid.endsWith("\"")) {
                 ssid = ssid.substring(1, ssid.length() - 1);
             }
