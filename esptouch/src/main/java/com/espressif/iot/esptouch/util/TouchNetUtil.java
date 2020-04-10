@@ -18,8 +18,9 @@ public class TouchNetUtil {
      * @return the local ip addr allocated by Ap
      */
     public static InetAddress getLocalInetAddress(Context context) {
-        WifiManager wm = (WifiManager) context
+        WifiManager wm = (WifiManager) context.getApplicationContext()
                 .getSystemService(Context.WIFI_SERVICE);
+        assert wm != null;
         WifiInfo wifiInfo = wm.getConnectionInfo();
         int localAddrInt = wifiInfo.getIpAddress();
         String localAddrStr = __formatString(localAddrInt);
@@ -33,15 +34,15 @@ public class TouchNetUtil {
     }
 
     private static String __formatString(int value) {
-        String strValue = "";
+        StringBuilder strValue = new StringBuilder();
         byte[] ary = __intToByteArray(value);
         for (int i = ary.length - 1; i >= 0; i--) {
-            strValue += (ary[i] & 0xFF);
+            strValue.append(ary[i] & 0xFF);
             if (i > 0) {
-                strValue += ".";
+                strValue.append(".");
             }
         }
-        return strValue;
+        return strValue.toString();
     }
 
     private static byte[] __intToByteArray(int value) {
@@ -64,7 +65,7 @@ public class TouchNetUtil {
         InetAddress inetAddress = null;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < count; i++) {
-            sb.append(Integer.toString(inetAddrBytes[offset + i] & 0xff));
+            sb.append((inetAddrBytes[offset + i] & 0xff));
             if (i != count - 1) {
                 sb.append('.');
             }
@@ -84,7 +85,7 @@ public class TouchNetUtil {
      * @return byte converted from bssid
      */
     public static byte[] parseBssid2bytes(String bssid) {
-        String bssidSplits[] = bssid.split(":");
+        String[] bssidSplits = bssid.split(":");
         byte[] result = new byte[bssidSplits.length];
         for (int i = 0; i < bssidSplits.length; i++) {
             result[i] = (byte) Integer.parseInt(bssidSplits[i], 16);

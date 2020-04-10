@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_esptouch2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/controlGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="apSsidLabel,apSsidText,apBssidLabel,apBssidText,ipLabel,ipText,apPasswordLayout,aesKeyLayout,customDataLayout,confirmBtn" />
+
+    <TextView
+        android:id="@+id/apSsidLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:singleLine="true"
+        android:text="@string/esptouch2_ssid_label"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/apSsidText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBaseline_toBaselineOf="@id/apSsidLabel"
+        app:layout_constraintStart_toEndOf="@id/apSsidLabel"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/apBssidLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="bottom"
+        android:singleLine="true"
+        android:text="@string/esptouch2_bssid_label"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/apSsidLabel" />
+
+    <TextView
+        android:id="@+id/apBssidText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBaseline_toBaselineOf="@id/apBssidLabel"
+        app:layout_constraintStart_toEndOf="@id/apBssidLabel"
+        app:layout_constraintTop_toTopOf="@id/apBssidLabel" />
+
+    <TextView
+        android:id="@+id/ipLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="bottom"
+        android:singleLine="true"
+        android:text="@string/esptouch2_ip_label"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/apBssidLabel" />
+
+    <TextView
+        android:id="@+id/ipText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBaseline_toBaselineOf="@id/ipLabel"
+        app:layout_constraintStart_toEndOf="@id/ipLabel"
+        app:layout_constraintTop_toTopOf="@id/ipLabel" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/apPasswordLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/esptouch2_password_label"
+        app:layout_constraintTop_toBottomOf="@id/ipLabel"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/apPasswordEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/aesKeyLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/esptouch2_aes_key"
+        app:layout_constraintTop_toBottomOf="@id/apPasswordLayout"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/aesKeyEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/customDataLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/esptouch2_custom_data"
+        app:layout_constraintTop_toBottomOf="@id/aesKeyLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/customDataEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/confirmBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/esptouch1_confirm"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/messageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginStart="4dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

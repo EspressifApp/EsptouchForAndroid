@@ -7,6 +7,9 @@ This APP is used to configure ESP devices to connect target AP, the devices need
 ## Version Log
 - See [Log](log/log-en.md)
 
+## Modules
+- EspTouch: [esptouch](esptouch)
+
 ## Releases
 - See [releases](https://github.com/EspressifApp/EsptouchForAndroid/releases/latest), contain APK and aar
 - For programmer, if you don't want use [esptouch](esptouch) module, download the aar into your own project.

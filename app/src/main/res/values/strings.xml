@@ -3,21 +3,46 @@
     <string name="app_name">EspTouch</string>
     <string name="menu_item_about">About App</string>
     <string name="about_app_version">App Version: %s</string>
-    <string name="about_esptouch_version">EspTouch Version: %s</string>
-    <string name="ssid_title">SSID: </string>
-    <string name="bssid_title">BSSID: </string>
-    <string name="password_title">Password: </string>
-    <string name="device_count_title">Device count: </string>
-    <string name="package_broadcast">Broadcast</string>
-    <string name="package_multicast">Multicast</string>
-    <string name="confirm">Confirm</string>
-    <string name="wifi_5g_message">Device don\'t support 5G Wifi, please make sure the currently connected Wifi is 2.4G</string>
-    <string name="location_disable_message">Location(GPS) is disable</string>
-    <string name="no_wifi_connection">No Wifi connection</string>
-    <string name="configuring_message">Esptouch is configuring, please wait for a moment…</string>
-    <string name="configure_wifi_change_message">Wifi disconnected or changed</string>
-    <string name="configure_result_failed">EspTouch failed</string>
-    <string name="configure_result_failed_port">Create Esptouch task failed, the EspTouch port could be used by other thread</string>
-    <string name="configure_result_success">EspTouch 完成</string>
-    <string name="configure_result_success_item">BSSID = %1$s, InetAddress = %2$s</string>
+
+    <string name="main_title">Home</string>
+
+    <string name="esptouch_message_permission">APP require Location permission to get Wi-Fi information. \nClick to request permission</string>
+    <string name="esptouch_message_location">Please turn on GPS to get Wi-Fi information.</string>
+    <string name="esptouch_message_wifi_connection">Please connect Wi-Fi first.</string>
+    <string name="esptouch_message_wifi_frequency">Current Wi-Fi connection is 5G, but the device just support 2.4G.</string>
+
+    <string name="esptouch1_title">EspTouch</string>
+    <string name="esptouch1_about_version">EspTouch Version: %s</string>
+    <string name="esptouch1_ssid_title">SSID: </string>
+    <string name="esptouch1_bssid_title">BSSID: </string>
+    <string name="esptouch1_password_title">Password: </string>
+    <string name="esptouch1_device_count_title">Device count: </string>
+    <string name="esptouch1_package_broadcast">Broadcast</string>
+    <string name="esptouch1_package_multicast">Multicast</string>
+    <string name="esptouch1_confirm">Confirm</string>
+    <string name="esptouch1_wifi_5g_message">Device don\'t support 5G Wi-Fi, please make sure the currently connected Wi-Fi is 2.4G, or you can try multicast</string>
+    <string name="esptouch1_location_permission_title">⚠️Warning</string>
+    <string name="esptouch1_location_permission_message">On Android M or higher version, App can\'t get Wi-Fi connection information if you forbid Location permission.</string>
+    <string name="esptouch1_configuring_message">Esptouch is configuring, please wait for a moment…</string>
+    <string name="esptouch1_configure_wifi_change_message">Wi-Fi disconnected or changed</string>
+    <string name="esptouch1_configure_result_failed">EspTouch failed</string>
+    <string name="esptouch1_configure_result_failed_port">Create EspTouch task failed, the EspTouch port could be used by other thread</string>
+    <string name="esptouch1_configure_result_success">EspTouch 完成</string>
+    <string name="esptouch1_configure_result_success_item">BSSID = %1$s, InetAddress = %2$s</string>
+
+    <string name="esptouch2_title">EspTouch V2</string>
+    <string name="esptouch2_about_version">EspTouch V2 Version: %s</string>
+    <string name="esptouch2_ssid_label">SSID: </string>
+    <string name="esptouch2_bssid_label">BSSID: </string>
+    <string name="esptouch2_ip_label">IP: </string>
+    <string name="esptouch2_password_label">Password</string>
+    <string name="esptouch2_aes_key">AES Key</string>
+    <string name="esptouch2_aes_key_error">AES Key must be null or 16 bytes data</string>
+    <string name="esptouch2_custom_data">Custom Data</string>
+    <string name="esptouch2_custom_data_error">Custom data can\'t be more than 127 bytes</string>
+
+    <string name="esptouch2_provision_title">Provision</string>
+    <string name="esptouch2_provision_stop">Stop</string>
+    <string name="esptouch2_provision_result_exception">Catch exception: %s</string>
+    <string name="esptouch2_provision_result_none">Not found any devices</string>
 </resources>

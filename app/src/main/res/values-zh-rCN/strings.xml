@@ -1,23 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EspTouch</string>
-    <string name="menu_item_about">关于App</string>
-    <string name="about_app_version">App版本: %s</string>
-    <string name="about_esptouch_version">EspTouch版本: %s</string>
-    <string name="ssid_title">SSID: </string>
-    <string name="bssid_title">BSSID: </string>
-    <string name="password_title">密码: </string>
-    <string name="device_count_title">设备数量: </string>
-    <string name="package_broadcast">广播</string>
-    <string name="package_multicast">组播</string>
-    <string name="confirm">确认</string>
-    <string name="wifi_5g_message">设备不支持 5G Wifi, 请确认当前连接的 Wifi 为 2.4G</string>
-    <string name="location_disable_message">位置信息(GPS)不可用</string>
-    <string name="no_wifi_connection">没有 Wifi 连接</string>
-    <string name="configure_wifi_change_message">Wifi 已断开或发生了变化</string>
-    <string name="configuring_message">Esptouch 正在执行配网, 请稍等片刻…</string>
-    <string name="configure_result_failed">EspTouch 配网失败</string>
-    <string name="configure_result_failed_port">建立 Esptouch 任务失败, 端口可能被其他程序占用</string>
-    <string name="configure_result_success">EspTouch 完成</string>
-    <string name="configure_result_success_item">BSSID = %1$s, 地址 = %2$s</string>
+    <string name="menu_item_about">关于 App</string>
+    <string name="about_app_version">App 版本: %s</string>
+
+    <string name="main_title">主页</string>
+
+    <string name="esptouch_message_permission">需要位置权限来获取 Wi-Fi 信息。 \n点击申请权限</string>
+    <string name="esptouch_message_location">请打开 GPS 以获取 Wi-Fi 信息。</string>
+    <string name="esptouch_message_wifi_connection">请先连上 Wi-Fi</string>
+    <string name="esptouch_message_wifi_frequency">当前连接的是 5G Wi-Fi, 设备仅支持 2.4G Wi-Fi</string>
+
+    <string name="esptouch1_title">EspTouch</string>
+    <string name="esptouch1_about_version">EspTouch 版本: %s</string>
+    <string name="esptouch1_ssid_title">SSID: </string>
+    <string name="esptouch1_bssid_title">BSSID: </string>
+    <string name="esptouch1_password_title">密码: </string>
+    <string name="esptouch1_device_count_title">设备数量: </string>
+    <string name="esptouch1_package_broadcast">广播</string>
+    <string name="esptouch1_package_multicast">组播</string>
+    <string name="esptouch1_confirm">确认</string>
+    <string name="esptouch1_wifi_5g_message">设备不支持 5G Wi-Fi, 请确认当前连接的 Wi-Fi 为 2.4G, 或者您可以尝试选择组播</string>
+    <string name="esptouch1_location_permission_title">⚠️警告️</string>
+    <string name="esptouch1_location_permission_message">在 Android M 及以上版本，如果您禁止授权位置权限，APP将无法获取 Wi-Fi 信息。</string>
+    <string name="esptouch1_configure_wifi_change_message">Wi-Fi 已断开或发生了变化</string>
+    <string name="esptouch1_configuring_message">Esptouch 正在执行配网, 请稍等片刻…</string>
+    <string name="esptouch1_configure_result_failed">EspTouch 配网失败</string>
+    <string name="esptouch1_configure_result_failed_port">建立 EspTouch 任务失败, 端口可能被其他程序占用</string>
+    <string name="esptouch1_configure_result_success">EspTouch 完成</string>
+    <string name="esptouch1_configure_result_success_item">BSSID: %1$s, 地址: %2$s</string>
+
+    <string name="esptouch2_title">EspTouch V2</string>
+    <string name="esptouch2_about_version">EspTouch V2 版本: %s</string>
+    <string name="esptouch2_ssid_label">SSID: </string>
+    <string name="esptouch2_bssid_label">BSSID: </string>
+    <string name="esptouch2_ip_label">IP: </string>
+    <string name="esptouch2_password_label">密码</string>
+    <string name="esptouch2_aes_key">AES Key</string>
+    <string name="esptouch2_aes_key_error">AES Key 必须为空或者16字节数据</string>
+    <string name="esptouch2_custom_data">自定义数据</string>
+    <string name="esptouch2_custom_data_error">自定义数据不能超过127字节</string>
+
+    <string name="esptouch2_provision_title">配网</string>
+    <string name="esptouch2_provision_stop">停止</string>
+    <string name="esptouch2_provision_result_exception">捕获到错误：%s</string>
+    <string name="esptouch2_provision_result_none">没有找到设备</string>
 </resources>
