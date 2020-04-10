@@ -2,6 +2,10 @@
 
 # Update Log
 
+## v1.1.1
+EspTouch v0.3.7.2
+- 优化权限检查和状态提示
+
 ## v1.1.0
 EspTouch v0.3.7.2
 - 使用AndroidX库

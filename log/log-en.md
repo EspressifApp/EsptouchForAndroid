@@ -2,6 +2,10 @@
 
 # Update Log
 
+## v1.1.1
+EspTouch v0.3.7.2
+- Optimize permission check
+
 ## v1.1.0
 EspTouch v0.3.7.2
 - Migrate to AndroidX
