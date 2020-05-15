@@ -20,9 +20,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.location.LocationManagerCompat;
 
-import com.espressif.iot_esptouch_demo.R;
-import com.espressif.iot_esptouch_demo.NetUtils;
-
 import java.net.InetAddress;
 
 public abstract class EspTouchActivityAbs extends AppCompatActivity {

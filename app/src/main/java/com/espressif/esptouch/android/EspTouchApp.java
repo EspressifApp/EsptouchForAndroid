@@ -1,4 +1,4 @@
-package com.espressif.iot_esptouch_demo;
+package com.espressif.esptouch.android;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;

@@ -17,13 +17,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 
 import com.espressif.esptouch.android.EspTouchActivityAbs;
+import com.espressif.esptouch.android.R;
 import com.espressif.iot.esptouch.EsptouchTask;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.TouchNetUtil;
-import com.espressif.iot_esptouch_demo.EspTouchApp;
-import com.espressif.iot_esptouch_demo.R;
+import com.espressif.esptouch.android.EspTouchApp;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
