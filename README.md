@@ -10,7 +10,7 @@ The devices need run smart config: [esp-idf](https://github.com/espressif/esp-id
 
 ## Modules
 - EspTouch: [esptouch](esptouch)
-- EspTouchV2: [esptouch2](esptouch2)
+- EspTouchV2: [esptouch-v2](esptouch-v2)
 
 ## Releases
 - See [releases](https://github.com/EspressifApp/EsptouchForAndroid/releases)
