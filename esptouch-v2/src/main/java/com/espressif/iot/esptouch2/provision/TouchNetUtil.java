@@ -1,6 +1,7 @@
-package com.espressif.esptouch.android;
+package com.espressif.iot.esptouch2.provision;
 
 import android.net.DhcpInfo;
+import android.net.InetAddresses;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
@@ -14,7 +15,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-public class NetUtils {
+public class TouchNetUtil {
     public static boolean isWifiConnected(WifiManager wifiManager) {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         return wifiInfo != null

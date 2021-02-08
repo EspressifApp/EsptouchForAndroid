@@ -2,6 +2,10 @@
 
 # Update Log
 
+## v2.0.0
+- Support EspTouchV2
+    - EspTouchV2 is not compatible with EspTouch
+
 ## v1.1.1
 EspTouch v0.3.7.2
 - Optimize permission check

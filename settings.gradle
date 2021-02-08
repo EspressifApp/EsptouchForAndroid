@@ -1,1 +1,3 @@
-include ':app', ':esptouch'
+include ':app'
+include ':esptouch'
+include ':esptouch-v2'

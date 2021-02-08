@@ -41,8 +41,11 @@
     <string name="esptouch2_custom_data">Custom Data</string>
     <string name="esptouch2_custom_data_error">Custom data can\'t be more than 127 bytes</string>
 
-    <string name="esptouch2_provision_title">Provision</string>
-    <string name="esptouch2_provision_stop">Stop</string>
-    <string name="esptouch2_provision_result_exception">Catch exception: %s</string>
-    <string name="esptouch2_provision_result_none">Not found any devices</string>
+    <string name="esptouch2_provisioning_title">Provision</string>
+    <string name="esptouch2_provisioning_stop">Stop</string>
+    <string name="esptouch2_provisioning_result_exception">Catch exception: %s</string>
+    <string name="esptouch2_provisioning_result_none">Not found any devices</string>
+    <string name="esptouch2_provisioning_wifi_disconnect">Wi-Fi connection is disconnected</string>
+    <string name="esptouch2_provisioning_result_bssid">BSSID: %1$s</string>
+    <string name="esptouch2_provisioning_result_address">Address: %1$s</string>
 </resources>

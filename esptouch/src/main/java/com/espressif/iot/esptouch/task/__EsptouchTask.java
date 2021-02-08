@@ -197,16 +197,13 @@ public class __EsptouchTask implements __IEsptouchTask {
                                 String bssid = ByteUtil.parseBssid(
                                         receiveBytes,
                                         mParameter.getEsptouchResultOneLen(),
-                                        mParameter.getEsptouchResultMacLen());
-                                InetAddress inetAddress = TouchNetUtil
-                                        .parseInetAddr(
-                                                receiveBytes,
-                                                mParameter
-                                                        .getEsptouchResultOneLen()
-                                                        + mParameter
-                                                        .getEsptouchResultMacLen(),
-                                                mParameter
-                                                        .getEsptouchResultIpLen());
+                                        mParameter.getEsptouchResultMacLen()
+                                );
+                                InetAddress inetAddress = TouchNetUtil.parseInetAddr(
+                                        receiveBytes,
+                                        mParameter.getEsptouchResultOneLen() + mParameter.getEsptouchResultMacLen(),
+                                        mParameter.getEsptouchResultIpLen()
+                                );
                                 __putEsptouchResult(true, bssid, inetAddress);
                             }
                         }

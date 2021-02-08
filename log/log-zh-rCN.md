@@ -2,6 +2,14 @@
 
 # Update Log
 
+## v2.0.0
+- 支持 EspTouchV2 协议
+    - 注: EspTouchV2 与 EspTouch 不能兼容
+
+## v1.1.1
+EspTouch v0.3.7.3
+- 优化权限检查和状态提示
+
 ## v1.1.1
 EspTouch v0.3.7.2
 - 优化权限检查和状态提示

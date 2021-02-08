@@ -36,13 +36,16 @@
     <string name="esptouch2_bssid_label">BSSID: </string>
     <string name="esptouch2_ip_label">IP: </string>
     <string name="esptouch2_password_label">密码</string>
-    <string name="esptouch2_aes_key">AES Key</string>
-    <string name="esptouch2_aes_key_error">AES Key 必须为空或者16字节数据</string>
+    <string name="esptouch2_aes_key">AES 密钥</string>
+    <string name="esptouch2_aes_key_error">AES 密钥必须为空或者16字节数据</string>
     <string name="esptouch2_custom_data">自定义数据</string>
     <string name="esptouch2_custom_data_error">自定义数据不能超过127字节</string>
 
-    <string name="esptouch2_provision_title">配网</string>
-    <string name="esptouch2_provision_stop">停止</string>
-    <string name="esptouch2_provision_result_exception">捕获到错误：%s</string>
-    <string name="esptouch2_provision_result_none">没有找到设备</string>
+    <string name="esptouch2_provisioning_title">配网</string>
+    <string name="esptouch2_provisioning_stop">停止</string>
+    <string name="esptouch2_provisioning_result_exception">捕获到错误：%s</string>
+    <string name="esptouch2_provisioning_result_none">没有找到设备</string>
+    <string name="esptouch2_provisioning_wifi_disconnect">Wi-Fi 连接已断开</string>
+    <string name="esptouch2_provisioning_result_bssid">BSSID: %1$s</string>
+    <string name="esptouch2_provisioning_result_address">地址: %1$s</string>
 </resources>

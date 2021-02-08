@@ -237,7 +237,6 @@ public class ByteUtil {
             k = 0xff & bssidByte;
             hexK = Integer.toHexString(k);
             str = ((k < 16) ? ("0" + hexK) : (hexK));
-            System.out.println(str);
             sb.append(str);
         }
         return sb.toString();

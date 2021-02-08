@@ -20,6 +20,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.location.LocationManagerCompat;
 
+import com.espressif.iot.esptouch2.provision.TouchNetUtil;
+
 import java.net.InetAddress;
 
 public abstract class EspTouchActivityAbs extends AppCompatActivity {
@@ -141,31 +143,31 @@ public abstract class EspTouchActivityAbs extends AppCompatActivity {
         StateResult result = new StateResult();
         result.wifiConnected = false;
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-        boolean connected = NetUtils.isWifiConnected(mWifiManager);
+        boolean connected = TouchNetUtil.isWifiConnected(mWifiManager);
         if (!connected) {
             result.message = getString(R.string.esptouch_message_wifi_connection);
             return result;
         }
 
-        String ssid = NetUtils.getSsidString(wifiInfo);
+        String ssid = TouchNetUtil.getSsidString(wifiInfo);
         int ipValue = wifiInfo.getIpAddress();
         if (ipValue != 0) {
-            result.address = NetUtils.getAddress(wifiInfo.getIpAddress());
+            result.address = TouchNetUtil.getAddress(wifiInfo.getIpAddress());
         } else {
-            result.address = NetUtils.getIPv4Address();
+            result.address = TouchNetUtil.getIPv4Address();
             if (result.address == null) {
-                result.address = NetUtils.getIPv6Address();
+                result.address = TouchNetUtil.getIPv6Address();
             }
         }
 
         result.wifiConnected = true;
         result.message = "";
-        result.is5G = NetUtils.is5G(wifiInfo.getFrequency());
+        result.is5G = TouchNetUtil.is5G(wifiInfo.getFrequency());
         if (result.is5G) {
             result.message = getString(R.string.esptouch_message_wifi_frequency);
         }
         result.ssid = ssid;
-        result.ssidBytes = NetUtils.getRawSsidBytesOrElse(wifiInfo, ssid.getBytes());
+        result.ssidBytes = TouchNetUtil.getRawSsidBytesOrElse(wifiInfo, ssid.getBytes());
         result.bssid = wifiInfo.getBSSID();
 
         return result;

@@ -27,7 +27,7 @@
         android:id="@+id/stopBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/esptouch2_provision_stop"
+        android:text="@string/esptouch2_provisioning_stop"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView

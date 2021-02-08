@@ -1,15 +1,13 @@
 package com.espressif.esptouch.android.v1;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,40 +15,46 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 
 import com.espressif.esptouch.android.EspTouchActivityAbs;
+import com.espressif.esptouch.android.EspTouchApp;
 import com.espressif.esptouch.android.R;
+import com.espressif.esptouch.android.databinding.ActivityEsptouchBinding;
 import com.espressif.iot.esptouch.EsptouchTask;
 import com.espressif.iot.esptouch.IEsptouchResult;
 import com.espressif.iot.esptouch.IEsptouchTask;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.TouchNetUtil;
-import com.espressif.esptouch.android.EspTouchApp;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class EspTouchActivity extends EspTouchActivityAbs {
     private static final String TAG = EspTouchActivity.class.getSimpleName();
 
     private static final int REQUEST_PERMISSION = 0x01;
 
-    private EspTouchViewModel mViewModel;
-
     private EsptouchAsyncTask4 mTask;
+
+    private ActivityEsptouchBinding mBinding;
+
+    private String mSsid;
+    private byte[] mSsidBytes;
+    private String mBssid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_esptouch);
-        mViewModel = new EspTouchViewModel();
-        mViewModel.apSsidTV = findViewById(R.id.apSsidText);
-        mViewModel.apBssidTV = findViewById(R.id.apBssidText);
-        mViewModel.apPasswordEdit = findViewById(R.id.apPasswordEdit);
-        mViewModel.deviceCountEdit = findViewById(R.id.deviceCountEdit);
-        mViewModel.packageModeGroup = findViewById(R.id.packageModeGroup);
-        mViewModel.messageView = findViewById(R.id.messageView);
-        mViewModel.confirmBtn = findViewById(R.id.confirmBtn);
-        mViewModel.confirmBtn.setOnClickListener(v -> executeEsptouch());
+        mBinding = ActivityEsptouchBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
+        mBinding.confirmBtn.setOnClickListener(v -> executeEsptouch());
+
+        mBinding.cancelButton.setOnClickListener(v -> {
+            showProgress(false);
+            if (mTask != null) {
+                mTask.cancelEsptouch();
+            }
+        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
@@ -88,6 +92,16 @@ public class EspTouchActivity extends EspTouchActivityAbs {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    private void showProgress(boolean show) {
+        if (show) {
+            mBinding.content.setVisibility(View.INVISIBLE);
+            mBinding.progressView.setVisibility(View.VISIBLE);
+        } else {
+            mBinding.content.setVisibility(View.VISIBLE);
+            mBinding.progressView.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     protected String getEspTouchVersion() {
         return getString(R.string.esptouch1_about_version, IEsptouchTask.ESPTOUCH_VERSION);
@@ -111,15 +125,15 @@ public class EspTouchActivity extends EspTouchActivityAbs {
 
     private void onWifiChanged() {
         StateResult stateResult = check();
-        mViewModel.message = stateResult.message;
-        mViewModel.ssid = stateResult.ssid;
-        mViewModel.ssidBytes = stateResult.ssidBytes;
-        mViewModel.bssid = stateResult.bssid;
-        mViewModel.confirmEnable = false;
+        mSsid = stateResult.ssid;
+        mSsidBytes = stateResult.ssidBytes;
+        mBssid = stateResult.bssid;
+        CharSequence message = stateResult.message;
+        boolean confirmEnable = false;
         if (stateResult.wifiConnected) {
-            mViewModel.confirmEnable = true;
+            confirmEnable = true;
             if (stateResult.is5G) {
-                mViewModel.message = getString(R.string.esptouch1_wifi_5g_message);
+                message = getString(R.string.esptouch1_wifi_5g_message);
             }
         } else {
             if (mTask != null) {
@@ -131,19 +145,22 @@ public class EspTouchActivity extends EspTouchActivityAbs {
                         .show();
             }
         }
-        mViewModel.invalidateAll();
+
+        mBinding.apSsidText.setText(mSsid);
+        mBinding.apBssidText.setText(mBssid);
+        mBinding.messageView.setText(message);
+        mBinding.confirmBtn.setEnabled(confirmEnable);
     }
 
     private void executeEsptouch() {
-        EspTouchViewModel viewModel = mViewModel;
-        byte[] ssid = viewModel.ssidBytes == null ? ByteUtil.getBytesByString(viewModel.ssid)
-                : viewModel.ssidBytes;
-        CharSequence pwdStr = mViewModel.apPasswordEdit.getText();
+        byte[] ssid = mSsidBytes == null ? ByteUtil.getBytesByString(this.mSsid)
+                : mSsidBytes;
+        CharSequence pwdStr = mBinding.apPasswordEdit.getText();
         byte[] password = pwdStr == null ? null : ByteUtil.getBytesByString(pwdStr.toString());
-        byte[] bssid = TouchNetUtil.parseBssid2bytes(viewModel.bssid);
-        CharSequence devCountStr = mViewModel.deviceCountEdit.getText();
+        byte[] bssid = TouchNetUtil.parseBssid2bytes(this.mBssid);
+        CharSequence devCountStr = mBinding.deviceCountEdit.getText();
         byte[] deviceCount = devCountStr == null ? new byte[0] : devCountStr.toString().getBytes();
-        byte[] broadcast = {(byte) (mViewModel.packageModeGroup.getCheckedRadioButtonId() == R.id.packageBroadcast
+        byte[] broadcast = {(byte) (mBinding.packageModeGroup.getCheckedRadioButtonId() == R.id.packageBroadcast
                 ? 1 : 0)};
 
         if (mTask != null) {
@@ -154,10 +171,9 @@ public class EspTouchActivity extends EspTouchActivityAbs {
     }
 
     private static class EsptouchAsyncTask4 extends AsyncTask<byte[], IEsptouchResult, List<IEsptouchResult>> {
-        private WeakReference<EspTouchActivity> mActivity;
+        private final WeakReference<EspTouchActivity> mActivity;
 
         private final Object mLock = new Object();
-        private ProgressDialog mProgressDialog;
         private AlertDialog mResultDialog;
         private IEsptouchTask mEsptouchTask;
 
@@ -167,8 +183,9 @@ public class EspTouchActivity extends EspTouchActivityAbs {
 
         void cancelEsptouch() {
             cancel(true);
-            if (mProgressDialog != null) {
-                mProgressDialog.dismiss();
+            EspTouchActivity activity = mActivity.get();
+            if (activity != null) {
+                activity.showProgress(false);
             }
             if (mResultDialog != null) {
                 mResultDialog.dismiss();
@@ -180,36 +197,26 @@ public class EspTouchActivity extends EspTouchActivityAbs {
 
         @Override
         protected void onPreExecute() {
-            Activity activity = mActivity.get();
-            mProgressDialog = new ProgressDialog(activity);
-            mProgressDialog.setMessage(activity.getString(R.string.esptouch1_configuring_message));
-            mProgressDialog.setCanceledOnTouchOutside(false);
-            mProgressDialog.setOnCancelListener(dialog -> {
-                synchronized (mLock) {
-                    if (mEsptouchTask != null) {
-                        mEsptouchTask.interrupt();
-                    }
-                }
-            });
-            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getText(android.R.string.cancel),
-                    (dialog, which) -> {
-                        synchronized (mLock) {
-                            if (mEsptouchTask != null) {
-                                mEsptouchTask.interrupt();
-                            }
-                        }
-                    });
-            mProgressDialog.show();
+            EspTouchActivity activity = mActivity.get();
+            activity.mBinding.testResult.setText("");
+            activity.showProgress(true);
         }
 
         @Override
         protected void onProgressUpdate(IEsptouchResult... values) {
-            Context context = mActivity.get();
-            if (context != null) {
+            EspTouchActivity activity = mActivity.get();
+            if (activity != null) {
                 IEsptouchResult result = values[0];
                 Log.i(TAG, "EspTouchResult: " + result);
                 String text = result.getBssid() + " is connected to the wifi";
-                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
+
+                activity.mBinding.testResult.append(String.format(
+                        Locale.ENGLISH,
+                        "%s,%s\n",
+                        result.getInetAddress().getHostAddress(),
+                        result.getBssid()
+                ));
             }
         }
 
@@ -236,7 +243,7 @@ public class EspTouchActivity extends EspTouchActivityAbs {
         protected void onPostExecute(List<IEsptouchResult> result) {
             EspTouchActivity activity = mActivity.get();
             activity.mTask = null;
-            mProgressDialog.dismiss();
+            activity.showProgress(false);
             if (result == null) {
                 mResultDialog = new AlertDialog.Builder(activity)
                         .setMessage(R.string.esptouch1_configure_result_failed_port)
