@@ -6,7 +6,7 @@
 ## APIs
 - Create provisioner instance
   ```java
-  Context conxt; // Set Application Context
+  Context context; // Set Application Context
   EspProvisioner provisioner = new EspProvisioner(context);
   ```
 
