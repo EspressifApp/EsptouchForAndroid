@@ -7,12 +7,30 @@ The devices need run smart config: [esp-idf](https://github.com/espressif/esp-id
 ## Licence
 - See [Licence](ESPRESSIF_MIT_LICENSE)
 
+## How to import
+- Add this in your root `build.gradle` at the end of repositories:
+  ```
+  allprojects {
+      repositories {
+          ...
+          maven { url 'https://jitpack.io' }
+      }
+  }
+   ```
+- And add a dependency code to your app module's `build.gradle` file.
+  ```
+  implementation 'com.github.EspressifApp:lib-esptouch-android:1.0.0'
+  ```
+  ```
+  implementation 'com.github.EspressifApp:lib-esptouch-v2-android:2.0.0'
+  ```
+
+## Lib Source Code
+- EspTouch: [esptouch](https://github.com/EspressifApp/lib-esptouch-android)
+- EspTouchV2: [esptouch-v2](https://github.com/EspressifApp/lib-esptouch-v2-android)
+
 ## Version Log
 - See [Log](log/log-en.md)
-
-## Modules
-- EspTouch: [esptouch](esptouch)
-- EspTouchV2: [esptouch-v2](esptouch-v2)
 
 ## Releases
 - See [releases](https://github.com/EspressifApp/EsptouchForAndroid/releases)
