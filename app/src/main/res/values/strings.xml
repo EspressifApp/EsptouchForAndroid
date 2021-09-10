@@ -39,7 +39,8 @@
     <string name="esptouch2_aes_key">AES Key</string>
     <string name="esptouch2_aes_key_error">AES Key must be null or 16 bytes data</string>
     <string name="esptouch2_custom_data">Custom Data</string>
-    <string name="esptouch2_custom_data_error">Custom data can\'t be more than 127 bytes</string>
+    <string name="esptouch2_custom_data_error">Custom data can\'t be more than %d bytes</string>
+    <string name="esptouch2_device_count">Device Count for Provisioning</string>
 
     <string name="esptouch2_provisioning_title">Provision</string>
     <string name="esptouch2_provisioning_stop">Stop</string>

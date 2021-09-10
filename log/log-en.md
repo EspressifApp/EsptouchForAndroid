@@ -2,6 +2,12 @@
 
 # Update Log
 
+## v2.3.0
+- EspTouchV2
+  - Support set device count for provisioning
+  - Change custom data max length to 64 bytes
+  - Update esptouch-v2 lib to 2.1.0
+
 ## v2.0.0
 - Support EspTouchV2
     - EspTouchV2 is not compatible with EspTouch

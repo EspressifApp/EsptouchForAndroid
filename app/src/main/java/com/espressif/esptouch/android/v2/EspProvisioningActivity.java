@@ -35,6 +35,7 @@ public class EspProvisioningActivity extends AppCompatActivity {
 
     public static final String KEY_PROVISION = "provision";
     public static final String KEY_PROVISION_REQUEST = "provision_request";
+    public static final String KEY_DEVICE_COUNT = "device_count";
 
     private List<EspProvisioningResult> mStations;
     private StationAdapter mStationAdapter;
@@ -51,6 +52,8 @@ public class EspProvisioningActivity extends AppCompatActivity {
 
     private long mTime;
 
+    private int mWillProvisioningCount = -1;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,7 @@ public class EspProvisioningActivity extends AppCompatActivity {
         }
 
         EspProvisioningRequest request = getIntent().getParcelableExtra(KEY_PROVISION_REQUEST);
+        mWillProvisioningCount = getIntent().getIntExtra(KEY_DEVICE_COUNT, -1);
         assert request != null;
         mProvisioner = new EspProvisioner(getApplicationContext());
 
@@ -171,6 +175,10 @@ public class EspProvisioningActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 mStations.add(result);
                 mStationAdapter.notifyItemInserted(mStations.size() - 1);
+
+                if (mWillProvisioningCount > 0 && mStations.size() >= mWillProvisioningCount) {
+                    mProvisioner.stopProvisioning();
+                }
             });
         }
 

@@ -3,10 +3,11 @@ package com.espressif.esptouch.android.v2;
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -29,7 +30,6 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
     private static final String TAG = EspTouch2Activity.class.getSimpleName();
 
     private static final int REQUEST_PERMISSION = 0x01;
-    private static final int REQUEST_PROVISIONING = 0x02;
 
     private EspProvisioner mProvisioner;
 
@@ -43,25 +43,25 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
     private int mMessageVisible;
     private int mControlVisible;
 
+    private ActivityResultLauncher<Intent> mProvisionLauncher;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mBinding = ActivityEsptouch2Binding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+
+        mProvisionLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> mBinding.confirmBtn.setEnabled(true)
+        );
+
         mBinding.controlGroup.setVisibility(View.INVISIBLE);
         mBinding.confirmBtn.setOnClickListener(v -> {
-            EspProvisioningRequest request = genRequest();
-            if (request == null) {
-                return;
+            if (launchProvisioning()) {
+                mBinding.confirmBtn.setEnabled(false);
             }
-            if (mProvisioner != null) {
-                mProvisioner.close();
-            }
-            Intent intent = new Intent(EspTouch2Activity.this, EspProvisioningActivity.class);
-            intent.putExtra(EspProvisioningActivity.KEY_PROVISION_REQUEST, request);
-            startActivityForResult(intent, REQUEST_PROVISIONING);
-            mBinding.confirmBtn.setEnabled(false);
         });
 
         ActionBar actionBar = getSupportActionBar();
@@ -110,18 +110,25 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQUEST_PROVISIONING) {
-            mBinding.confirmBtn.setEnabled(true);
-            return;
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     protected String getEspTouchVersion() {
         return getString(R.string.esptouch2_about_version, IEspProvisioner.ESPTOUCH_VERSION);
+    }
+
+    private boolean launchProvisioning() {
+        EspProvisioningRequest request = genRequest();
+        if (request == null) {
+            return false;
+        }
+        if (mProvisioner != null) {
+            mProvisioner.close();
+        }
+
+        Intent intent = new Intent(EspTouch2Activity.this, EspProvisioningActivity.class);
+        intent.putExtra(EspProvisioningActivity.KEY_PROVISION_REQUEST, request);
+        intent.putExtra(EspProvisioningActivity.KEY_DEVICE_COUNT, getDeviceCount());
+        mProvisionLauncher.launch(intent);
+
+        return true;
     }
 
     private boolean checkState() {
@@ -190,7 +197,7 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
 
         CharSequence aesKeyChars = mBinding.aesKeyEdit.getText();
         byte[] aesKey = null;
-        if (!TextUtils.isEmpty(aesKeyChars)) {
+        if (aesKeyChars != null && aesKeyChars.length() > 0) {
             aesKey = aesKeyChars.toString().getBytes();
         }
         if (aesKey != null && aesKey.length != 16) {
@@ -200,11 +207,12 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
 
         CharSequence customDataChars = mBinding.customDataEdit.getText();
         byte[] customData = null;
-        if (!TextUtils.isEmpty(customDataChars)) {
+        if (customDataChars != null && customDataChars.length() > 0) {
             customData = customDataChars.toString().getBytes();
         }
-        if (customData != null && customDataChars.length() > 127) {
-            mBinding.customDataEdit.setError(getString(R.string.esptouch2_custom_data_error));
+        int customDataMaxLen = EspProvisioningRequest.RESERVED_LENGTH_MAX;
+        if (customData != null && customData.length > customDataMaxLen) {
+            mBinding.customDataEdit.setError(getString(R.string.esptouch2_custom_data_error, customDataMaxLen));
             return null;
         }
 
@@ -218,8 +226,21 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
                 .build();
     }
 
+    private int getDeviceCount() {
+        CharSequence deviceCountStr = mBinding.deviceCountEdit.getText();
+        int deviceCount = -1;
+        if (deviceCountStr != null && deviceCountStr.length() > 0) {
+            try {
+                deviceCount = Integer.parseInt(deviceCountStr.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return deviceCount;
+    }
+
     private static class SyncListener implements EspSyncListener {
-        private WeakReference<EspProvisioner> provisioner;
+        private final WeakReference<EspProvisioner> provisioner;
 
         SyncListener(EspProvisioner provisioner) {
             this.provisioner = new WeakReference<>(provisioner);

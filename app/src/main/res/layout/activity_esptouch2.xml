@@ -11,7 +11,7 @@
         android:id="@+id/controlGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="apSsidLabel,apSsidText,apBssidLabel,apBssidText,ipLabel,ipText,apPasswordLayout,aesKeyLayout,customDataLayout,confirmBtn" />
+        app:constraint_referenced_ids="apSsidLabel,apSsidText,apBssidLabel,apBssidText,ipLabel,ipText,apPasswordLayout,aesKeyLayout,customDataLayout,confirmBtn,deviceCountLayout" />
 
     <TextView
         android:id="@+id/apSsidLabel"
@@ -103,13 +103,30 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/deviceCountLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/esptouch2_device_count"
+        app:layout_constraintTop_toBottomOf="@id/apPasswordLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/deviceCountEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/aesKeyLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/esptouch2_aes_key"
-        app:layout_constraintTop_toBottomOf="@id/apPasswordLayout"
+        app:layout_constraintTop_toBottomOf="@id/deviceCountLayout"
         app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText

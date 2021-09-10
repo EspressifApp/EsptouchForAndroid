@@ -39,7 +39,8 @@
     <string name="esptouch2_aes_key">AES 密钥</string>
     <string name="esptouch2_aes_key_error">AES 密钥必须为空或者16字节数据</string>
     <string name="esptouch2_custom_data">自定义数据</string>
-    <string name="esptouch2_custom_data_error">自定义数据不能超过127字节</string>
+    <string name="esptouch2_custom_data_error">自定义数据不能超过%d字节</string>
+    <string name="esptouch2_device_count">需要配网的设备数量</string>
 
     <string name="esptouch2_provisioning_title">配网</string>
     <string name="esptouch2_provisioning_stop">停止</string>
