@@ -99,7 +99,7 @@ public abstract class EspTouchActivityAbs extends AppCompatActivity {
 
     protected StateResult checkPermission() {
         StateResult result = new StateResult();
-        result.permissionGranted = false;
+        result.permissionGranted = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             boolean locationGranted = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED;
@@ -115,11 +115,11 @@ public abstract class EspTouchActivityAbs extends AppCompatActivity {
                 clickMsg.setSpan(clickSpan, 0, clickMsg.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 ssb.append(clickMsg);
                 result.message = ssb;
-                return result;
+
+                result.permissionGranted = false;
             }
         }
 
-        result.permissionGranted = true;
         return result;
     }
 
