@@ -2,6 +2,15 @@
 
 # Update Log
 
+## v2.3.1
+- Update gradle
+- Update `targetSdkVersion` to 32
+- Change `sourceCompatibility` and `targetCompatibility` to JavaVersion.VERSION_1_8
+- EspTouchV2
+  - Update esptouch-v2 lib to 2.2.0
+- EspTouch
+  - Update esptouch lib to 1.1.0
+
 ## v2.3.0
 - EspTouchV2
   - Support set device count for provisioning
