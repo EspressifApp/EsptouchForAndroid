@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.espressif.iot.esptouch2.BuildConfig;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -27,7 +29,7 @@ import java.util.concurrent.Future;
 
 class EspProvisionerImpl implements IEspProvisioner {
     private static final String TAG = EspProvisionerImpl.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     private static final long SYNC_PKG_INTERVAL = 100;
     private static final long DATA_PKG_INTERVAL = 15;

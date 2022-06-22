@@ -2,6 +2,8 @@ package com.espressif.iot.esptouch2.provision;
 
 import android.util.Log;
 
+import com.espressif.iot.esptouch2.BuildConfig;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.Inet4Address;
@@ -12,7 +14,7 @@ import java.util.Random;
 
 class EspProvisioningParams {
     private static final String TAG = "ProvisionParams";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     private static final int VERSION = 0;
 

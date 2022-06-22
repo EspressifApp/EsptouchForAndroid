@@ -152,6 +152,8 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
 
         if (stateResult.wifiConnected && stateResult.is5G) {
             mBinding.hintView.setText(R.string.esptouch_message_wifi_frequency);
+        } else {
+            mBinding.hintView.setText("");
         }
 
         return stateResult.wifiConnected;

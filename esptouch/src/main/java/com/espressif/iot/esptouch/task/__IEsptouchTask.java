@@ -1,5 +1,6 @@
 package com.espressif.iot.esptouch.task;
 
+import com.espressif.iot.esptouch.BuildConfig;
 import com.espressif.iot.esptouch.IEsptouchListener;
 import com.espressif.iot.esptouch.IEsptouchResult;
 
@@ -17,7 +18,7 @@ public interface __IEsptouchTask {
     /**
      * Turn on or off the log.
      */
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = BuildConfig.DEBUG;
 
     /**
      * set the esptouch listener, when one device is connected to the Ap, it will be called back
