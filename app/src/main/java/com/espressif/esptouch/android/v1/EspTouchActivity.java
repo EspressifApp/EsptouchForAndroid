@@ -107,24 +107,8 @@ public class EspTouchActivity extends EspTouchActivityAbs {
         return getString(R.string.esptouch1_about_version, IEsptouchTask.ESPTOUCH_VERSION);
     }
 
-    private StateResult check() {
-        StateResult result = checkPermission();
-        if (!result.permissionGranted) {
-            return result;
-        }
-        result = checkLocation();
-        result.permissionGranted = true;
-        if (result.locationRequirement) {
-            return result;
-        }
-        result = checkWifi();
-        result.permissionGranted = true;
-        result.locationRequirement = false;
-        return result;
-    }
-
     private void onWifiChanged() {
-        StateResult stateResult = check();
+        StateResult stateResult = checkState();
         mSsid = stateResult.ssid;
         mSsidBytes = stateResult.ssidBytes;
         mBssid = stateResult.bssid;
@@ -133,7 +117,7 @@ public class EspTouchActivity extends EspTouchActivityAbs {
         if (stateResult.wifiConnected) {
             confirmEnable = true;
             if (stateResult.is5G) {
-                message = getString(R.string.esptouch1_wifi_5g_message);
+                message = getString(R.string.esptouch_message_wifi_frequency);
             }
         } else {
             if (mTask != null) {

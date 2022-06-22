@@ -131,8 +131,8 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
         return true;
     }
 
-    private boolean checkState() {
-        StateResult stateResult = checkPermission();
+    private boolean checkEnable() {
+        StateResult stateResult = checkState();
         if (!stateResult.permissionGranted) {
             mMessage = stateResult.message;
             mBinding.messageView.setOnClickListener(v -> {
@@ -142,20 +142,19 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
             return false;
         }
 
-        stateResult = checkLocation();
-        if (stateResult.locationRequirement) {
-            mMessage = stateResult.message;
-            mBinding.messageView.setOnClickListener(null);
-            return false;
-        }
+        mBinding.messageView.setOnClickListener(null);
 
-        stateResult = checkWifi();
         mSsid = stateResult.ssid;
         mSsidBytes = stateResult.ssidBytes;
         mBssid = stateResult.bssid;
         mMessage = stateResult.message;
         mAddress = stateResult.address;
-        return stateResult.wifiConnected && !stateResult.is5G;
+
+        if (stateResult.wifiConnected && stateResult.is5G) {
+            mBinding.hintView.setText(R.string.esptouch_message_wifi_frequency);
+        }
+
+        return stateResult.wifiConnected;
     }
 
     private byte[] getBssidBytes() {
@@ -172,7 +171,7 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
     }
 
     private void check() {
-        if (checkState()) {
+        if (checkEnable()) {
             mControlVisible = View.VISIBLE;
             mMessageVisible = View.GONE;
         } else {

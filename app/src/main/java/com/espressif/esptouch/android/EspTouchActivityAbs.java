@@ -34,11 +34,12 @@ public abstract class EspTouchActivityAbs extends AppCompatActivity {
     protected static class StateResult {
         public CharSequence message = null;
 
+        public boolean enable = true;
+
         public boolean permissionGranted = false;
 
-        public boolean locationRequirement = false;
-
         public boolean wifiConnected = false;
+
         public boolean is5G = false;
         public InetAddress address = null;
         public String ssid = null;
@@ -97,8 +98,24 @@ public abstract class EspTouchActivityAbs extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected StateResult checkPermission() {
+    protected StateResult checkState() {
         StateResult result = new StateResult();
+        checkPermission(result);
+        if (!result.enable) {
+            return result;
+        }
+
+        checkLocation(result);
+        if (!result.enable) {
+            return result;
+        }
+
+        checkWifi(result);
+
+        return result;
+    }
+
+    private StateResult checkPermission(StateResult result) {
         result.permissionGranted = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             boolean locationGranted = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -116,31 +133,30 @@ public abstract class EspTouchActivityAbs extends AppCompatActivity {
                 ssb.append(clickMsg);
                 result.message = ssb;
 
+
                 result.permissionGranted = false;
+                result.enable = false;
             }
         }
 
         return result;
     }
 
-    protected StateResult checkLocation() {
-        StateResult result = new StateResult();
-        result.locationRequirement = true;
+    private StateResult checkLocation(StateResult result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             LocationManager manager = getSystemService(LocationManager.class);
             boolean enable = manager != null && LocationManagerCompat.isLocationEnabled(manager);
             if (!enable) {
                 result.message = getString(R.string.esptouch_message_location);
+                result.enable = false;
                 return result;
             }
         }
 
-        result.locationRequirement = false;
         return result;
     }
 
-    protected StateResult checkWifi() {
-        StateResult result = new StateResult();
+    private StateResult checkWifi(StateResult result) {
         result.wifiConnected = false;
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
         boolean connected = TouchNetUtil.isWifiConnected(mWifiManager);
@@ -169,6 +185,8 @@ public abstract class EspTouchActivityAbs extends AppCompatActivity {
         result.ssid = ssid;
         result.ssidBytes = TouchNetUtil.getRawSsidBytesOrElse(wifiInfo, ssid.getBytes());
         result.bssid = wifiInfo.getBSSID();
+
+        result.enable = result.wifiConnected;
 
         return result;
     }

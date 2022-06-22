@@ -9,7 +9,7 @@
     <string name="esptouch_message_permission">APP require Location permission to get Wi-Fi information. \nClick to request permission</string>
     <string name="esptouch_message_location">Please turn on GPS to get Wi-Fi information.</string>
     <string name="esptouch_message_wifi_connection">Please connect Wi-Fi first.</string>
-    <string name="esptouch_message_wifi_frequency">Current Wi-Fi connection is 5G, but the device just support 2.4G.</string>
+    <string name="esptouch_message_wifi_frequency">Current Wi-Fi connection is 5G, make sure your device supports it.</string>
 
     <string name="esptouch1_title">EspTouch</string>
     <string name="esptouch1_about_version">EspTouch Version: %s</string>
@@ -20,7 +20,6 @@
     <string name="esptouch1_package_broadcast">Broadcast</string>
     <string name="esptouch1_package_multicast">Multicast</string>
     <string name="esptouch1_confirm">Confirm</string>
-    <string name="esptouch1_wifi_5g_message">Device don\'t support 5G Wi-Fi, please make sure the currently connected Wi-Fi is 2.4G, or you can try multicast</string>
     <string name="esptouch1_location_permission_title">⚠️Warning</string>
     <string name="esptouch1_location_permission_message">On Android M or higher version, App can\'t get Wi-Fi connection information if you forbid Location permission.</string>
     <string name="esptouch1_configuring_message">Esptouch is configuring, please wait for a moment…</string>

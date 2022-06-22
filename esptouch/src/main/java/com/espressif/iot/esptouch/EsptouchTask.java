@@ -19,7 +19,7 @@ public class EsptouchTask implements IEsptouchTask {
      * Constructor of EsptouchTask
      *
      * @param apSsid     the Ap's ssid
-     * @param apBssid    the Ap's bssid
+     * @param apBssid    the Ap's bssid, like aa:bb:cc:dd:ee:ff
      * @param apPassword the Ap's password
      * @param context    the {@link Context} of the Application
      */
@@ -31,7 +31,7 @@ public class EsptouchTask implements IEsptouchTask {
      * Constructor of EsptouchTask
      *
      * @param apSsid     the Ap's ssid
-     * @param apBssid    the Ap's bssid
+     * @param apBssid    the Ap's bssid, the length must be 6
      * @param apPassword the Ap's password
      * @param context    the {@link Context} of the Application
      */
