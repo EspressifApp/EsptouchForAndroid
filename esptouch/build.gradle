@@ -1,0 +1,32 @@
+plugins {
+    id 'com.android.library'
+}
+
+def libVersion = "1.1.0"
+
+android {
+    compileSdkVersion 32
+
+    namespace "com.espressif.iot.esptouch"
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 32
+
+        buildConfigField "String", "VERSION_NAME", "\"$libVersion\""
+    }
+
+    buildTypes {
+        debug {
+
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

@@ -44,6 +44,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    implementation 'com.github.EspressifApp:lib-esptouch-android:1.1.0'
-    implementation 'com.github.EspressifApp:lib-esptouch-v2-android:2.2.0'
+    implementation project(":esptouch")
+    implementation project(":esptouch-v2")
 }
