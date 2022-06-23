@@ -2,6 +2,13 @@
 
 # Update Log
 
+## v2.3.2
+- Allow the app to smart config in 5G frequency for ESP32-C5
+- EspTouchV2
+  - Update esptouch-v2 lib to 2.2.1
+- EspTouch
+  - Update esptouch lib to 1.1.1
+
 ## v2.3.1
 - Update gradle
 - Update `targetSdkVersion` to 32

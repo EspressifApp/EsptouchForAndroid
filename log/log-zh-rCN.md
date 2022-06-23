@@ -2,6 +2,13 @@
 
 # Update Log
 
+## v2.3.2
+- 因为 ESP32-C5 支持 5G 频率，允许 APP 在 5G 频率下进行 smart config.
+- EspTouchV2
+  - 升级 esptouch-v2 库到 2.2.1
+- EspTouch
+  - 升级 esptouch 库到 1.1.1
+
 ## v2.3.1
 - 升级 gradle
 - 升级 `targetSdkVersion` 到 32
