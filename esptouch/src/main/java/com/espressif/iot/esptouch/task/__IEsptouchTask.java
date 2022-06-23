@@ -18,7 +18,7 @@ public interface __IEsptouchTask {
     /**
      * Turn on or off the log.
      */
-    static final boolean DEBUG = BuildConfig.DEBUG;
+    boolean DEBUG = BuildConfig.DEBUG;
 
     /**
      * set the esptouch listener, when one device is connected to the Ap, it will be called back

@@ -19,10 +19,10 @@ The devices need run smart config: [esp-idf](https://github.com/espressif/esp-id
    ```
 - And add a dependency code to your app module's `build.gradle` file.
   ```
-  implementation 'com.github.EspressifApp:lib-esptouch-android:1.0.0'
+  implementation 'com.github.EspressifApp:lib-esptouch-android:1.1.1'
   ```
   ```
-  implementation 'com.github.EspressifApp:lib-esptouch-v2-android:2.1.0'
+  implementation 'com.github.EspressifApp:lib-esptouch-v2-android:2.1.1'
   ```
 
 ## Lib Source Code
@@ -34,7 +34,9 @@ The devices need run smart config: [esp-idf](https://github.com/espressif/esp-id
 - EspTouchV2: [doc](esptouch-v2/README.md)
 
 ## Version Log
-- See [Log](log/log-en.md)
+- APP [Log](log/log-en.md)
+- Lib EspTouch [Log](esptouch/ChangeLogs/log_en.md)
+- Lib EspTouchV2 [Log](esptouch-v2/ChangeLogs/log_en.md)
 
 ## Releases
 - See [releases](https://github.com/EspressifApp/EsptouchForAndroid/releases)
