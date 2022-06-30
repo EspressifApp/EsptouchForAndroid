@@ -26,8 +26,8 @@ The devices need run smart config: [esp-idf](https://github.com/espressif/esp-id
   ```
 
 ## Lib Source Code
-- EspTouch: [lib-esptouch-android](esptouch)
-- EspTouchV2: [lib-esptouch-v2-android](esptouch-v2)
+- EspTouch: [esptouch](esptouch)
+- EspTouchV2: [esptouch-v2](esptouch-v2)
 
 ## Api
 - EspTouch: [doc](esptouch/README.md)
