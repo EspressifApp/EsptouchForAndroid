@@ -5,7 +5,7 @@ The devices need run smart config: [esp-idf](https://github.com/espressif/esp-id
 **Note: EspTouchV2 is not compatible with EspTouch**
 
 ## Licence
-- See [Licence](ESPRESSIF_MIT_LICENSE)
+- See [Licence](LICENSE)
 
 ## How to import
 - Add this in your root `build.gradle` at the end of repositories:
