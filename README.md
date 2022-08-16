@@ -22,7 +22,7 @@ The devices need run smart config: [esp-idf](https://github.com/espressif/esp-id
   implementation 'com.github.EspressifApp:lib-esptouch-android:1.1.1'
   ```
   ```
-  implementation 'com.github.EspressifApp:lib-esptouch-v2-android:2.1.1'
+  implementation 'com.github.EspressifApp:lib-esptouch-v2-android:2.2.1'
   ```
 
 ## Lib Source Code
