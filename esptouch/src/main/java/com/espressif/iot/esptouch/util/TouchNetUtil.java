@@ -4,8 +4,6 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -22,36 +20,20 @@ public class TouchNetUtil {
                 .getSystemService(Context.WIFI_SERVICE);
         assert wm != null;
         WifiInfo wifiInfo = wm.getConnectionInfo();
-        int localAddrInt = wifiInfo.getIpAddress();
-        String localAddrStr = __formatString(localAddrInt);
+        int ipAddress = wifiInfo.getIpAddress();
+        byte[] addressBytes = new byte[]{
+                (byte) (ipAddress & 0xff),
+                (byte) (ipAddress >> 8 & 0xff),
+                (byte) (ipAddress >> 16 & 0xff),
+                (byte) (ipAddress >> 24 & 0xff)
+        };
         InetAddress localInetAddr = null;
         try {
-            localInetAddr = InetAddress.getByName(localAddrStr);
+            localInetAddr = InetAddress.getByAddress(addressBytes);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
         return localInetAddr;
-    }
-
-    private static String __formatString(int value) {
-        StringBuilder strValue = new StringBuilder();
-        byte[] ary = __intToByteArray(value);
-        for (int i = ary.length - 1; i >= 0; i--) {
-            strValue.append(ary[i] & 0xFF);
-            if (i > 0) {
-                strValue.append(".");
-            }
-        }
-        return strValue.toString();
-    }
-
-    private static byte[] __intToByteArray(int value) {
-        byte[] b = new byte[4];
-        for (int i = 0; i < 4; i++) {
-            int offset = (b.length - 1 - i) * 8;
-            b[i] = (byte) ((value >>> offset) & 0xFF);
-        }
-        return b;
     }
 
     /**
@@ -60,8 +42,7 @@ public class TouchNetUtil {
      * @param inetAddrBytes
      * @return
      */
-    public static InetAddress parseInetAddr(byte[] inetAddrBytes, int offset,
-                                            int count) {
+    public static InetAddress parseInetAddr(byte[] inetAddrBytes, int offset, int count) {
         InetAddress inetAddress = null;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < count; i++) {
@@ -91,28 +72,5 @@ public class TouchNetUtil {
             result[i] = (byte) Integer.parseInt(bssidSplits[i], 16);
         }
         return result;
-    }
-
-    public static byte[] getOriginalSsidBytes(WifiInfo info) {
-        try {
-            Method method = info.getClass().getMethod("getWifiSsid");
-            method.setAccessible(true);
-            Object wifiSsid = method.invoke(info);
-            if (wifiSsid == null) {
-                return null;
-            }
-            method = wifiSsid.getClass().getMethod("getOctets");
-            method.setAccessible(true);
-            return (byte[]) method.invoke(wifiSsid);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
