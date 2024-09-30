@@ -37,6 +37,9 @@
     <string name="esptouch2_password_label">Password</string>
     <string name="esptouch2_aes_key">AES Key</string>
     <string name="esptouch2_aes_key_error">AES Key must be null or 16 bytes data</string>
+    <string name="esptouch2_security_ver">Security ver:</string>
+    <string name="esptouch2_security_v1">v1</string>
+    <string name="esptouch2_security_v2">v2</string>
     <string name="esptouch2_custom_data">Custom Data</string>
     <string name="esptouch2_custom_data_error">Custom data can\'t be more than %d bytes</string>
     <string name="esptouch2_device_count">Device Count for Provisioning</string>

@@ -2,15 +2,15 @@ plugins {
     id 'com.android.library'
 }
 
-def libVersion = "2.1.1"
+def libVersion = "2.2.0"
 
 android {
-    compileSdkVersion 32
+    compileSdk 32
 
     namespace "com.espressif.iot.esptouch2"
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 32
+        minSdk 21
+        targetSdk 32
 
         buildConfigField "String", "VERSION_NAME", "\"$libVersion\""
     }
@@ -30,5 +30,5 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
 }

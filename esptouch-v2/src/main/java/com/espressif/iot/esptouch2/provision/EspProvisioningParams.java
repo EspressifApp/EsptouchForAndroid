@@ -30,6 +30,7 @@ class EspProvisioningParams {
     private byte[] mReservedData;
 
     private boolean mWillEncrypt;
+    private int mSecurityVer;
     private byte[] mAesKey;
 
     private boolean mPasswordEncode;
@@ -77,6 +78,7 @@ class EspProvisioningParams {
 
         mWillEncrypt = request.aesKey != null && (mPassword.length > 0 || mReservedData.length > 0);
         mAesKey = mWillEncrypt ? request.aesKey : EMPTY_DATA;
+        mSecurityVer = request.securityVer;
 
         mPasswordEncode = checkCharEncode(mPassword);
         mReservedEncode = checkCharEncode(mReservedData);
@@ -89,7 +91,7 @@ class EspProvisioningParams {
         crcCalc.update(request.bssid);
         int bssidCrc = (int) (crcCalc.getValue() & 0xff);
         int flag = (isIPv4 ? 1 : 0) // bit0: ipv4 or ipv6
-                | (mWillEncrypt ? 0b01_0 : 0) // bit1 bit2: crypt
+                | (mWillEncrypt ? (mSecurityVer << 1) : 0) // bit1 bit2: crypt
                 | ((mAppPortMark & 0b11) << 3) // bit3 bit4: app port
                 | ((VERSION & 0b11) << 6); // bit6 bit7: version
         mHead = new byte[]{
@@ -171,11 +173,18 @@ class EspProvisioningParams {
         int ssidPaddingFactor;
         boolean ssidEncode;
 
+        byte[] aesIV = EMPTY_DATA;
+
         if (mWillEncrypt) {
+            if (mSecurityVer == 2) {
+                aesIV = new byte[18];
+                random.nextBytes(aesIV);
+            }
+            TouchAES aes = new TouchAES(mAesKey, aesIV);
+
             byte[] willEncryptData = new byte[mPassword.length + mReservedData.length];
             System.arraycopy(mPassword, 0, willEncryptData, 0, mPassword.length);
             System.arraycopy(mReservedData, 0, willEncryptData, mPassword.length, mReservedData.length);
-            TouchAES aes = new TouchAES(mAesKey);
             byte[] encryptedData = aes.encrypt(willEncryptData);
             password = encryptedData;
             passwordEncode = true;
@@ -242,6 +251,7 @@ class EspProvisioningParams {
         os.write(passwordPadding, 0, passwordPadding.length);
         os.write(reservedData, 0, reservedData.length);
         os.write(reservedPadding, 0, reservedPadding.length);
+        os.write(aesIV, 0, aesIV.length);
         os.write(ssid, 0, ssid.length);
         os.write(ssidPadding, 0, ssidPadding.length);
 

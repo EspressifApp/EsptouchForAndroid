@@ -137,6 +137,43 @@
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <LinearLayout
+        android:id="@+id/securityVerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/aesKeyLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/esptouch2_security_ver" />
+
+        <RadioGroup
+            android:id="@+id/securityVerGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/aesKeyLayout">
+
+            <RadioButton
+                android:id="@+id/securityV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:checked="true"
+                android:text="@string/esptouch2_security_v1" />
+
+            <RadioButton
+                android:id="@+id/securityV2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="@string/esptouch2_security_v2" />
+        </RadioGroup>
+    </LinearLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/customDataLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -144,7 +181,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/esptouch2_custom_data"
-        app:layout_constraintTop_toBottomOf="@id/aesKeyLayout">
+        app:layout_constraintTop_toBottomOf="@id/securityVerLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/customDataEdit"

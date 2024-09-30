@@ -20,6 +20,9 @@ public class EspProvisioningRequest implements Parcelable {
 
     public static final int RESERVED_LENGTH_MAX = 64;
 
+    public static final int SECURITY_V1 = 1;
+    public static final int SECURITY_V2 = 2;
+
     public final InetAddress address;
 
     public final byte[] ssid;
@@ -29,15 +32,17 @@ public class EspProvisioningRequest implements Parcelable {
     public final byte[] reservedData;
 
     public final byte[] aesKey;
+    public final int securityVer;
 
     private EspProvisioningRequest(InetAddress address, byte[] ssid, byte[] bssid, byte[] password,
-                                   byte[] reservedData, byte[] aesKey) {
+                                   byte[] reservedData, byte[] aesKey, int securityVer) {
         this.address = address;
         this.ssid = ssid;
         this.bssid = bssid;
         this.password = password;
         this.reservedData = reservedData;
         this.aesKey = aesKey;
+        this.securityVer = securityVer;
     }
 
     private EspProvisioningRequest(Parcel in) {
@@ -47,6 +52,7 @@ public class EspProvisioningRequest implements Parcelable {
         password = in.createByteArray();
         reservedData = in.createByteArray();
         aesKey = in.createByteArray();
+        securityVer = in.readInt();
     }
 
     public static final Creator<EspProvisioningRequest> CREATOR = new Creator<EspProvisioningRequest>() {
@@ -74,6 +80,7 @@ public class EspProvisioningRequest implements Parcelable {
         dest.writeByteArray(password);
         dest.writeByteArray(reservedData);
         dest.writeByteArray(aesKey);
+        dest.writeInt(securityVer);
     }
 
     public static class Builder {
@@ -86,6 +93,7 @@ public class EspProvisioningRequest implements Parcelable {
         private byte[] reservedData;
 
         private byte[] aesKey;
+        private int secretVer = SECURITY_V1;
 
         private Context mContext;
 
@@ -136,6 +144,18 @@ public class EspProvisioningRequest implements Parcelable {
             return this;
         }
 
+        public Builder setSecurityVer(int securityVer) {
+            switch (securityVer) {
+                case SECURITY_V1:
+                case SECURITY_V2:
+                    break;
+                default:
+                    throw new IllegalArgumentException(("Security ver is illegal"));
+            }
+            this.secretVer = securityVer;
+            return this;
+        }
+
         public EspProvisioningRequest build() {
             WifiManager wm = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             assert wm != null;
@@ -170,7 +190,7 @@ public class EspProvisioningRequest implements Parcelable {
                 }
             }
 
-            return new EspProvisioningRequest(address, ssid, bssid, password, reservedData, aesKey);
+            return new EspProvisioningRequest(address, ssid, bssid, password, reservedData, aesKey, secretVer);
         }
     }
 }

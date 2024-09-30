@@ -206,6 +206,16 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
             return null;
         }
 
+        int currentCheckedSecurityId = mBinding.securityVerGroup.getCheckedRadioButtonId();
+        int securityVer;
+        if (currentCheckedSecurityId == R.id.securityV1) {
+            securityVer = EspProvisioningRequest.SECURITY_V1;
+        } else if (currentCheckedSecurityId == R.id.securityV2) {
+            securityVer = EspProvisioningRequest.SECURITY_V2;
+        } else {
+            securityVer = EspProvisioningRequest.SECURITY_V1;
+        }
+
         CharSequence customDataChars = mBinding.customDataEdit.getText();
         byte[] customData = null;
         if (customDataChars != null && customDataChars.length() > 0) {
@@ -223,6 +233,7 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
                 .setBSSID(getBssidBytes())
                 .setPassword(password == null ? null : password.toString().getBytes())
                 .setAESKey(aesKey)
+                .setSecurityVer(securityVer)
                 .setReservedData(customData)
                 .build();
     }
@@ -234,7 +245,7 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
             try {
                 deviceCount = Integer.parseInt(deviceCountStr.toString());
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.w(TAG, "getDeviceCount: ", e);
             }
         }
         return deviceCount;
@@ -259,7 +270,7 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
 
         @Override
         public void onError(Exception e) {
-            e.printStackTrace();
+            Log.w(TAG, "onError: ", e);
             EspProvisioner provisioner = this.provisioner.get();
             if (provisioner != null) {
                 provisioner.stopSync();
