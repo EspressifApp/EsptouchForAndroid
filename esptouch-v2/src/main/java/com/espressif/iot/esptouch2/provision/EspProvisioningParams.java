@@ -24,7 +24,7 @@ class EspProvisioningParams {
 
     private final List<byte[]> mDataPacketList;
 
-    private int mAppPortMark;
+    private final int mAppPortMark;
     private byte[] mPassword;
     private byte[] mSsid;
     private byte[] mReservedData;
@@ -78,7 +78,7 @@ class EspProvisioningParams {
 
         mWillEncrypt = request.aesKey != null && (mPassword.length > 0 || mReservedData.length > 0);
         mAesKey = mWillEncrypt ? request.aesKey : EMPTY_DATA;
-        mSecurityVer = request.securityVer;
+        mSecurityVer = request.securityVer & 0b11;
 
         mPasswordEncode = checkCharEncode(mPassword);
         mReservedEncode = checkCharEncode(mReservedData);

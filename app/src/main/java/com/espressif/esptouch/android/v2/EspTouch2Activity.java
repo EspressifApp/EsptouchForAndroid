@@ -193,8 +193,8 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
     }
 
     private EspProvisioningRequest genRequest() {
-        mBinding.aesKeyEdit.setError(null);
-        mBinding.customDataEdit.setError(null);
+        mBinding.aesKeyLayout.setError(null);
+        mBinding.customDataLayout.setError(null);
 
         CharSequence aesKeyChars = mBinding.aesKeyEdit.getText();
         byte[] aesKey = null;
@@ -202,7 +202,7 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
             aesKey = aesKeyChars.toString().getBytes();
         }
         if (aesKey != null && aesKey.length != 16) {
-            mBinding.aesKeyEdit.setError(getString(R.string.esptouch2_aes_key_error));
+            mBinding.aesKeyLayout.setError(getString(R.string.esptouch2_aes_key_error));
             return null;
         }
 
@@ -223,7 +223,7 @@ public class EspTouch2Activity extends EspTouchActivityAbs {
         }
         int customDataMaxLen = EspProvisioningRequest.RESERVED_LENGTH_MAX;
         if (customData != null && customData.length > customDataMaxLen) {
-            mBinding.customDataEdit.setError(getString(R.string.esptouch2_custom_data_error, customDataMaxLen));
+            mBinding.customDataLayout.setError(getString(R.string.esptouch2_custom_data_error, customDataMaxLen));
             return null;
         }
 
