@@ -5,12 +5,12 @@ plugins {
 def libVersion = "2.2.0"
 
 android {
-    compileSdk 32
+    compileSdk 34
 
     namespace "com.espressif.iot.esptouch2"
     defaultConfig {
         minSdk 21
-        targetSdk 32
+        targetSdk 34
 
         buildConfigField "String", "VERSION_NAME", "\"$libVersion\""
     }

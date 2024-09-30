@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 32
+    compileSdk 34
 
     namespace "com.espressif.esptouch.android"
     defaultConfig {
         applicationId "com.espressif.esptouch.android"
         minSdk 21
-        targetSdk 32
-        versionCode 30
-        versionName "v2.3.2"
+        targetSdk 34
+        versionCode 31
+        versionName "v2.4.0"
     }
 
     signingConfigs {
