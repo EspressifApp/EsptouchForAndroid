@@ -256,7 +256,8 @@ class EspProvisioningParams {
         os.write(ssidPadding, 0, ssidPadding.length);
 
         int reservedBeginPosition = mHead.length + password.length + passwordPadding.length;
-        int ssidBeginPosition = reservedBeginPosition + reservedData.length + reservedPadding.length;
+        int ivBeginPosition = reservedBeginPosition + reservedData.length + reservedPadding.length;
+        int ssidBeginPosition = ivBeginPosition + aesIV.length;
         int offset = 0;
         ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
         int sequence = SEQUENCE_FIRST;
@@ -273,10 +274,14 @@ class EspProvisioningParams {
                     // Password data
                     tailIsCrc = !passwordEncode;
                     expectLength = passwordPaddingFactor;
-                } else if (offset < ssidBeginPosition) {
+                } else if (offset < ivBeginPosition) {
                     // Reserved data
                     tailIsCrc = !reservedEncode;
                     expectLength = reservedPaddingFactor;
+                } else if (offset < ssidBeginPosition) {
+                    // aes iv data
+                    tailIsCrc = false;
+                    expectLength = 6;
                 } else {
                     // SSID data
                     tailIsCrc = !ssidEncode;
