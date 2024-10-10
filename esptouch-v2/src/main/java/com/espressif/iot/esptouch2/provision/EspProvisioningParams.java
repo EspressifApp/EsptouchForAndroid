@@ -65,6 +65,7 @@ class EspProvisioningParams {
                 return true;
             }
         }
+        // all bytes are in 0..127
         return false;
     }
 
@@ -177,7 +178,7 @@ class EspProvisioningParams {
 
         if (mWillEncrypt) {
             if (mSecurityVer == 2) {
-                aesIV = new byte[18];
+                aesIV = new byte[20];
                 random.nextBytes(aesIV);
             }
             TouchAES aes = new TouchAES(mAesKey, aesIV);
@@ -264,27 +265,27 @@ class EspProvisioningParams {
         int count = 0;
         while (is.available() > 0) {
             int expectLength;
-            boolean tailIsCrc;
+            boolean crcInPacket;
             if (sequence < SEQUENCE_FIRST + 1) {
                 // First packet
-                tailIsCrc = false;
+                crcInPacket = true;
                 expectLength = 6;
             } else {
                 if (offset < reservedBeginPosition) {
                     // Password data
-                    tailIsCrc = !passwordEncode;
+                    crcInPacket = passwordEncode;
                     expectLength = passwordPaddingFactor;
                 } else if (offset < ivBeginPosition) {
                     // Reserved data
-                    tailIsCrc = !reservedEncode;
+                    crcInPacket = reservedEncode;
                     expectLength = reservedPaddingFactor;
                 } else if (offset < ssidBeginPosition) {
                     // aes iv data
-                    tailIsCrc = false;
-                    expectLength = 6;
+                    crcInPacket = true;
+                    expectLength = 5;
                 } else {
                     // SSID data
-                    tailIsCrc = !ssidEncode;
+                    crcInPacket = ssidEncode;
                     expectLength = ssidPaddingFactor;
                 }
             }
@@ -301,7 +302,7 @@ class EspProvisioningParams {
             if (expectLength < buf.length) {
                 buf[buf.length - 1] = (byte) seqCrc;
             }
-            addDataFor6Bytes(buf, sequence, seqCrc, tailIsCrc);
+            addDataFor6Bytes(buf, sequence, seqCrc, !crcInPacket);
             ++sequence;
             ++count;
         } // end while
