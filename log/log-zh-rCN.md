@@ -2,6 +2,10 @@
 
 # Update Log
 
+## v2.4.0
+- EspTouchV2
+  - 增加加密模式选择
+
 ## v2.3.2
 - 因为 ESP32-C5 支持 5G 频率，允许 APP 在 5G 频率下进行 smart config.
 - EspTouchV2

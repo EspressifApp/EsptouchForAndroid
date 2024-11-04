@@ -2,6 +2,10 @@
 
 # Update Log
 
+## v2.4.0
+- EspTouchV2
+  - Add security mode options
+
 ## v2.3.2
 - Allow the app to smart config in 5G frequency for ESP32-C5
 - EspTouchV2
