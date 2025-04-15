@@ -6,9 +6,9 @@
 
 ## Technology Overview
 
-Espressif’s ESP-TOUCH protocol implements the Smart Config technology to enable seamless Wi-Fi provisioning for ESP8266 and ESP32 embedded devices (hereafter "the device") through smartphone-based configuration.
+ESP-TOUCH protocol implements the Smart Config technology to enable seamless Wi-Fi provisioning for ESP8266 and ESP32 embedded devices (hereafter "the device") through smartphone-based configuration.
 
-![Typical ESP-TOUCH Application Workflow](images/esptouch-app-flow-en.png)
+<img src="images/esptouch-app-flow-en.png" alt="Typical ESP-TOUCH Application Workflow" style="width: 50%; display: block; margin: 0 auto; height: auto;"/>
 
 Since the device is not connected to the network initially, the ESP-TOUCH application cannot send any information to the device directly. With the ESP-TOUCH communication protocol, a device with Wi-Fi access capabilities, such as a smartphone, can send a series of UDP packets to the Wi-Fi Access Point (AP), encoding the SSID and password into the Length field of each of these UDP packets. The device can then reach the UDP packets, obtaining and parsing out the required information.
 
@@ -62,8 +62,8 @@ The data packet structure is shown below:
 
 The ESP-TOUCH communication model can be understood as a unidirectional channel with a certain packet error rate. However, this error rate varies depending on the bandwidth. Typically:
 
-- For 20 MHz bandwidth, the packet error rate is approximately 0–5%.
-- For 40 MHz bandwidth, it ranges from 0–17%.
+- For 20 MHz bandwidth, the packet error rate is approximately 0–5%
+- For 40 MHz bandwidth, it ranges is 0–17%
 
 Assuming that the maximum length of data to be transmitted is 104 bytes, if no error-correcting algorithm is used, it is difficult to ensure that the data can be transmitted over limited rounds of data transfer.
 
@@ -73,16 +73,16 @@ To address this, ESP-TOUCH implements a cumulative error-correcting algorithm to
 
 The success rate of data transmission can be generalized as:
 
-\[ \text{Success Rate} = \left[1 - (1 - P)^k\right]^l \]
+Success Rate = [1 – (1 – P)<sup>k</sup>]<sup>l</sup>
 
 Where:
-- \( P \): Single-packet success rate
-- \( k \): Transmission rounds
-- \( l \): Data length (in bytes)
+- P: Single-packet success rate
+- k: Transmission rounds
+- l: Data length (in bytes)
 
 **Typical Scenario Analysis**:
-- **20 MHz Bandwidth** (\( P = 0.95 \)): 104-byte data achieves a 95% success rate.
-- **40 MHz Bandwidth** (\( P = 0.83 \)): 72-byte data achieves an 83% success rate.
+- **20 MHz Bandwidth** (*P = 0.95*): 104-byte data achieves a 95% success rate
+- **40 MHz Bandwidth** (*P = 0.83*): 72-byte data achieves an 83% success rate
 
 The tables below show the probability of the data transmission success rate and the transmission time when the cumulative error-correcting algorithm is adopted.
 
