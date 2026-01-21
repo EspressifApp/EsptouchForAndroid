@@ -1,0 +1,5 @@
+[codespell]
+skip = build,*.drawio,*.svg,*.pdf,*.png,*.jar,gradlew.bat
+ignore-words-list = laf,OT
+write-changes = true
+

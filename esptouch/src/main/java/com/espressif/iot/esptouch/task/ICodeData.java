@@ -9,12 +9,12 @@ public interface ICodeData {
     /**
      * Get the byte[] to be transformed.
      *
-     * @return the byte[] to be transfromed
+     * @return the byte[] to be transformed
      */
     byte[] getBytes();
 
     /**
-     * Get the char[](u8[]) to be transfromed.
+     * Get the char[](u8[]) to be transformed.
      *
      * @return the char[](u8) to be transformed
      */

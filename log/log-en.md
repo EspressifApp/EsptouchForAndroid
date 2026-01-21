@@ -69,7 +69,7 @@ EspTouch v0.3.7.1
 - Modify bssid post sequence
 
 ## v0.3.6.0
-- Fix bug that cann't configure Chinese SSID
+- Fix bug that can't configure Chinese SSID
 
 ## v0.3.4.7
 - Change project from Eclipse to Android Studio
@@ -98,7 +98,7 @@ EspTouch v0.3.7.1
     - Esptouch v0.3.4.3 only support Espressif's Smart Config v2.4
 
 ## v0.3.4.2
-- Espressif's Smart Config is updated to v2.4, and some paremeters are changed.
+- Espressif's Smart Config is updated to v2.4, and some parameters are changed.
     - Esptouch v0.3.4.2 only support Espressif's Smart Config v2.4
 ```
     The usage of v0.3.4 is supported, besides one new API is added:
@@ -107,7 +107,7 @@ EspTouch v0.3.7.1
  ```
 
 ## v0.3.4
-- Espressif's Smart Config is updated to v2.4, and some paremeters are changed.
+- Espressif's Smart Config is updated to v2.4, and some parameters are changed.
     - Esptouch v0.3.4 only support Espressif's Smart Config v2.4
 
 ## v0.3.3
@@ -116,7 +116,7 @@ EspTouch v0.3.7.1
 ```
     The usage of v0.3.0 is supported, besides one new API is added:
     List<IEsptouchResult> executeForResults(int expectTaskResultCount)
-    The only differece is that it return list, and require expectTaskResultCount
+    The only difference is that it return list, and require expectTaskResultCount
 ```
 
 ## v0.3.2
@@ -207,7 +207,7 @@ IEsptouchTask esptouchTask = new EsptouchTask(apSsid, apPassword);
 IEsptouchTask esptouchTask = new EsptouchTask(apSsid, apPassword);
 // execute syn util it suc or timeout
 IEsptouchResult result = esptouchTask.executeForResult();
-// check whehter the execute is suc
+// check whether the execute is suc
 boolean isSuc = result.isSuc();
 // get the device's bssid, the format of the bssid is like this format: "18fe3497f310"
 String bssid = result.getBssid();
